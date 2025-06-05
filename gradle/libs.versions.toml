@@ -1,0 +1,53 @@
+[versions]
+agp = "8.8.0"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.0"
+material = "1.12.0"
+constraintlayout = "2.2.1"
+lifecycleLivedataKtx = "2.8.7"
+lifecycleViewmodelKtx = "2.8.7"
+navigationFragment = "2.8.8"
+navigationUi = "2.8.8"
+navigationCompose = "2.8.8"
+kotlin = "1.9.23"
+coreAnimation = "1.0.0"
+roomCommonJvm = "2.7.1"
+coreKtx = "1.12.0"
+activityCompose = "1.8.2"
+composeBom = "2024.04.01"
+navigationUiVersion = "2.9.0"
+room = "2.6.1"
+ksp = "1.9.23-1.0.20"
+foundationLayoutAndroid = "1.7.2"
+preferenceKtx = "1.2.1"
+
+[libraries]
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+ui = { group = "androidx.compose.ui", name = "ui" }
+ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+material3 = { group = "androidx.compose.material3", name = "material3" }
+ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+room-common-jvm = { group = "androidx.room", name = "room-common", version.ref = "roomCommonJvm" }
+core-animation = { group = "androidx.core.animation", name = "core-animation", version.ref = "coreAnimation" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+espresso-core = { group = "androidx.espresso", name = "espresso-core", version.ref = "espressoCore" }
+navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUiVersion" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+foundation-layout-android = { group = "androidx.compose.foundation", name = "foundation-layout-android", version.ref = "foundationLayoutAndroid" }
+preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preferenceKtx" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

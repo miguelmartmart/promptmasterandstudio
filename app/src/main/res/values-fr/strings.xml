@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">PromptMaster: Catalogue de Prompts IA</string>
+    <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
+    <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">En-tête de navigation</string>
+    <string name="action_settings">Paramètres</string>
+
+    <string name="menu_home">Accueil</string>
+    <string name="menu_gallery">Galerie</string>
+    <string name="menu_slideshow">Diaporama</string>
+    <string name="menu_favorites">Favoris</string>
+    <string name="menu_settings">Paramètres</string>
+    <string name="add_new_prompt">Ajouter un nouveau prompt</string>
+    <string name="edit_prompt">Modifier le prompt</string>
+    <string name="title_label">Titre</string>
+    <string name="description_label">Description</string>
+    <string name="category_label">Catégorie</string>
+    <string name="tags_label">Tags (séparés par des virgules)</string>
+    <string name="recommended_model_label">Modèle recommandé</string>
+    <string name="customizable_fields_label">Champs personnalisables (JSON ou similaire)</string>
+    <string name="save_prompt_button">Enregistrer le prompt</string>
+    <string name="update_prompt_button">Mettre à jour le prompt</string>
+    <string name="delete_prompt_content_description">Supprimer le prompt</string>
+    <string name="add_to_favorites_content_description">Ajouter aux favoris</string>
+    <string name="remove_from_favorites_content_description">Retirer des favoris</string>
+    <string name="duplicate_prompt_content_description">Dupliquer le prompt</string>
+    <string name="copy_prompt_description_content_description">Copier la description du prompt</string>
+    <string name="dark_mode_setting">Mode sombre</string>
+    <string name="search_prompts_label">Rechercher des prompts</string>
+    <string name="prompt_list_title">Liste des prompts</string>
+    <string name="back_button_content_description">Bouton retour</string>
+    <string name="favorite_prompts_title">PSuggestions préférées</string>
+</resources>

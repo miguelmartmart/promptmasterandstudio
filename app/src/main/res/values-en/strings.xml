@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">PromptMaster: AI Prompt Catalog</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_favorites">Favorites</string>
+    <string name="menu_settings">Settings</string>
+    <string name="add_new_prompt">Add New Prompt</string>
+    <string name="edit_prompt">Edit Prompt</string>
+    <string name="title_label">Title</string>
+    <string name="description_label">Description</string>
+    <string name="category_label">Category</string>
+    <string name="tags_label">Tags (comma separated)</string>
+    <string name="recommended_model_label">Recommended Model</string>
+    <string name="customizable_fields_label">Customizable Fields (JSON or similar)</string>
+    <string name="save_prompt_button">Save Prompt</string>
+    <string name="update_prompt_button">Update Prompt</string>
+    <string name="delete_prompt_content_description">Delete prompt</string>
+    <string name="add_to_favorites_content_description">Add to favorites</string>
+    <string name="remove_from_favorites_content_description">Remove from favorites</string>
+    <string name="duplicate_prompt_content_description">Duplicate prompt</string>
+    <string name="copy_prompt_description_content_description">Copy prompt description</string>
+    <string name="dark_mode_setting">Dark Mode</string>
+    <string name="search_prompts_label">Search Prompts</string>
+    <string name="prompt_list_title">Prompt List</string>
+    <string name="back_button_content_description">Back button</string>
+    <string name="favorite_prompts_title">Favorite Prompts</string>
+</resources>
