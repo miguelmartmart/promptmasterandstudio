@@ -10,8 +10,9 @@ data class Prompt(
     val title: String,
     val description: String,
     val category: String,
+    val subcategory: String?,
     val tags: List<String>, // Will need a TypeConverter
-    val recommendedModel: String,
+    val recommendedModel: String?,
     val customizableFields: Map<String, String>, // Will need a TypeConverter
     val imagePath: String?, // Path to image in internal storage
     val videoPath: String?, // Path to video in internal storage (optional)

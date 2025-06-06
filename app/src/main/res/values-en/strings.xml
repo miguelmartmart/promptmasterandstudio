@@ -35,4 +35,15 @@
     <string name="clear_search_button_description">Delete</string>
     <string name="clear_text_button_description">Delete</string>
     <string name="clear_category_button_description">Delete</string>
+    <string name="all_subcategories_label">All subcategories</string>
+    <string name="subcategory_label">Subcategory</string>
+    <string name="reset_application_button">Reset application</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Confirm Reset</string>
+    <string name="reset_app_dialog_message">Are you sure you want to reset the application to its initial state? All saved prompts and settings will be deleted.</string>
+    <string name="edit_prompt_dialog_title">Discard Changes</string>
+    <string name="edit_prompt_dialog_message">You have unsaved changes. Do you want to discard them and exit?</string>
+    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_cancel">Cancel</string>
 </resources>

@@ -35,6 +35,7 @@ fun PromptListScreen(
     var searchText by remember { mutableStateOf("") }
     val searchQuery by viewModel.searchQuery.collectAsState() // Collect search query state
     val selectedCategory by viewModel.selectedCategory.collectAsState() // Collect selected category state from ViewModel
+    val selectedSubcategory by viewModel.selectedSubcategory.collectAsState() // Collect selected subcategory state
 
     Column(modifier = Modifier.padding(16.dp)) {
         // General Search Field
@@ -115,6 +116,75 @@ fun PromptListScreen(
                 }
             }
         }
+
+        // Subcategory Filter (appears when a category is selected)
+        val subcategories by viewModel.getAllSubcategories(selectedCategory).collectAsState(initial = emptyList()) // Get subcategories for selected category
+
+        if (selectedCategory != null) { // Only show subcategory filter if a category is selected
+            var subcategoryExpanded by remember { mutableStateOf(false) }
+            var subcategorySearchText by remember { mutableStateOf("") }
+
+            ExposedDropdownMenuBox(
+                expanded = subcategoryExpanded,
+                onExpandedChange = { subcategoryExpanded = !subcategoryExpanded }
+            ) {
+                TextField(
+                    value = if (selectedSubcategory == null && selectedCategory != null) stringResource(R.string.all_subcategories_label) else selectedSubcategory ?: "",
+                    onValueChange = {
+                        // Update subcategorySearchText for filtering dropdown items
+                        subcategorySearchText = it
+                    },
+                    label = { Text(stringResource(R.string.subcategory_label)) }, // TODO: Add string resource
+                    trailingIcon = {
+                        // Show clear icon if a subcategory is selected
+                        if (selectedSubcategory != null) {
+                            IconButton(onClick = {
+                                viewModel.setSelectedSubcategory(null) // Clear selected subcategory
+                                subcategorySearchText = "" // Clear subcategorySearchText as well
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Clear,
+                                    contentDescription = "Clear subcategory filter" // TODO: Add string resource
+                                )
+                            }
+                        } else {
+                            // Otherwise, show the default dropdown icon
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = subcategoryExpanded)
+                        }
+                    },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = subcategoryExpanded,
+                    onDismissRequest = { subcategoryExpanded = false }
+                ) {
+                    // Add "Select All" option
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.all_subcategories_label)) },
+                        onClick = {
+                            subcategoryExpanded = false
+                            viewModel.setSelectedSubcategory(null) // Set subcategory filter to null in ViewModel
+                            subcategorySearchText = "" // Clear subcategorySearchText when "All Subcategories" is selected
+                        }
+                    )
+                    subcategories.filter {
+                        it.contains(subcategorySearchText, ignoreCase = true)
+                    }.forEach { subcategory ->
+                        DropdownMenuItem(
+                            text = { Text(subcategory as String) },
+                            onClick = {
+                                subcategoryExpanded = false
+                                viewModel.setSelectedSubcategory(subcategory) // Apply filter when item is selected
+                                subcategorySearchText = subcategory // Update subcategorySearchText to show selected subcategory
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
 
         LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
             items(prompts) { prompt ->

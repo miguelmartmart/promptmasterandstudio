@@ -25,11 +25,21 @@ import androidx.compose.ui.platform.LocalContext // Import LocalContext
 import androidx.compose.foundation.isSystemInDarkTheme
 import java.util.Locale
 import android.app.Activity
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
+import kotlinx.coroutines.launch // Import launch
+import androidx.compose.runtime.rememberCoroutineScope // Import rememberCoroutineScope
+import com.promptmaster.ui.PromptViewModel
+import com.promptmaster.ui.components.ConfirmationDialog // Import ConfirmationDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(onThemeChange: () -> Unit) { // Add the callback parameter
+fun SettingsScreen(
+    viewModel: PromptViewModel, // Accept ViewModel
+    onThemeChange: () -> Unit
+) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope() // Create a coroutine scope
     val sharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context) // Use default shared preferences
     // Fix for Deprecated Locale
     val currentLanguage = if (context.resources.configuration.locales.isEmpty) {
@@ -37,6 +47,8 @@ fun SettingsScreen(onThemeChange: () -> Unit) { // Add the callback parameter
     } else {
         context.resources.configuration.locales[0].language
     }
+
+    var showResetConfirmationDialog by remember { mutableStateOf(false) } // State for dialog visibility
 
     Scaffold(
         topBar = {
@@ -107,9 +119,44 @@ fun SettingsScreen(onThemeChange: () -> Unit) { // Add the callback parameter
                 }
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Reset Application Option
+            Button(
+                onClick = { showResetConfirmationDialog = true }, // Show dialog on click
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.reset_application_button)) // Use string resource
+            }
+
             // TODO: Add theme selection, text size, backup/restore, export options
         }
     }
+
+    // Reset Confirmation Dialog
+    ConfirmationDialog(
+        showDialog = showResetConfirmationDialog,
+        title = stringResource(id = R.string.reset_app_dialog_title),
+        text = stringResource(id = R.string.reset_app_dialog_message),
+        confirmButtonText = stringResource(id = R.string.dialog_confirm),
+        cancelButtonText = stringResource(id = R.string.dialog_cancel),
+        onConfirm = {
+            coroutineScope.launch {
+                viewModel.resetApplicationData() // Call the reset function
+                // Reset SharedPreferences
+                sharedPreferences.edit().apply {
+                    remove("search_history") // Clear search history
+                    remove("appLanguage") // Reset language to default
+                    remove("darkModeEnabled") // Reset dark mode to default
+                    apply()
+                }
+                // Recreate activity to apply language and theme changes
+                (context as? Activity)?.recreate()
+            }
+            showResetConfirmationDialog = false // Hide dialog after confirming
+        },
+        onCancel = { showResetConfirmationDialog = false } // Hide dialog on cancel
+    )
 }
 
 // TODO: Add Preview

@@ -19,6 +19,9 @@ interface PromptDao {
     @Delete
     suspend fun delete(prompt: Prompt)
 
+    @Query("DELETE FROM prompts")
+    suspend fun deleteAllPrompts() // Add function to delete all prompts
+
     @Query("SELECT * FROM prompts WHERE id = :id")
     fun getPrompt(id: Int): Flow<Prompt>
 
@@ -27,7 +30,7 @@ interface PromptDao {
 
     @Query("""
         SELECT * FROM prompts
-        WHERE (:searchQuery IS NULL OR :searchQuery = '' OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' OR tags LIKE '%' || :searchQuery || '%' OR category LIKE '%' || :searchQuery || '%')
+        WHERE (:searchQuery IS NULL OR :searchQuery = '' OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' OR tags LIKE '%' || :searchQuery || '%' OR category LIKE '%' || :searchQuery || '%' OR subcategory LIKE '%' || :searchQuery || '%')
         AND (:category IS NULL OR category = :category)
         AND (:recommendedModel IS NULL OR recommendedModel = :recommendedModel)
         AND (:tag IS NULL OR tags LIKE '%' || :tag || '%')
@@ -54,14 +57,19 @@ interface PromptDao {
 
     @Query("""
         SELECT * FROM prompts
-        WHERE (:searchQuery IS NULL OR :searchQuery = '' OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%')
+        WHERE (:searchQuery IS NULL OR :searchQuery = '' OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' OR subcategory LIKE '%' || :searchQuery || '%')
         AND (:category IS NULL OR category = :category)
+        AND (:subcategory IS NULL OR subcategory = :subcategory)
         AND (:showFavoritesOnly = 0 OR isFavorite = 1)
         ORDER BY lastUsed DESC
     """)
     fun getFilteredAndSortedPrompts(
         searchQuery: String?,
         category: String?,
+        subcategory: String?,
         showFavoritesOnly: Boolean
     ): Flow<List<Prompt>>
+
+    @Query("SELECT DISTINCT subcategory FROM prompts WHERE (:category IS NULL OR category = :category) ORDER BY subcategory")
+    fun getAllSubcategories(category: String?): Flow<List<String>>
 }

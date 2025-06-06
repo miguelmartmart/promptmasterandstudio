@@ -36,4 +36,15 @@
     <string name="clear_search_button_description">Borrar</string>
     <string name="clear_text_button_description">Borrar</string>
     <string name="clear_category_button_description">Borrar</string>
+    <string name="all_subcategories_label">Todas las subcategorías</string>
+    <string name="subcategory_label">Subcategoría</string>
+    <string name="reset_application_button">Reestablecer aplicación</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Confirmar reestablecimiento</string>
+    <string name="reset_app_dialog_message">¿Estás seguro de que quieres reestablecer la aplicación a su estado inicial? Se eliminarán todos los prompts guardados y la configuración.</string>
+    <string name="edit_prompt_dialog_title">Descartar cambios</string>
+    <string name="edit_prompt_dialog_message">Tienes cambios sin guardar. ¿Quieres descartarlos y salir?</string>
+    <string name="dialog_confirm">Confirmar</string>
+    <string name="dialog_cancel">Cancelar</string>
 </resources>

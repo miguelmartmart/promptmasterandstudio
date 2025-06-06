@@ -31,9 +31,20 @@
     <string name="search_prompts_label">Rechercher des prompts</string>
     <string name="prompt_list_title">Liste des prompts</string>
     <string name="back_button_content_description">Bouton retour</string>
-    <string name="favorite_prompts_title">PSuggestions préférées</string>
+    <string name="favorite_prompts_title">Suggestions préférées</string>
     <string name="all_categories_label">Toutes les catégories</string>
     <string name="clear_search_button_description">Supprimer</string>
     <string name="clear_text_button_description">Supprimer</string>
     <string name="clear_category_button_description">Supprimer</string>
+    <string name="all_subcategories_label">Toutes les sous-catégories</string>
+    <string name="subcategory_label">Sous-catégorie</string>
+    <string name="reset_application_button">Réinitialiser l\'application</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Confirmer la réinitialisation</string>
+    <string name="reset_app_dialog_message">Êtes-vous sûr de vouloir réinitialiser l\'application à son état initial ? Tous les prompts et paramètres enregistrés seront supprimés.</string>
+    <string name="edit_prompt_dialog_title">Annuler les modifications</string>
+    <string name="edit_prompt_dialog_message">Vous avez des modifications non enregistrées. Voulez-vous les annuler et quitter ?</string>
+    <string name="dialog_confirm">Confirmer</string>
+    <string name="dialog_cancel">Annuler</string>
 </resources>

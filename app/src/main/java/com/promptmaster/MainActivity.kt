@@ -46,7 +46,7 @@ import com.promptmaster.utils.rememberBooleanPreference // Import the helper fun
 import androidx.preference.PreferenceManager // Import PreferenceManager
 import com.promptmaster.ui.components.PromptListScreen // Import PromptListScreen
 import com.promptmaster.utils.setLocale // Import the setLocale extension function
-import android.app.Application // Import Application for the mock
+
 
 class MainActivity : ComponentActivity() {
 
@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
 
         val database = PromptRoomDatabase.getDatabase(applicationContext)
         val repository = PromptRepository(database.promptDao())
-        val viewModelFactory = PromptViewModelFactory(repository, application) // Pass application context
+        val viewModelFactory = PromptViewModelFactory(repository, application) // Pass repository and application
 
         setContent {
             val isDarkModeEnabled by rememberBooleanPreference(
@@ -112,14 +112,21 @@ fun PromptMasterApp(
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Home.route) {
+            composable(Screen.Home.route) { backStackEntry ->
+                val promptViewModel: PromptViewModel = viewModel(
+                    viewModelStoreOwner = backStackEntry,
+                    factory = viewModelFactory
+                )
                 HomeScreen(
                     viewModelFactory = viewModelFactory, // Pass the factory
                     onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) }
                 )
             }
-            composable(Screen.Favorites.route) {
-                val promptViewModel: PromptViewModel = viewModel(factory = viewModelFactory) // Obtain ViewModel here
+            composable(Screen.Favorites.route) { backStackEntry ->
+                val promptViewModel: PromptViewModel = viewModel(
+                    viewModelStoreOwner = backStackEntry,
+                    factory = viewModelFactory
+                ) // Obtain ViewModel here
                 PromptListScreen(
                     viewModel = promptViewModel,
                     showFavoritesOnly = true, // Show only favorites
@@ -132,15 +139,25 @@ fun PromptMasterApp(
                 arguments = listOf(navArgument("promptId") { type = NavType.IntType; defaultValue = 0 })
             ) { backStackEntry ->
                 val promptId = backStackEntry.arguments?.getInt("promptId")
-                val promptViewModel: PromptViewModel = viewModel(factory = viewModelFactory) // Obtain ViewModel here
+                val promptViewModel: PromptViewModel = viewModel(
+                    viewModelStoreOwner = backStackEntry,
+                    factory = viewModelFactory
+                ) // Obtain ViewModel here
                 EditPromptScreen(
-                    navController = navController,
-                    promptId = if (promptId == 0) null else promptId,
-                    viewModel = promptViewModel // Pass the obtained ViewModel
+                    promptId = promptId ?: 0, // Use elvis operator to ensure non-null Int
+                    promptViewModel = promptViewModel, // Pass the obtained ViewModel with correct parameter name
+                    onBack = { navController.popBackStack() } // Provide onBack lambda
                 )
             }
-            composable(Screen.Settings.route) {
-                SettingsScreen(onThemeChange = onThemeChange) // Pass the callback to SettingsScreen
+            composable(Screen.Settings.route) { backStackEntry ->
+                val promptViewModel: PromptViewModel = viewModel(
+                    viewModelStoreOwner = backStackEntry,
+                    factory = viewModelFactory
+                )
+                SettingsScreen(
+                    viewModel = promptViewModel,
+                    onThemeChange = onThemeChange
+                )
             }
             // TODO: Add other screen composables
         }
@@ -229,13 +246,21 @@ fun DefaultPreview() {
             ): Flow<List<Prompt>> = flowOf(emptyList())
             override fun getFavoritePrompts(): Flow<List<Prompt>> = flowOf(emptyList())
             override fun getAllCategories(): Flow<List<String>> = flowOf(emptyList()) // Add dummy implementation
-            override fun getPromptsFiltered(category: String?): Flow<List<Prompt>> = flowOf(emptyList()) // Add dummy implementation
-            override suspend fun updateLastUsed(id: Int, timestamp: Long) {} // Add dummy implementation
-            override fun getFilteredAndSortedPrompts(searchQuery: String?, category: String?, showFavoritesOnly: Boolean): Flow<List<Prompt>> = flowOf(emptyList()) // Add dummy implementation
+            override fun getPromptsFiltered(category: String?): Flow<List<Prompt>> = flowOf(emptyList())
+            override fun getAllSubcategories(category: String?): Flow<List<String>> = flowOf(emptyList()) // Add dummy implementation
+            override suspend fun updateLastUsed(id: Int, timestamp: Long) {}
+            override fun getFilteredAndSortedPrompts(
+                searchQuery: String?,
+                category: String?,
+                subcategory: String?,
+                showFavoritesOnly: Boolean
+            ): Flow<List<Prompt>> = flowOf(emptyList())
+
+            override suspend fun deleteAllPrompts() {} // Add dummy implementation for deleteAllPrompts
         }
         val mockPromptRepository = PromptRepository(mockPromptDao)
         PromptMasterApp(
-            viewModelFactory = PromptViewModelFactory(mockPromptRepository, Application()), // Provide a mock Application
+            viewModelFactory = PromptViewModelFactory(mockPromptRepository, Application()), // Provide mock repository and mock Application
             onThemeChange = {} // Provide a dummy lambda for the preview
         )
     }

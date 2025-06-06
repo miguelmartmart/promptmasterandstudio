@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow // Import TextOverflow
 import androidx.compose.ui.unit.dp
 import com.promptmaster.data.Prompt
 import androidx.compose.foundation.layout.*
@@ -40,8 +41,24 @@ fun PromptItem(
         onClick = onPromptClick
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = prompt.title, style = MaterialTheme.typography.titleMedium)
-            Text(text = prompt.description, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = prompt.title,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = prompt.category,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = prompt.description,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
             // Add more UI elements for tags, model, etc. as needed
 
             Spacer(modifier = Modifier.height(8.dp))

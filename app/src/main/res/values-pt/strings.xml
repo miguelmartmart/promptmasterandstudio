@@ -36,4 +36,15 @@
     <string name="clear_search_button_description">Apagar</string>
     <string name="clear_text_button_description">Apagar</string>
     <string name="clear_category_button_description">Apagar</string>
+    <string name="all_subcategories_label">Todas as subcategorias</string>
+    <string name="subcategory_label">Subcategoria</string>
+    <string name="reset_application_button">Repor a aplicação</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Confirmar redefinição</string>
+    <string name="reset_app_dialog_message">Tem certeza de que deseja redefinir o aplicativo para o estado inicial? Todos os prompts e configurações salvos serão excluídos.</string>
+    <string name="edit_prompt_dialog_title">Descartar alterações</string>
+    <string name="edit_prompt_dialog_message">Você tem alterações não salvas. Deseja descartá-las e sair?</string>
+    <string name="dialog_confirm">Confirmar</string>
+    <string name="dialog_cancel">Cancelar</string>
 </resources>

@@ -19,21 +19,23 @@ class PromptRepository(private val promptDao: PromptDao) {
         promptDao.delete(prompt)
     }
 
+    suspend fun deleteAllPrompts() { // Add function to delete all prompts
+        promptDao.deleteAllPrompts()
+    }
+
     fun getPrompt(id: Int): Flow<Prompt> {
         return promptDao.getPrompt(id)
     }
 
     // TODO: Add methods for searching and filtering
 
-    fun searchPrompts(
+    fun getFilteredAndSortedPrompts(
         searchQuery: String?,
         category: String?,
-        recommendedModel: String?,
-        tag: String?,
-        showFavoritesOnly: Boolean // Add showFavoritesOnly parameter
+        subcategory: String?,
+        showFavoritesOnly: Boolean
     ): Flow<List<Prompt>> {
-        // Pass all parameters, including showFavoritesOnly, to the DAO
-        return promptDao.getFilteredAndSortedPrompts(searchQuery, category, showFavoritesOnly)
+        return promptDao.getFilteredAndSortedPrompts(searchQuery, category, subcategory, showFavoritesOnly)
     }
 
     fun getAllCategories(): Flow<List<String>> = promptDao.getAllCategories()
@@ -41,15 +43,10 @@ class PromptRepository(private val promptDao: PromptDao) {
     fun getPromptsFiltered(category: String?): Flow<List<Prompt>> =
         promptDao.getPromptsFiltered(category)
 
+    fun getAllSubcategories(category: String?): Flow<List<String>> =
+        promptDao.getAllSubcategories(category)
+
     suspend fun updateLastUsed(id: Int, timestamp: Long) {
         promptDao.updateLastUsed(id, timestamp)
-    }
-
-    fun getFilteredAndSortedPrompts(
-        searchQuery: String?,
-        category: String?,
-        showFavoritesOnly: Boolean
-    ): Flow<List<Prompt>> {
-        return promptDao.getFilteredAndSortedPrompts(searchQuery, category, showFavoritesOnly)
     }
 }
