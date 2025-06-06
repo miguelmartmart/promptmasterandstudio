@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PromptMaster: KI-Prompt-Katalog</string>
+    <string name="app_name">PromptMaster KI</string>
     <string name="navigation_drawer_open">Navigationsleiste öffnen</string>
     <string name="navigation_drawer_close">Navigationsleiste schließen</string>
     <string name="nav_header_title">Android Studio</string>
@@ -32,4 +32,8 @@
     <string name="prompt_list_title">Prompt-Liste</string>
     <string name="back_button_content_description">Zurück-Taste</string>
     <string name="favorite_prompts_title">Favoriten-Prompts</string>
+    <string name="all_categories_label">Alle Kategorien</string>
+    <string name="clear_search_button_description">Löschen</string>
+    <string name="clear_text_button_description">Löschen</string>
+    <string name="clear_category_button_description">Löschen</string>
 </resources>

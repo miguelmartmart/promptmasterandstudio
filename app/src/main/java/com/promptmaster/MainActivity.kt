@@ -3,24 +3,18 @@ package com.promptmaster
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -37,7 +31,6 @@ import com.promptmaster.ui.PromptViewModel
 import com.promptmaster.ui.PromptViewModelFactory
 import com.promptmaster.ui.home.HomeScreen
 import com.promptmaster.ui.editprompt.EditPromptScreen
-import com.promptmaster.ui.home.PromptItem
 import com.promptmaster.ui.settings.SettingsScreen
 import com.promptmaster.ui.theme.PromptMasterTheme
 import android.content.Context
@@ -51,7 +44,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import com.promptmaster.utils.rememberBooleanPreference // Import the helper function
 import androidx.preference.PreferenceManager // Import PreferenceManager
+import com.promptmaster.ui.components.PromptListScreen // Import PromptListScreen
 import com.promptmaster.utils.setLocale // Import the setLocale extension function
+import android.app.Application // Import Application for the mock
 
 class MainActivity : ComponentActivity() {
 
@@ -68,7 +63,7 @@ class MainActivity : ComponentActivity() {
 
         val database = PromptRoomDatabase.getDatabase(applicationContext)
         val repository = PromptRepository(database.promptDao())
-        val viewModelFactory = PromptViewModelFactory(repository)
+        val viewModelFactory = PromptViewModelFactory(repository, application) // Pass application context
 
         setContent {
             val isDarkModeEnabled by rememberBooleanPreference(
@@ -105,6 +100,11 @@ fun PromptMasterApp(
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController)
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { navController.navigate(Screen.EditPrompt.createRoute()) }) {
+                Icon(Icons.Filled.Add, "Add new prompt")
+            }
         }
     ) { innerPadding ->
         NavHost(
@@ -114,37 +114,40 @@ fun PromptMasterApp(
         ) {
             composable(Screen.Home.route) {
                 HomeScreen(
-                    viewModel = viewModel(factory = viewModelFactory),
-                    onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) },
-                    onAddPromptClick = { navController.navigate(Screen.EditPrompt.createRoute()) }
+                    viewModelFactory = viewModelFactory, // Pass the factory
+                    onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) }
                 )
             }
             composable(Screen.Favorites.route) {
-                val promptViewModel: PromptViewModel = viewModel(factory = viewModelFactory)
-                FavoritesScreenContent(
+                val promptViewModel: PromptViewModel = viewModel(factory = viewModelFactory) // Obtain ViewModel here
+                PromptListScreen(
                     viewModel = promptViewModel,
+                    showFavoritesOnly = true, // Show only favorites
                     onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) },
+                    onCopyDescriptionClick = { description -> promptViewModel.copyTextToClipboard(description) } // Use the obtained ViewModel
                 )
-            }
-            composable(Screen.Settings.route) {
-                SettingsScreen(onThemeChange = onThemeChange) // Pass the callback to SettingsScreen
             }
             composable(
                 route = Screen.EditPrompt.route,
                 arguments = listOf(navArgument("promptId") { type = NavType.IntType; defaultValue = 0 })
             ) { backStackEntry ->
                 val promptId = backStackEntry.arguments?.getInt("promptId")
+                val promptViewModel: PromptViewModel = viewModel(factory = viewModelFactory) // Obtain ViewModel here
                 EditPromptScreen(
                     navController = navController,
                     promptId = if (promptId == 0) null else promptId,
-                    viewModel = viewModel(factory = viewModelFactory)
+                    viewModel = promptViewModel // Pass the obtained ViewModel
                 )
+            }
+            composable(Screen.Settings.route) {
+                SettingsScreen(onThemeChange = onThemeChange) // Pass the callback to SettingsScreen
             }
             // TODO: Add other screen composables
         }
     }
 }
 
+/*
 @Composable
 fun FavoritesScreenContent(
     viewModel: PromptViewModel,
@@ -159,16 +162,16 @@ fun FavoritesScreenContent(
             items(favoritePrompts) { prompt ->
                 PromptItem( // Reuse the PromptItem composable from HomeScreen
                     prompt = prompt,
-                    onPromptClick = onPromptClick,
-                    onDeleteClick = { viewModel.delete(it) },
-                    onFavoriteClick = { viewModel.update(it.copy(isFavorite = !it.isFavorite)) },
-                    onDuplicateClick = { viewModel.duplicatePrompt(it) }
+                    onPromptClick = { onPromptClick(prompt.id) }, // Fix: Pass prompt.id
+                    onDeleteClick = { viewModel.delete(prompt) }, // Fix: Use prompt instead of it
+                    onFavoriteClick = { viewModel.update(prompt.copy(isFavorite = !prompt.isFavorite)) }, // Fix: Use prompt instead of it
+                    onDuplicateClick = { viewModel.duplicatePrompt(prompt) } // Fix: Use prompt instead of it
                 )
             }
         }
     }
 }
-
+*/
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
@@ -225,11 +228,18 @@ fun DefaultPreview() {
                 tag: String?
             ): Flow<List<Prompt>> = flowOf(emptyList())
             override fun getFavoritePrompts(): Flow<List<Prompt>> = flowOf(emptyList())
+            override fun getAllCategories(): Flow<List<String>> = flowOf(emptyList()) // Add dummy implementation
+            override fun getPromptsFiltered(category: String?): Flow<List<Prompt>> = flowOf(emptyList()) // Add dummy implementation
+            override suspend fun updateLastUsed(id: Int, timestamp: Long) {} // Add dummy implementation
+            override fun getFilteredAndSortedPrompts(searchQuery: String?, category: String?, showFavoritesOnly: Boolean): Flow<List<Prompt>> = flowOf(emptyList()) // Add dummy implementation
         }
         val mockPromptRepository = PromptRepository(mockPromptDao)
         PromptMasterApp(
-            viewModelFactory = PromptViewModelFactory(mockPromptRepository),
+            viewModelFactory = PromptViewModelFactory(mockPromptRepository, Application()), // Provide a mock Application
             onThemeChange = {} // Provide a dummy lambda for the preview
         )
     }
 }
+
+// Create a mock Application class for previews
+class Application : android.app.Application()

@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [Prompt::class], version = 2, exportSchema = false)
+@Database(entities = [Prompt::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class PromptRoomDatabase : RoomDatabase() {
 

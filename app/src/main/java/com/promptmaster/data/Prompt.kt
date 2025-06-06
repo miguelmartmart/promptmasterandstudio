@@ -15,5 +15,6 @@ data class Prompt(
     val customizableFields: Map<String, String>, // Will need a TypeConverter
     val imagePath: String?, // Path to image in internal storage
     val videoPath: String?, // Path to video in internal storage (optional)
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val lastUsed: Long? = null
 )

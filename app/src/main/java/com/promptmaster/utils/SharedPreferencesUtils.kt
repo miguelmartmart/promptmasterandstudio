@@ -1,6 +1,5 @@
 package com.promptmaster.utils
 
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
@@ -27,4 +26,12 @@ fun rememberBooleanPreference(
     }
 
     return state
+}
+
+fun SharedPreferences.Editor.putStringList(key: String, list: List<String>) {
+    putStringSet(key, list.toSet())
+}
+
+fun SharedPreferences.getStringList(key: String, defaultValue: List<String> = emptyList()): List<String> {
+    return getStringSet(key, defaultValue.toSet())?.toList() ?: defaultValue
 }

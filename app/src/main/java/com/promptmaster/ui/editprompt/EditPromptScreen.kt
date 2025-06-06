@@ -5,24 +5,24 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.promptmaster.R
 import com.promptmaster.data.Prompt
 import com.promptmaster.ui.PromptViewModel
-import com.promptmaster.ui.PromptViewModelFactory
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditPromptScreen(
     navController: NavController,
     promptId: Int? = null, // Null for adding, ID for editing
-    viewModel: PromptViewModel = viewModel(factory = PromptViewModelFactory(TODO("Provide PromptRepository"))) // TODO: Provide PromptRepository
+    viewModel: PromptViewModel // Accept ViewModel as parameter
 ) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -33,6 +33,11 @@ fun EditPromptScreen(
     var imagePath by remember { mutableStateOf<String?>(null) }
     var videoPath by remember { mutableStateOf<String?>(null) }
     var isFavorite by remember { mutableStateOf(false) }
+
+    var showSnackbar by remember { mutableStateOf(false) }
+    var snackbarMessage by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     // Fetch prompt data if editing
     LaunchedEffect(promptId) {
@@ -54,6 +59,7 @@ fun EditPromptScreen(
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(if (promptId == null || promptId == 0) R.string.add_new_prompt else R.string.edit_prompt)) }, // Use stringResource
@@ -76,42 +82,102 @@ fun EditPromptScreen(
                 value = title,
                 onValueChange = { title = it },
                 label = { Text(stringResource(R.string.title_label)) }, // Use stringResource
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (title.isNotEmpty()) {
+                        IconButton(onClick = { title = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description) // TODO: Add string resource
+                            )
+                        }
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
                 label = { Text(stringResource(R.string.description_label)) }, // Use stringResource
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (description.isNotEmpty()) {
+                        IconButton(onClick = { description = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description) // TODO: Add string resource
+                            )
+                        }
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = category,
                 onValueChange = { category = it },
                 label = { Text(stringResource(R.string.category_label)) }, // Use stringResource
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (category.isNotEmpty()) {
+                        IconButton(onClick = { category = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description) // TODO: Add string resource
+                            )
+                        }
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = tags,
                 onValueChange = { tags = it },
                 label = { Text(stringResource(R.string.tags_label)) }, // Use stringResource
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (tags.isNotEmpty()) {
+                        IconButton(onClick = { tags = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description) // TODO: Add string resource
+                            )
+                        }
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = recommendedModel,
                 onValueChange = { recommendedModel = it },
                 label = { Text(stringResource(R.string.recommended_model_label)) }, // Use stringResource
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (recommendedModel.isNotEmpty()) {
+                        IconButton(onClick = { recommendedModel = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description) // TODO: Add string resource
+                            )
+                        }
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = customizableFields,
                 onValueChange = { customizableFields = it },
                 label = { Text(stringResource(R.string.customizable_fields_label)) }, // Use stringResource
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (customizableFields.isNotEmpty()) {
+                        IconButton(onClick = { customizableFields = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description) // TODO: Add string resource
+                            )
+                        }
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
             // TODO: Add fields for image and video paths
@@ -121,6 +187,16 @@ fun EditPromptScreen(
 
             Button(
                 onClick = {
+                    if (title.isBlank() || description.isBlank() || category.isBlank()) {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "Title, Description, and Category cannot be empty.", // TODO: Add string resource
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                        return@Button
+                    }
+
                     val prompt = Prompt(
                         id = promptId ?: 0, // Use 0 for new prompt, actual ID for editing
                         title = title,

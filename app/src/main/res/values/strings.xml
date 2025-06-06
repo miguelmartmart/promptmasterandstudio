@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PromptMaster: Catálogo de Prompts IA</string>
+    <string name="app_name">PromptMaster AI</string>
     <string name="navigation_drawer_open">Abrir cajón de navegación</string>
     <string name="navigation_drawer_close">Cerrar cajón de navegación</string>
     <string name="nav_header_title">Android Studio</string>
@@ -32,4 +32,8 @@
     <string name="prompt_list_title">Lista de Prompts</string>
     <string name="back_button_content_description">Botón atrás</string>
     <string name="favorite_prompts_title">Prompts Favoritos</string>
+    <string name="all_categories_label">Todas las categorías</string>
+    <string name="clear_search_button_description">Borrar</string>
+    <string name="clear_text_button_description">Borrar</string>
+    <string name="clear_category_button_description">Borrar</string>
 </resources>
