@@ -22,6 +22,9 @@ import androidx.compose.material.icons.filled.TextSnippet // Import TextSnippet 
 import androidx.compose.material3.*
 
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
+import com.promptmaster.R
+import androidx.compose.runtime.* // Import remember and mutableStateOf
 
 // Reusable PromptItem Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +37,8 @@ fun PromptItem(
     onDuplicateClick: () -> Unit,
     onCopyDescriptionClick: (String) -> Unit // Add new parameter for copying description
 ) {
+    var showDeleteConfirmationDialog by remember { mutableStateOf(false) } // State for delete confirmation dialog
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -72,7 +77,7 @@ fun PromptItem(
                 IconButton(onClick = onFavoriteClick) {
                     Icon(
                         imageVector = if (prompt.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        contentDescription = if (prompt.isFavorite) "Remove from Favorites" else "Add to Favorites",
+                        contentDescription = if (prompt.isFavorite) stringResource(R.string.remove_from_favorites_content_description) else stringResource(R.string.add_to_favorites_content_description),
                         tint = MaterialTheme.colorScheme.onSurface // Explicitly set tint color
                     )
                 }
@@ -81,7 +86,7 @@ fun PromptItem(
                 IconButton(onClick = { onCopyDescriptionClick(prompt.description) }) { // Use new parameter and pass description
                     Icon(
                         imageVector = Icons.Filled.TextSnippet, // Use TextSnippet icon
-                        contentDescription = "Copy Description",
+                        contentDescription = stringResource(R.string.copy_description_content_description),
                         tint = MaterialTheme.colorScheme.onSurface // Explicitly set tint color
                     )
                 }
@@ -90,20 +95,36 @@ fun PromptItem(
                 IconButton(onClick = onDuplicateClick) {
                     Icon(
                         imageVector = Icons.Filled.ContentCopy, // Use ContentCopy icon
-                        contentDescription = "Duplicate Prompt",
+                        contentDescription = stringResource(R.string.duplicate_prompt_content_description),
                         tint = MaterialTheme.colorScheme.onSurface // Explicitly set tint color
                     )
                 }
 
                 // Delete Icon
-                IconButton(onClick = onDeleteClick) {
+                IconButton(onClick = { showDeleteConfirmationDialog = true }) { // Show confirmation dialog on click
                     Icon(
                         imageVector = Icons.Filled.Delete,
-                        contentDescription = "Delete Prompt",
+                        contentDescription = stringResource(R.string.delete_prompt_content_description),
                         tint = MaterialTheme.colorScheme.onSurface // Explicitly set tint color
                     )
                 }
             }
         }
+    }
+
+    // Delete Confirmation Dialog
+    if (showDeleteConfirmationDialog) {
+        ConfirmationDialog(
+            showDialog = showDeleteConfirmationDialog,
+            title = stringResource(id = R.string.delete_prompt_dialog_title),
+            text = stringResource(id = R.string.delete_prompt_dialog_message),
+            confirmButtonText = stringResource(id = R.string.dialog_confirm),
+            cancelButtonText = stringResource(id = R.string.dialog_cancel),
+            onConfirm = {
+                onDeleteClick() // Call the original delete logic
+                showDeleteConfirmationDialog = false // Hide dialog after confirming
+            },
+            onCancel = { showDeleteConfirmationDialog = false } // Hide dialog on cancel
+        )
     }
 }

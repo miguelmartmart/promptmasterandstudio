@@ -47,4 +47,15 @@
     <string name="edit_prompt_dialog_message">Você tem alterações não salvas. Deseja descartá-las e sair?</string>
     <string name="dialog_confirm">Confirmar</string>
     <string name="dialog_cancel">Cancelar</string>
+
+    <string name="empty_fields_error">Título, Descrição e Categoria não podem estar vazios.</string>
+    <string name="copy_description_content_description">Copiar descrição</string>
+    <string name="clear_subcategory_button_description">Limpar filtro de subcategoria</string>
+    <string name="language_setting">Idioma</string>
+    <string name="export_prompts_button">Exportar prompts</string>
+    <string name="import_prompts_button">Importar prompts</string>
+
+    <string name="delete_prompt_dialog_title">Confirmar exclusão</string>
+<string name="delete_prompt_dialog_message">Tem certeza de que deseja excluir este prompt?</string>
+
 </resources>

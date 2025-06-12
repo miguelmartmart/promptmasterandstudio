@@ -16,37 +16,40 @@ import com.promptmaster.R
 import com.promptmaster.data.Prompt
 
 import com.promptmaster.ui.PromptViewModel
+import com.promptmaster.ui.PromptOperationsViewModel // New import
 import androidx.activity.compose.BackHandler // Import BackHandler
 import com.promptmaster.ui.components.ConfirmationDialog // Import ConfirmationDialog
 import kotlinx.coroutines.launch // Import launch
+import androidx.compose.runtime.saveable.rememberSaveable // Import rememberSaveable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditPromptScreen(
     promptId: Int,
-    promptViewModel: PromptViewModel, // Accept ViewModel as parameter
+    promptViewModel: PromptOperationsViewModel, // Accept generic interface
     onBack: () -> Unit
 ) {
     // Log the received promptId
     android.util.Log.d("EditPromptScreen", "Received promptId: $promptId")
 
-    val prompt by promptViewModel.getPrompt(promptId).collectAsState(initial = null) // Use getPrompt
+    val prompt by promptViewModel.getPrompt(promptId)
+        .collectAsState(initial = null) // Use getPrompt
 
     // Log the collected prompt object
     LaunchedEffect(prompt) {
         android.util.Log.d("EditPromptScreen", "Collected prompt: $prompt")
     }
 
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("") }
-    var subcategory by remember { mutableStateOf("") }
-    var tags by remember { mutableStateOf("") }
-    var recommendedModel by remember { mutableStateOf("") }
-    var customizableFields by remember { mutableStateOf("") }
-    var imagePath by remember { mutableStateOf("") }
-    var videoPath by remember { mutableStateOf("") }
-    var isFavorite by remember { mutableStateOf(false) }
+    var title by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var category by rememberSaveable { mutableStateOf("") }
+    var subcategory by rememberSaveable { mutableStateOf("") }
+    var tags by rememberSaveable { mutableStateOf("") }
+    var recommendedModel by rememberSaveable { mutableStateOf("") }
+    var customizableFields by rememberSaveable { mutableStateOf("") }
+    var imagePath by rememberSaveable { mutableStateOf("") }
+    var videoPath by rememberSaveable { mutableStateOf("") }
+    var isFavorite by rememberSaveable { mutableStateOf(false) }
 
     var showDiscardConfirmationDialog by remember { mutableStateOf(false) }
 
@@ -65,19 +68,32 @@ fun EditPromptScreen(
         }
     }
 
-    val hasUnsavedChanges = remember(prompt, title, description, category, subcategory, tags, recommendedModel, customizableFields, imagePath, videoPath, isFavorite) {
+    val hasUnsavedChanges = remember(
+        prompt,
+        title,
+        description,
+        category,
+        subcategory,
+        tags,
+        recommendedModel,
+        customizableFields,
+        imagePath,
+        videoPath,
+        isFavorite
+    ) {
         prompt?.let {
             it.title != title ||
-            it.description != description ||
-            it.category != category ||
-            it.subcategory != subcategory ||
-            it.tags.joinToString(",") != tags ||
-            it.recommendedModel != recommendedModel ||
-            it.customizableFields?.toString() != customizableFields ||
-            it.imagePath != imagePath ||
-            it.videoPath != videoPath ||
-            it.isFavorite != isFavorite
-        } ?: (title.isNotEmpty() || description.isNotEmpty() || category.isNotEmpty() || subcategory.isNotEmpty() || tags.isNotEmpty() || recommendedModel.isNotEmpty() || customizableFields.isNotEmpty() || imagePath.isNotEmpty() || videoPath.isNotEmpty() || isFavorite) // Consider changes for new prompts
+                    it.description != description ||
+                    it.category != category ||
+                    it.subcategory != subcategory ||
+                    it.tags.joinToString(",") != tags ||
+                    it.recommendedModel != recommendedModel ||
+                    it.customizableFields?.toString() != customizableFields ||
+                    it.imagePath != imagePath ||
+                    it.videoPath != videoPath ||
+                    it.isFavorite != isFavorite
+        }
+            ?: (title.isNotEmpty() || description.isNotEmpty() || category.isNotEmpty() || subcategory.isNotEmpty() || tags.isNotEmpty() || recommendedModel.isNotEmpty() || customizableFields.isNotEmpty() || imagePath.isNotEmpty() || videoPath.isNotEmpty() || isFavorite) // Consider changes for new prompts
     }
 
     BackHandler(enabled = hasUnsavedChanges) {
@@ -231,12 +247,14 @@ fun EditPromptScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+
+            val emptyFieldsMessage = stringResource(R.string.empty_fields_error)
             Button(
                 onClick = {
                     if (title.isBlank() || description.isBlank() || category.isBlank()) {
                         coroutineScope.launch {
                             snackbarHostState.showSnackbar(
-                                message = "Title, Description, and Category cannot be empty.",
+                                message = emptyFieldsMessage,
                                 duration = SnackbarDuration.Short
                             )
                         }
@@ -256,12 +274,14 @@ fun EditPromptScreen(
                         videoPath = videoPath.ifEmpty { null },
                         isFavorite = isFavorite
                     )
-                    if (promptId == 0) {
-                         promptViewModel.insert(promptToSave)
-                    } else {
-                         promptViewModel.update(promptToSave)
+                    coroutineScope.launch {
+                        if (promptId == 0) {
+                            promptViewModel.insert(promptToSave)
+                        } else {
+                            promptViewModel.update(promptToSave)
+                        }
+                        onBack()
                     }
-                    onBack()
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = hasUnsavedChanges
@@ -269,20 +289,22 @@ fun EditPromptScreen(
                 Text(stringResource(if (promptId == 0) R.string.save_prompt_button else R.string.update_prompt_button))
             }
         }
+        // Confirmation Dialog
+        if (showDiscardConfirmationDialog) {
+            ConfirmationDialog(
+                showDialog = showDiscardConfirmationDialog,
+                title = stringResource(id = R.string.edit_prompt_dialog_title),
+                text = stringResource(id = R.string.edit_prompt_dialog_message),
+                confirmButtonText = stringResource(id = R.string.dialog_confirm),
+                cancelButtonText = stringResource(id = R.string.dialog_cancel),
+                onConfirm = {
+                    showDiscardConfirmationDialog = false
+                    onBack()
+                },
+                onCancel = { showDiscardConfirmationDialog = false }
+            )
+        }
     }
-
-    ConfirmationDialog(
-        showDialog = showDiscardConfirmationDialog,
-        title = stringResource(id = R.string.edit_prompt_dialog_title),
-        text = stringResource(id = R.string.edit_prompt_dialog_message),
-        confirmButtonText = stringResource(id = R.string.dialog_confirm),
-        cancelButtonText = stringResource(id = R.string.dialog_cancel),
-        onConfirm = {
-            showDiscardConfirmationDialog = false
-            onBack()
-        },
-        onCancel = { showDiscardConfirmationDialog = false }
-    )
 }
 
 // TODO: Add Preview

@@ -7,8 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.promptmaster.data.PromptViewModelFactory
 import com.promptmaster.ui.PromptViewModel
-import com.promptmaster.ui.PromptViewModelFactory
+
 import com.promptmaster.ui.components.PromptListScreen // Import the new Composable
 
 @Composable
@@ -26,9 +27,10 @@ fun HomeScreen(
         // Use the new PromptListScreen Composable
         PromptListScreen(
             viewModel = viewModel,
-            showFavoritesOnly = false, // Show all prompts on the home screen
             onPromptClick = onPromptClick,
-            onCopyDescriptionClick = { description -> viewModel.copyTextToClipboard(description) } // Use the obtained ViewModel
+            onCopyDescriptionClick = { promptId, description ->
+                viewModel.onPromptDescriptionCopied(promptId, description)
+            }
         )
     }
 }

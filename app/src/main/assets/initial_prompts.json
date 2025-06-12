@@ -1,0 +1,445 @@
+[
+  {
+    "title": "Verificador de Fiabilidad y Fuentes Oficiales",
+    "description": "Evalúa la veracidad de este contenido verificando hechos clave, sesgos, y proporciona enlaces a fuentes oficiales.",
+    "category": "Prompts Básicos",
+    "tags": ["fiabilidad", "verificación", "fuentes oficiales", "fact-checking"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "idioma": "es",
+      "tipo_fuente_requerida": "[\"gobierno\", \"OMS\", \"universidades\"]",
+      "formato_salida": "JSON con campos: {veracidad, evidencia, enlaces, fiabilidad_general}"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Rol personalizado para IA: estructurar personalidad",
+    "description": "Define un personaje o asistente virtual estableciendo su rol, tono, conocimientos, formato de respuesta y restricciones. Esto permite tener respuestas coherentes con el personaje definido.",
+    "category": "Prompts Básicos",
+    "tags": ["rol", "agente", "personaje", "tono", "formato"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "rol": "asesor fiscal experto en autónomos de España",
+      "tono": "formal y claro",
+      "formato_respuesta": "lista + resumen final",
+      "restricciones": "sin opiniones personales, solo datos oficiales",
+      "contexto": "consultas tributarias para 2025"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Ayuda para tomar decisiones complejas paso a paso",
+    "description": "Analiza una decisión complicada desglosándola en criterios, alternativas, beneficios, riesgos y una conclusión justificada. Ideal para decidir entre varias opciones relevantes.",
+    "category": "Prompts Básicos",
+    "tags": ["decisiones", "análisis", "estrategia"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "decisión": "cambiar de proveedor tecnológico",
+      "criterios": "[\"coste\", \"fiabilidad\", \"soporte\"]",
+      "formato_salida": "tabla comparativa + conclusión"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Reformula un texto según estilo",
+    "description": "Convierte el siguiente texto a un tono, nivel de formalidad y estilo específico. Mantén el significado pero adapta la forma según el contexto deseado.",
+    "category": "Prompts Básicos",
+    "tags": ["estilo", "reformulación", "redacción"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "tono_deseado": "profesional",
+      "nivel_formalidad": "alto",
+      "adaptar_a": "presentación corporativa"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Estructurar contenido educativo",
+    "description": "Crea una lección o explicación sobre un tema para un público con cierto nivel. Incluye resumen, desarrollo, ejemplos y actividades sugeridas.",
+    "category": "Prompts Básicos",
+    "tags": ["educación", "enseñanza", "clases", "estructura"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "tema": "álgebra básica",
+      "nivel": "secundaria",
+      "formato_salida": "lección estructurada con preguntas al final"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Extraer ideas clave",
+    "description": "Identifica ideas clave, argumentos principales y detalles secundarios. Devuelve una estructura jerárquica de la información.",
+    "category": "Prompts Básicos",
+    "tags": ["resumen", "ideas clave", "comprensión"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "idioma": "es",
+      "nivel_detalle": "alto",
+      "formato_salida": "bullet points con sangría"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Actuar como moderador de debates",
+    "description": "Responde como un moderador que organiza turnos, mantiene el respeto y sintetiza los argumentos sin inclinarse por ningún lado.",
+    "category": "Prompts Básicos",
+    "tags": ["debate", "neutralidad", "moderación"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "tema_del_debate": "inteligencia artificial en educación",
+      "cantidad_participantes": "2",
+      "formato": "pregunta inicial + turnos + conclusión objetiva"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Generar contrato laboral personalizado",
+    "description": "Crea un contrato laboral completo con los datos proporcionados. Incluye cláusulas legales estándar, condiciones laborales, y campos editables para personalizar según el rol y la legislación local.",
+    "category": "Automatización",
+    "subcategory": "Documentos",
+    "tags": ["contrato", "laboral", "legal", "documento"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "nombre_empleado": "Juan Pérez",
+      "puesto": "Desarrollador Backend",
+      "salario": "32.000 € brutos anuales",
+      "duración": "indefinido",
+      "jornada": "completa",
+      "ubicación": "Madrid, España"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Redactar correo formal automáticamente",
+    "description": "Genera un correo profesional según el objetivo, destinatario y contexto. El texto debe ser claro, directo y con un cierre adecuado.",
+    "category": "Comunicación",
+    "subcategory": "Correo",
+    "tags": ["correo", "email", "oficina", "profesional"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "destinatario": "cliente",
+      "objetivo": "informar sobre retraso en entrega",
+      "tono": "respetuoso y resolutivo",
+      "idioma": "es",
+      "firma": "Laura Gómez\nGestión de cuentas"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Contrato de prestación de servicios personalizado",
+    "description": "Genera un contrato entre proveedor y cliente que detalle alcance, condiciones, duración, cláusulas legales, y métodos de pago.",
+    "category": "Automatización",
+    "subcategory": "Documentos",
+    "tags": ["servicios", "contrato", "proveedor", "legal"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "nombre_cliente": "TechNova S.L.",
+      "nombre_proveedor": "Freelancer AI Consulting",
+      "servicio": "Desarrollo de módulo IA personalizado",
+      "duración": "3 meses",
+      "precio": "6.000 € + IVA",
+      "jurisdicción": "España"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Resumen automático de contrato",
+    "description": "Resume un contrato largo destacando cláusulas clave, obligaciones, penalizaciones, y duración. Útil para revisión rápida.",
+    "category": "Análisis",
+    "subcategory": "Documentos",
+    "tags": ["resumen", "contrato", "legal", "síntesis"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "tipo_contrato": "servicio de mantenimiento web",
+      "idioma": "es",
+      "formato": "puntos clave + tabla con partes y fechas importantes"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Correo de seguimiento para clientes",
+    "description": "Redacta un correo amable y profesional para hacer seguimiento a un cliente tras una reunión, incluyendo resumen, próximos pasos y agradecimiento.",
+    "category": "Comunicación",
+    "subcategory": "Seguimiento",
+    "tags": ["seguimiento", "email", "cliente", "negocios"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "cliente": "María Rodríguez",
+      "fecha_reunión": "10 de mayo de 2025",
+      "temas_tratados": "campaña de lanzamiento y presupuesto",
+      "próximo_paso": "enviar propuesta antes del viernes"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Contrato de confidencialidad (NDA) personalizado",
+    "description": "Genera un contrato de confidencialidad entre dos partes, detallando las definiciones de información confidencial, duración, limitaciones y consecuencias legales.",
+    "category": "Automatización",
+    "subcategory": "Documentos",
+    "tags": ["NDA", "confidencialidad", "contrato", "empresa"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "parte_receptora": "Desarrollador Freelance",
+      "parte_divulgadora": "TechGlobal Solutions",
+      "alcance": "documentación técnica y estratégica",
+      "duración": "2 años",
+      "jurisdicción": "España"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Responder queja de cliente de forma profesional y empática",
+    "description": "Redacta una respuesta profesional y empática a una queja de cliente, asumiendo responsabilidad y ofreciendo una solución concreta.",
+    "category": "Atención al Cliente",
+    "subcategory": "Queja",
+    "tags": ["respuesta", "queja", "cliente", "correo"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "nombre_cliente": "Laura Gómez",
+      "motivo_queja": "entrega retrasada de pedido",
+      "acción_tomada": "envío urgente sin costes",
+      "firma": "Soporte TechNova"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Propuesta comercial adaptada a cliente",
+    "description": "Genera una propuesta comercial estructurada con introducción, objetivos, servicios ofrecidos, cronograma, presupuesto y cierre profesional.",
+    "category": "Documentación",
+    "subcategory": "Comercial",
+    "tags": ["propuesta", "oferta", "cliente", "negocio"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "nombre_cliente": "Grupo Solvia",
+      "servicio": "automatización de procesos con IA",
+      "duración_proyecto": "2 meses",
+      "presupuesto": "9.500 € + IVA"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Redactar acta de reunión estructurada",
+    "description": "Crea un acta de reunión clara y formal incluyendo fecha, asistentes, temas tratados, acuerdos y próximos pasos.",
+    "category": "Documentación",
+    "subcategory": "Interna",
+    "tags": ["acta", "reunión", "interno", "resumen"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "fecha": "5 de junio de 2025",
+      "asistentes": "Equipo de Marketing + Dirección",
+      "temas": "plan de contenidos Q3",
+      "decisiones": "incrementar presupuesto de redes"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Correo de bienvenida a nuevo empleado",
+    "description": "Redacta un correo amigable y formal para dar la bienvenida a un nuevo miembro del equipo. Incluye datos útiles y próximos pasos.",
+    "category": "Comunicación",
+    "subcategory": "Interna",
+    "tags": ["bienvenida", "empleado", "onboarding", "correo"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "nombre_empleado": "Miguel Ortega",
+      "equipo": "Departamento de Producto",
+      "fecha_inicio": "12 de junio de 2025",
+      "contacto_soporte": "rrhh@empresa.com"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Generar aviso legal personalizado",
+    "description": "Crea un aviso legal adaptado a las leyes de protección de datos, propiedad intelectual y uso del sitio o app según el país.",
+    "category": "Documentación",
+    "subcategory": "Legal",
+    "tags": ["aviso legal", "protección de datos", "web", "app", "RGPD"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "nombre_empresa": "PromptMaster Inc.",
+      "tipo_servicio": "plataforma de generación de prompts IA",
+      "país_jurisdicción": "España",
+      "email_contacto": "legal@promptmaster.com"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Redactar cláusula adicional para contrato",
+    "description": "Crea una cláusula adicional específica para un contrato existente, detallando condiciones y efectos jurídicos claros.",
+    "category": "Documentación",
+    "subcategory": "Legal",
+    "tags": ["cláusula", "anexo", "modificación", "contrato"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "tipo_contrato": "contrato de prestación de servicios",
+      "motivo": "extensión de plazos y condiciones de entrega",
+      "parte_interesada": "proveedor externo",
+      "fecha_efectiva": "15 de junio de 2025"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Generar anexo técnico explicativo",
+    "description": "Redacta un anexo que detalle especificaciones técnicas, condiciones de ejecución o requerimientos vinculados a un proyecto o contrato.",
+    "category": "Documentación",
+    "subcategory": "Técnica",
+    "tags": ["anexo", "documentación técnica", "contrato", "proyecto"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "proyecto": "automatización de facturación con IA",
+      "elementos_especificados": "modelos utilizados, métricas de precisión, APIs de terceros",
+      "vinculado_a": "cláusula 5.3 del contrato",
+      "formato_salida": "apartados con títulos + tabla de requisitos"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Generar memorando interno a empleados",
+    "description": "Redacta un memorando breve y profesional para comunicar información interna relevante a empleados o departamentos.",
+    "category": "Comunicación",
+    "subcategory": "Interna",
+    "tags": ["memorando", "interno", "información", "empresa"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "asunto": "Nueva política de trabajo remoto",
+      "destinatarios": "todo el personal de operaciones",
+      "fecha": "10 de junio de 2025",
+      "resumen_contenido": "normas, horarios flexibles, control de asistencia y uso de herramientas online"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Crear acuerdo de colaboración entre entidades",
+    "description": "Genera un acuerdo formal entre dos partes donde se establecen los objetivos, duración, responsabilidades y beneficios mutuos.",
+    "category": "Negociaciones",
+    "subcategory": "Acuerdos",
+    "tags": ["colaboración", "contrato", "empresa", "partes"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "empresa1": "StartUp Vision",
+      "empresa2": "BigTech Labs",
+      "objetivo": "desarrollar solución conjunta de análisis predictivo",
+      "duración": "12 meses",
+      "compromisos": "entregables trimestrales y propiedad compartida del código"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Negociar precio con proveedor",
+    "description": "Redacta un correo cortés y estratégico para negociar condiciones económicas con un proveedor o socio comercial.",
+    "category": "Comercial",
+    "subcategory": "Compras",
+    "tags": ["negociación", "correo", "proveedor", "precio"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "nombre_proveedor": "TechParts Ltd.",
+      "producto_servicio": "componentes electrónicos para IoT",
+      "precio_actual": "4.500 €/mes",
+      "motivo_negociación": "reducción por volumen de pedidos y fidelidad"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Renegociar condiciones de contrato actual",
+    "description": "Genera un correo profesional para plantear la revisión o ajuste de cláusulas de un contrato vigente por cambios en las circunstancias.",
+    "category": "Negociaciones",
+    "subcategory": "Renegociaciones",
+    "tags": ["renegociación", "contrato", "condiciones", "correo"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "nombre_cliente_o_proveedor": "MundoAI Solutions",
+      "motivo": "modificación del alcance del proyecto por nuevas regulaciones",
+      "cláusulas_a_revisar": "cronograma de entregas y coste adicional",
+      "tono_deseado": "profesional, conciliador y claro"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+  "title": "Auditoría de cumplimiento RGPD",
+  "description": "Evalúa si una empresa o app cumple con el Reglamento General de Protección de Datos. Analiza textos legales, prácticas y recoge riesgos.",
+  "category": "Legal",
+  "subcategory": "Protección de Datos",
+  "tags": ["RGPD", "auditoría", "datos personales", "legal"],
+  "recommendedModel": "gpt-4",
+  "customizableFields": {
+    "tipo_entidad": "startup tecnológica",
+    "elementos_a_analizar": "[\"política de privacidad\", \"consentimiento explícito\", \"registro de actividades\"]",
+    "formato_salida": "informe estructurado con alertas y recomendaciones"
+  },
+  "imagePath": null,
+  "videoPath": null,
+  "isFavorite": false
+},
+{
+  "title": "Crear guía paso a paso para un proceso",
+  "description": "Desarrolla un tutorial detallado sobre un procedimiento profesional, ideal para formación o onboarding.",
+  "category": "Documentación",
+  "subcategory": "Operaciones",
+  "tags": ["procedimientos", "guía", "formación", "tutorial"],
+  "recommendedModel": "gpt-3.5-turbo",
+  "customizableFields": {
+    "proceso": "publicar un nuevo producto en ecommerce",
+    "nivel_dificultad": "medio",
+    "formato_salida": "pasos numerados + consejos + errores comunes"
+  },
+  "imagePath": null,
+  "videoPath": null,
+  "isFavorite": false
+}
+
+
+]

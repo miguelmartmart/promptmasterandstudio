@@ -47,4 +47,17 @@
     <string name="edit_prompt_dialog_message">Vous avez des modifications non enregistrées. Voulez-vous les annuler et quitter ?</string>
     <string name="dialog_confirm">Confirmer</string>
     <string name="dialog_cancel">Annuler</string>
+
+
+    <string name="empty_fields_error">Le titre, la description et la catégorie ne peuvent pas être vides.</string>
+    <string name="copy_description_content_description">Beschreibung kopieren</string>
+    <string name="clear_subcategory_button_description">Unterkategorie-Filter löschen</string>
+    <string name="language_setting">Sprache</string>
+    <string name="export_prompts_button">Prompts exportieren</string>
+    <string name="import_prompts_button">Prompts importieren</string>
+
+    <string name="delete_prompt_dialog_title">Confirmer la suppression</string>
+<string name="delete_prompt_dialog_message">Êtes-vous sûr de vouloir supprimer ce prompt ?</string>
+
+
 </resources>

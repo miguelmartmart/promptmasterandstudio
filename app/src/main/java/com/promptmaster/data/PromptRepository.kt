@@ -1,52 +1,128 @@
 package com.promptmaster.data
 
+import android.content.Context
+import android.os.Environment
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow // Explicitly import asSharedFlow
+import java.io.File
+import java.io.IOException
+import android.app.Application // Import Application
 
-class PromptRepository(private val promptDao: PromptDao) {
+class PromptRepository(
+    private val promptDao: PromptDao,
+    private val application: Application // Accept Application in constructor
+) {
 
-    val allPrompts: Flow<List<Prompt>> = promptDao.getAllPrompts()
+    val pageSize = 20 // Define your page size
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val _databaseReadyEvent = MutableSharedFlow<Unit>(replay = 1) // Replay 1 to ensure late collectors get the last event
+    val databaseReadyEvent: SharedFlow<Unit> = _databaseReadyEvent.asSharedFlow()
+
+    suspend fun setDatabaseReady() {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: setDatabaseReady called")
+        _databaseReadyEvent.emit(Unit)
+    }
+
     val favoritePrompts: Flow<List<Prompt>> = promptDao.getFavoritePrompts()
 
-    suspend fun insert(prompt: Prompt): Long { // Explicitly declare return type as Long
-        return promptDao.insert(prompt) // Return the result of the DAO insert
+    suspend fun insert(prompt: Prompt): Int {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: insert prompt: ${prompt.title}")
+        val newPromptId = promptDao.insert(prompt)
+        return newPromptId.toInt()
     }
 
     suspend fun update(prompt: Prompt) {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: update prompt: ${prompt.id} - ${prompt.title}, isFavorite: ${prompt.isFavorite}")
         promptDao.update(prompt)
     }
 
     suspend fun delete(prompt: Prompt) {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: delete prompt: ${prompt.id} - ${prompt.title}")
         promptDao.delete(prompt)
     }
 
-    suspend fun deleteAllPrompts() { // Add function to delete all prompts
+    suspend fun deleteAllPrompts() {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: deleteAllPrompts")
         promptDao.deleteAllPrompts()
     }
 
     fun getPrompt(id: Int): Flow<Prompt> {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: getPrompt for ID: $id")
         return promptDao.getPrompt(id)
     }
 
-    // TODO: Add methods for searching and filtering
+    suspend fun getFilteredAndSortedPrompts(
+        searchQuery: String?,
+        category: String?,
+        subcategory: String?,
+        showFavoritesOnly: Boolean,
+        limit: Int,
+        offset: Int
+    ): List<Prompt> {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: getFilteredAndSortedPrompts - Query: '$searchQuery', Cat: '$category', Subcat: '$subcategory', FavOnly: $showFavoritesOnly, Limit: $limit, Offset: $offset")
+        return promptDao.getPaginatedFilteredAndSortedPromptsList(
+            searchQuery,
+            category,
+            subcategory,
+            showFavoritesOnly,
+            limit,
+            offset
+        )
+    }
 
-    fun getFilteredAndSortedPrompts(
+    suspend fun getAllFilteredAndSortedPromptsList(
         searchQuery: String?,
         category: String?,
         subcategory: String?,
         showFavoritesOnly: Boolean
-    ): Flow<List<Prompt>> {
-        return promptDao.getFilteredAndSortedPrompts(searchQuery, category, subcategory, showFavoritesOnly)
+    ): List<Prompt> {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: getAllFilteredAndSortedPromptsList - Query: '$searchQuery', Cat: '$category', Subcat: '$subcategory', FavOnly: $showFavoritesOnly")
+        return promptDao.getAllFilteredAndSortedPromptsList(searchQuery, category, subcategory, showFavoritesOnly)
     }
 
-    fun getAllCategories(): Flow<List<String>> = promptDao.getAllCategories()
+    fun getAllCategories(): Flow<List<String>> {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: getAllCategories")
+        return promptDao.getAllCategories()
+    }
 
-    fun getPromptsFiltered(category: String?): Flow<List<Prompt>> =
-        promptDao.getPromptsFiltered(category)
+    fun getPromptsFiltered(category: String?): Flow<List<Prompt>> {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: getPromptsFiltered for category: $category")
+        return promptDao.getPromptsFiltered(category)
+    }
 
-    fun getAllSubcategories(category: String?): Flow<List<String>> =
-        promptDao.getAllSubcategories(category)
+    fun getAllSubcategories(category: String?): Flow<List<String>> {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: getAllSubcategories for category: $category")
+        return promptDao.getAllSubcategories(category)
+    }
 
     suspend fun updateLastUsed(id: Int, timestamp: Long) {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: updateLastUsed for ID: $id, Timestamp: $timestamp")
         promptDao.updateLastUsed(id, timestamp)
+    }
+
+    suspend fun exportPromptsToJson(): String {
+        val prompts = promptDao.getAllPromptsList()
+        return Gson().toJson(prompts)
+    }
+
+    suspend fun writeJsonToFile(context: Context, jsonString: String, filename: String): Boolean {
+        return try {
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val file = File(downloadsDir, filename)
+            file.writeText(jsonString)
+            true
+        } catch (e: IOException) {
+            e.printStackTrace()
+            false
+        }
     }
 }

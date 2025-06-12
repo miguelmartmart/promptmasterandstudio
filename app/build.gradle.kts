@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -12,13 +13,11 @@ android {
         applicationId = "com.promptmaster"
         minSdk = 24
         targetSdk = 35
-        versionCode = 8
-        versionName = "8.0"
+        versionCode = 9
+        versionName = "9.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -28,46 +27,38 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            ndk {
-                debugSymbolLevel = "FULL"
-            }
+            ndk.debugSymbolLevel = "FULL"
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-    kotlin {
-        jvmToolchain(17) // o 11 si tu JDK base es Java 11
-    }
 
+    kotlinOptions.jvmTarget = "17"
+    kotlin.jvmToolchain(17)
 
     buildFeatures {
         compose = true
-        viewBinding = true // Keep view binding for now, might be needed for some interop
+        viewBinding = true
         dataBinding = true
     }
+
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.13" // Use the appropriate Compose compiler version
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+        kotlinCompilerExtensionVersion = "1.5.13"
     }
 
+    packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
 }
 
 dependencies {
-    // Core Android
+    // Core
     implementation(libs.core.ktx)
-    implementation(libs.appcompat) // Keep appcompat for basic compatibility
-    implementation(libs.material) // Keep material for basic compatibility
+    implementation(libs.appcompat)
+    implementation(libs.material)
 
-    // Jetpack Compose
+    // Compose
     implementation(platform(libs.compose.bom))
     implementation(libs.ui)
     implementation(libs.ui.graphics)
@@ -80,29 +71,30 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.foundation.layout.android)
     implementation(libs.preference.ktx)
+
     // Room
-    val room_version = "2.6.1" // Use the appropriate Room version
-    implementation("androidx.room:room-runtime:$room_version")
-   /// annotationProcessor("androidx.room:room-compiler:$room_version")
-    // If using KSP, replace annotationProcessor with ksp and add the KSP plugin
-    //ksp("androidx.room:room-compiler:$room_version")
-    ksp("androidx.room:room-compiler:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 
-    // Coil for image loading
-    implementation("io.coil-kt:coil-compose:2.6.0")
+    ksp(libs.room.compiler)
 
-    // Gson for Type Converters
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    // Gson
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.6.0")
 
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-
+    androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
-    androidTestImplementation(libs.espresso.core)
 
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)

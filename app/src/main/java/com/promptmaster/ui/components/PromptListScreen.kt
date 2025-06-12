@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
@@ -12,23 +13,27 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.promptmaster.ui.PromptViewModel
+import com.promptmaster.ui.PromptOperationsViewModel // New import
 import androidx.compose.ui.res.stringResource // Import stringResource
 import com.promptmaster.R // Import R
+import androidx.compose.foundation.layout.wrapContentSize // Import wrapContentSize
+import androidx.compose.ui.Alignment // Import Alignment
+import kotlinx.coroutines.launch // Import launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PromptListScreen(
-    viewModel: PromptViewModel,
-    showFavoritesOnly: Boolean = false, // Add showFavoritesOnly parameter with a default value
+    viewModel: PromptOperationsViewModel, // Change to PromptOperationsViewModel
     onPromptClick: (Int) -> Unit,
-    onCopyDescriptionClick: (String) -> Unit
+    onCopyDescriptionClick: (Int, String) -> Unit // Modify to accept prompt ID and description
 ) {
-    // Observe the showFavoritesOnly parameter and update the ViewModel accordingly
-    LaunchedEffect(showFavoritesOnly) {
-        viewModel.setShowFavoritesOnly(showFavoritesOnly)
-    }
-    val prompts by viewModel.filteredPrompts.collectAsState()
+    val coroutineScope = rememberCoroutineScope() // Define coroutine scope once at the top
+
+    // Always collect prompts from the main prompts flow, filtering is handled in the ViewModel/Repository
+    val prompts by viewModel.prompts.collectAsState()
+
+    val isLoading by viewModel.isLoading.collectAsState()
     val categories by viewModel.getAllCategories().collectAsState(initial = emptyList())
 
     var expanded by remember { mutableStateOf(false) }
@@ -77,7 +82,7 @@ fun PromptListScreen(
                         }) {
                             Icon(
                                 imageVector = Icons.Filled.Clear,
-                                contentDescription = stringResource(R.string.clear_category_button_description) // TODO: Add string resource
+                                contentDescription = stringResource(R.string.clear_category_button_description)
                             )
                         }
                     } else {
@@ -134,7 +139,7 @@ fun PromptListScreen(
                         // Update subcategorySearchText for filtering dropdown items
                         subcategorySearchText = it
                     },
-                    label = { Text(stringResource(R.string.subcategory_label)) }, // TODO: Add string resource
+                    label = { Text(stringResource(R.string.subcategory_label)) },
                     trailingIcon = {
                         // Show clear icon if a subcategory is selected
                         if (selectedSubcategory != null) {
@@ -144,7 +149,7 @@ fun PromptListScreen(
                             }) {
                                 Icon(
                                     imageVector = Icons.Filled.Clear,
-                                    contentDescription = "Clear subcategory filter" // TODO: Add string resource
+                                    contentDescription = stringResource(R.string.clear_subcategory_button_description)
                                 )
                             }
                         } else {
@@ -185,21 +190,72 @@ fun PromptListScreen(
             }
         }
 
+        val listState = rememberLazyListState()
 
-        LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
-            items(prompts) { prompt ->
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            items(
+                items = prompts,
+                key = { prompt -> prompt.id } // Provide a unique key for each item
+            ) { prompt ->
                 PromptItem( // Assuming PromptItem Composable exists
                     prompt = prompt,
                     onPromptClick = {
-                        viewModel.markPromptAsUsed(prompt.id)
-                        onPromptClick(prompt.id)
+                        android.util.Log.d("PromptMasterDebug", "PromptListScreen: onPromptClick for ID: ${prompt.id}")
+                        coroutineScope.launch {
+                            viewModel.markPromptAsUsed(prompt.id)
+                            onPromptClick(prompt.id)
+                        }
                     },
-                    onDeleteClick = { viewModel.delete(prompt) }, // Assuming delete exists in ViewModel
-                    onFavoriteClick = { viewModel.update(prompt.copy(isFavorite = !prompt.isFavorite)) }, // Assuming update exists in ViewModel
-                    onDuplicateClick = { viewModel.duplicatePrompt(prompt) }, // Assuming duplicatePrompt exists in ViewModel
-                    onCopyDescriptionClick = onCopyDescriptionClick // Pass the lambda received by PromptListScreen
+                    onDeleteClick = {
+                        android.util.Log.d("PromptMasterDebug", "PromptListScreen: onDeleteClick for ID: ${prompt.id}")
+                        coroutineScope.launch {
+                            viewModel.delete(prompt)
+                        }
+                    }, // Assuming delete exists in ViewModel
+                    onFavoriteClick = {
+                        android.util.Log.d("PromptMasterDebug", "PromptListScreen: onFavoriteClick for ID: ${prompt.id}, current favorite: ${prompt.isFavorite}")
+                        coroutineScope.launch {
+                            viewModel.toggleFavorite(prompt)
+                        }
+                    },
+                    onDuplicateClick = {
+                        android.util.Log.d("PromptMasterDebug", "PromptListScreen: onDuplicateClick for ID: ${prompt.id}")
+                        coroutineScope.launch {
+                            viewModel.duplicatePrompt(prompt)
+                        }
+                    }, // Assuming duplicatePrompt exists in ViewModel
+                    onCopyDescriptionClick = { description -> // Modify lambda to receive description
+                        android.util.Log.d("PromptMasterDebug", "PromptListScreen: onCopyDescriptionClick for ID: ${prompt.id}")
+                        onCopyDescriptionClick(prompt.id, description) // Call the lambda with prompt ID and description
+                    }
                 )
             }
+
+            // Loading indicator at the end of the list
+            if (isLoading) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .wrapContentSize(Alignment.Center) // Center the indicator
+                    )
+                }
+            }
+        }
+
+        // Load more data when the user scrolls to the end
+        LaunchedEffect(listState) {
+            snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+                .collect { lastVisibleItemIndex ->
+                    // Only load next page if there are prompts and we are at the end of the list
+                    if (prompts.isNotEmpty() && lastVisibleItemIndex != null && lastVisibleItemIndex >= prompts.size - 1 && !isLoading) {
+                        viewModel.loadNextPage()
+                    }
+                }
         }
     }
 }

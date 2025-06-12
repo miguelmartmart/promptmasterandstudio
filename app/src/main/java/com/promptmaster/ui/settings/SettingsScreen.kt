@@ -25,12 +25,18 @@ import androidx.compose.ui.platform.LocalContext // Import LocalContext
 import androidx.compose.foundation.isSystemInDarkTheme
 import java.util.Locale
 import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import kotlinx.coroutines.launch // Import launch
 import androidx.compose.runtime.rememberCoroutineScope // Import rememberCoroutineScope
 import com.promptmaster.ui.PromptViewModel
 import com.promptmaster.ui.components.ConfirmationDialog // Import ConfirmationDialog
+import android.widget.Toast // Import Toast
+import androidx.compose.runtime.LaunchedEffect // Import LaunchedEffect
+import androidx.activity.compose.rememberLauncherForActivityResult // Import rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts // Import ActivityResultContracts
+import android.net.Uri // Import Uri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,6 +55,19 @@ fun SettingsScreen(
     }
 
     var showResetConfirmationDialog by remember { mutableStateOf(false) } // State for dialog visibility
+    var showImportConfirmationDialog by remember { mutableStateOf(false) } // State for import confirmation dialog
+
+    // Import Prompts Option
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            coroutineScope.launch {
+                // TODO: Call ViewModel function to import prompts
+                viewModel.importPrompts(context, it)
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -96,7 +115,7 @@ fun SettingsScreen(
                     value = selectedLanguage,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Language") }, // TODO: Add string resource for "Language"
+                    label = { Text(stringResource(R.string.language_setting)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                     modifier = Modifier.menuAnchor()
                 )
@@ -129,7 +148,40 @@ fun SettingsScreen(
                 Text(stringResource(R.string.reset_application_button)) // Use string resource
             }
 
-            // TODO: Add theme selection, text size, backup/restore, export options
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Export Prompts Option
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        val fileUri = viewModel.exportPrompts(context)
+                        fileUri?.let { uri ->
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "application/json"
+                                putExtra(Intent.EXTRA_SUBJECT, "PromptMaster Prompts Backup")
+                                putExtra(Intent.EXTRA_STREAM, uri)
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            context.startActivity(Intent.createChooser(intent, "Share Prompts Backup"))
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.export_prompts_button))
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Import Prompts Option
+            Button(
+                onClick = { showImportConfirmationDialog = true }, // Show confirmation dialog on click
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.import_prompts_button))
+            }
+
+            // TODO: Add theme selection, text size, backup/restore options
         }
     }
 
@@ -157,6 +209,29 @@ fun SettingsScreen(
         },
         onCancel = { showResetConfirmationDialog = false } // Hide dialog on cancel
     )
+
+    // Import Confirmation Dialog
+    if (showImportConfirmationDialog) {
+        ConfirmationDialog(
+            showDialog = showImportConfirmationDialog,
+            title = stringResource(id = R.string.import_prompts_dialog_title),
+            text = stringResource(id = R.string.import_prompts_dialog_message),
+            confirmButtonText = stringResource(id = R.string.dialog_confirm),
+            cancelButtonText = stringResource(id = R.string.dialog_cancel),
+            onConfirm = {
+                importLauncher.launch("application/json") // Launch file picker for JSON files
+                showImportConfirmationDialog = false // Hide dialog after confirming
+            },
+            onCancel = { showImportConfirmationDialog = false } // Hide dialog on cancel
+        )
+    }
+
+    // Observe status and show Toast
+    LaunchedEffect(viewModel.status) {
+        viewModel.status.collect { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
 }
 
 // TODO: Add Preview

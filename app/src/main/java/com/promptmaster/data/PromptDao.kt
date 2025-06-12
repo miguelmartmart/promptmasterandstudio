@@ -20,7 +20,7 @@ interface PromptDao {
     suspend fun delete(prompt: Prompt)
 
     @Query("DELETE FROM prompts")
-    suspend fun deleteAllPrompts() // Add function to delete all prompts
+    suspend fun deleteAllPrompts()
 
     @Query("SELECT * FROM prompts WHERE id = :id")
     fun getPrompt(id: Int): Flow<Prompt>
@@ -40,7 +40,7 @@ interface PromptDao {
         searchQuery: String?,
         category: String?,
         recommendedModel: String?,
-        tag: String? // Searching for one tag at a time for simplicity, can be extended
+        tag: String?
     ): Flow<List<Prompt>>
 
     @Query("SELECT * FROM prompts WHERE isFavorite = 1 ORDER BY lastUsed DESC")
@@ -58,10 +58,10 @@ interface PromptDao {
     @Query("""
         SELECT * FROM prompts
         WHERE (:searchQuery IS NULL OR :searchQuery = '' OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' OR subcategory LIKE '%' || :searchQuery || '%')
-        AND (:category IS NULL OR category = :category)
-        AND (:subcategory IS NULL OR subcategory = :subcategory)
-        AND (:showFavoritesOnly = 0 OR isFavorite = 1)
-        ORDER BY lastUsed DESC
+        AND (category = :category OR :category IS NULL)
+        AND (subcategory = :subcategory OR :subcategory IS NULL)
+        AND (NOT :showFavoritesOnly OR isFavorite = 1)
+        ORDER BY isFavorite DESC, lastUsed DESC
     """)
     fun getFilteredAndSortedPrompts(
         searchQuery: String?,
@@ -72,4 +72,64 @@ interface PromptDao {
 
     @Query("SELECT DISTINCT subcategory FROM prompts WHERE (:category IS NULL OR category = :category) ORDER BY subcategory")
     fun getAllSubcategories(category: String?): Flow<List<String>>
+
+    @Query("SELECT * FROM prompts ORDER BY title ASC LIMIT :limit OFFSET :offset")
+    fun getPaginatedPrompts(limit: Int, offset: Int): Flow<List<Prompt>>
+
+    @Query("""
+        SELECT * FROM prompts
+        WHERE (:searchQuery IS NULL OR :searchQuery = '' OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' OR subcategory LIKE '%' || :searchQuery || '%')
+        AND (:category IS NULL OR category = :category)
+        AND (:subcategory IS NULL OR subcategory = :subcategory)
+        AND (NOT :showFavoritesOnly OR isFavorite = 1)
+        ORDER BY isFavorite DESC, lastUsed DESC
+        LIMIT :limit OFFSET :offset
+""")
+    suspend fun getPaginatedFilteredAndSortedPrompts(
+        searchQuery: String?,
+        category: String?,
+        subcategory: String?,
+        showFavoritesOnly: Boolean,
+        limit: Int,
+        offset: Int
+    ): List<Prompt>
+
+    @Query("""
+    SELECT * FROM prompts
+    WHERE (:searchQuery IS NULL OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%')
+      AND (category = :category OR :category IS NULL)
+      AND (subcategory = :subcategory OR :subcategory IS NULL)
+      AND (NOT :showFavoritesOnly OR isFavorite = 1)
+    ORDER BY isFavorite DESC, lastUsed DESC
+        LIMIT :limit OFFSET :offset
+""")
+    suspend fun getPaginatedFilteredAndSortedPromptsList(
+        searchQuery: String?,
+        category: String?,
+        subcategory: String?,
+        showFavoritesOnly: Boolean,
+        limit: Int,
+        offset: Int
+    ): List<Prompt>
+
+    @Query("""
+        SELECT * FROM prompts
+        WHERE (:searchQuery IS NULL OR :searchQuery = '' OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%')
+        AND (category = :category OR :category IS NULL)
+        AND (subcategory = :subcategory OR :subcategory IS NULL)
+        AND (NOT :showFavoritesOnly OR isFavorite = 1)
+        ORDER BY isFavorite DESC, lastUsed DESC
+    """)
+    suspend fun getAllFilteredAndSortedPromptsList(
+        searchQuery: String?,
+        category: String?,
+        subcategory: String?,
+        showFavoritesOnly: Boolean
+    ): List<Prompt>
+
+    @Query("SELECT * FROM prompts ORDER BY title ASC")
+    suspend fun getAllPromptsList(): List<Prompt>
+
+    @Query("SELECT COUNT(*) FROM prompts WHERE title = :title AND description = :description")
+    suspend fun getPromptCountByContent(title: String, description: String): Int
 }

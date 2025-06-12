@@ -47,4 +47,16 @@
     <string name="edit_prompt_dialog_message">Sie haben ungespeicherte Änderungen. Möchten Sie diese verwerfen und beenden?</string>
     <string name="dialog_confirm">Bestätigen</string>
     <string name="dialog_cancel">Abbrechen</string>
+
+    <string name="empty_fields_error">Titel, Beschreibung und Kategorie dürfen nicht leer sein.</string>
+    <string name="copy_description_content_description">Beschreibung kopieren</string>
+    <string name="clear_subcategory_button_description">Unterkategorie-Filter löschen</string>
+    <string name="language_setting">Sprache</string>
+    <string name="export_prompts_button">Prompts exportieren</string>
+    <string name="import_prompts_button">Prompts importieren</string>
+
+    <string name="delete_prompt_dialog_title">Löschen bestätigen</string>
+<string name="delete_prompt_dialog_message">Möchten Sie diesen Prompt wirklich löschen?</string>
+
+
 </resources>

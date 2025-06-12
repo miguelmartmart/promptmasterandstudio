@@ -47,4 +47,16 @@
     <string name="edit_prompt_dialog_message">Tienes cambios sin guardar. ¿Quieres descartarlos y salir?</string>
     <string name="dialog_confirm">Confirmar</string>
     <string name="dialog_cancel">Cancelar</string>
+
+    <string name="empty_fields_error">Título, Descripción y Categoría no pueden ser vacíos.</string>
+    <string name="copy_description_content_description">Copiar descripción</string>
+    <string name="clear_subcategory_button_description">Borrar filtro de subcategoría</string>
+    <string name="language_setting">Idioma</string>
+    <string name="export_prompts_button">Exportar prompts</string>
+    <string name="import_prompts_button">Importar prompts</string>
+    <string name="delete_prompt_dialog_title">Confirmar eliminación</string>
+    <string name="delete_prompt_dialog_message">¿Estás seguro de que quieres eliminar este prompt?</string>
+    <string name="import_prompts_dialog_title">Confirmar importación</string>
+    <string name="import_prompts_dialog_message">¿Estás seguro de que quieres importar prompts? Esto puede sobrescribir prompts existentes.</string>
+
 </resources>
