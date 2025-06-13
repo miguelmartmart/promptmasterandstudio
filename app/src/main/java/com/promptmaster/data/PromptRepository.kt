@@ -13,8 +13,9 @@ import kotlinx.coroutines.flow.asSharedFlow // Explicitly import asSharedFlow
 import java.io.File
 import java.io.IOException
 import android.app.Application // Import Application
+import javax.inject.Inject // Import Inject
 
-class PromptRepository(
+class PromptRepository @Inject constructor(
     private val promptDao: PromptDao,
     private val application: Application // Accept Application in constructor
 ) {

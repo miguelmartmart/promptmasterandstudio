@@ -57,7 +57,9 @@
     <string name="import_prompts_button">Prompts importieren</string>
 
     <string name="delete_prompt_dialog_title">Confirmer la suppression</string>
-<string name="delete_prompt_dialog_message">Êtes-vous sûr de vouloir supprimer ce prompt ?</string>
+<string name="delete_prompt_dialog_message">Êtes-vous sûr de vouloir supprimer ce prompt?</string>
+    <string name="import_prompts_dialog_title">Confirmer l\'importation</string>
+    <string name="import_prompts_dialog_message">Êtes-vous sûr de vouloir importer des prompts? Cela peut écraser les prompts existants.</string>
 
 
 </resources>

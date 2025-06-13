@@ -27,7 +27,11 @@ abstract class PromptRoomDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: PromptRoomDatabase? = null
 
-        fun getDatabase(context: Context, onDatabasePopulated: () -> Unit): PromptRoomDatabase {
+        fun getDatabase(
+            context: Context,
+            promptBackupManager: PromptBackupManager, // New parameter for injected PromptBackupManager
+            onDatabasePopulated: () -> Unit
+        ): PromptRoomDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
@@ -35,7 +39,7 @@ abstract class PromptRoomDatabase : RoomDatabase() {
                     "prompt_database"
                 )
                     .fallbackToDestructiveMigration()
-                    .addCallback(PromptDatabaseCallback(context.applicationContext, onDatabasePopulated)) // Pass application context and callback
+                    .addCallback(PromptDatabaseCallback(context.applicationContext, promptBackupManager, onDatabasePopulated)) // Pass application context, promptBackupManager, and callback
                     .build()
                 INSTANCE = instance
                 instance
@@ -45,6 +49,7 @@ abstract class PromptRoomDatabase : RoomDatabase() {
 
     private class PromptDatabaseCallback(
         private val applicationContext: Context, // Accept application context
+        private val promptBackupManager: PromptBackupManager, // Injected PromptBackupManager
         private val onDatabasePopulated: () -> Unit // Callback to signal database population
     ) : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
@@ -62,10 +67,7 @@ abstract class PromptRoomDatabase : RoomDatabase() {
             super.onOpen(db)
             android.util.Log.d("PromptDatabaseCallback", "Database onOpen called")
             APPLICATION_SCOPE.launch {
-                // Access the DAO from the already built database instance
-                val promptDao = INSTANCE!!.promptDao()
-                val promptBackupManager = PromptBackupManager(promptDao, applicationContext) // Create PromptBackupManager here
-                promptBackupManager.restoreBackup() // Restore backup on open
+                promptBackupManager.restoreBackup() // Restore backup on open using injected manager
                 onDatabasePopulated() // Invoke the callback after restoring backup
             }
         }

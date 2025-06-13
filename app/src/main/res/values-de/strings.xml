@@ -57,6 +57,8 @@
 
     <string name="delete_prompt_dialog_title">Löschen bestätigen</string>
 <string name="delete_prompt_dialog_message">Möchten Sie diesen Prompt wirklich löschen?</string>
+    <string name="import_prompts_dialog_title">Import bestätigen</string>
+    <string name="import_prompts_dialog_message">Möchten Sie die Prompts wirklich importieren? Vorhandene Prompts können überschrieben werden.</string>
 
 
 </resources>

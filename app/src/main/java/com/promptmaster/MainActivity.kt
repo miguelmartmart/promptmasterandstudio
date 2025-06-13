@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -25,13 +24,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.promptmaster.data.PromptRoomDatabase
 import com.promptmaster.data.PromptRepository
 import com.promptmaster.ui.PromptViewModel
-
-import com.promptmaster.data.PromptViewModelFactory // Import PromptViewModelFactory
-import com.promptmaster.ui.FavoritesViewModel // New import
-import com.promptmaster.ui.FavoritesViewModelFactory // Import FavoritesViewModelFactory
 import com.promptmaster.ui.home.HomeScreen
 import com.promptmaster.ui.editprompt.EditPromptScreen
 import com.promptmaster.ui.settings.SettingsScreen
@@ -49,22 +43,21 @@ import kotlinx.coroutines.flow.flowOf
 import com.promptmaster.utils.rememberBooleanPreference // Import the helper function
 import androidx.preference.PreferenceManager // Import PreferenceManager
 import com.promptmaster.data.PromptBackupManager
-import com.promptmaster.ui.PromptOperationsViewModel // Import PromptOperationsViewModel
 import com.promptmaster.ui.components.PromptListScreen // Import PromptListScreen
 import com.promptmaster.utils.setLocale // Import the setLocale extension function
-import androidx.compose.runtime.remember // Import remember
 import kotlinx.coroutines.launch // Import launch
 import androidx.compose.runtime.rememberCoroutineScope // Import rememberCoroutineScope
-import com.promptmaster.ui.CombinedViewModelFactory // New import
-import kotlinx.coroutines.CoroutineScope // Import CoroutineScope
-import kotlinx.coroutines.Dispatchers // Import Dispatchers
-import kotlinx.coroutines.launch // Import launch
+import dagger.hilt.android.AndroidEntryPoint // Import AndroidEntryPoint
+import javax.inject.Inject // Import Inject
+import androidx.hilt.navigation.compose.hiltViewModel // Import hiltViewModel
+import com.promptmaster.ui.PromptOperationsViewModel // Import PromptOperationsViewModel
+import com.promptmaster.ui.FavoritesViewModel // Import FavoritesViewModel
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private lateinit var repository: PromptRepository
-    private lateinit var promptBackupManager: PromptBackupManager
+    @Inject lateinit var repository: PromptRepository
+    @Inject lateinit var promptBackupManager: PromptBackupManager
 
     override fun attachBaseContext(newBase: Context?) {
         val preferences = PreferenceManager.getDefaultSharedPreferences(newBase!!)
@@ -77,24 +70,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        // Initialize repository and backup manager
-        val promptDao = PromptRoomDatabase.getDatabase(applicationContext) {
-            // This lambda is called when the database is populated
-            // We need to launch a coroutine because setDatabaseReady is a suspend function
-            CoroutineScope(Dispatchers.IO).launch {
-                repository.setDatabaseReady()
-            }
-        }.promptDao()
-
-        repository = PromptRepository(promptDao, application)
-        promptBackupManager = PromptBackupManager(promptDao, applicationContext)
-
-        val viewModelFactory = PromptViewModelFactory(
-            repository,
-            this.application,
-            promptBackupManager
-        )
-
         setContent {
             val isDarkModeEnabled by rememberBooleanPreference(
                 key = "darkModeEnabled",
@@ -103,10 +78,6 @@ class MainActivity : ComponentActivity() {
 
             PromptMasterTheme(darkTheme = isDarkModeEnabled) {
                 PromptMasterApp(
-                    repository = repository, // Pass repository
-                    application = application, // Pass application
-                    promptBackupManager = promptBackupManager, // Pass promptBackupManager
-                    viewModelFactory = viewModelFactory,
                     onThemeChange = { recreate() }
                 )
             }
@@ -129,10 +100,6 @@ sealed class Screen(val route: String, val icon: ImageVector? = null, val resour
 
 @Composable
 fun PromptMasterApp(
-    repository: PromptRepository, // Add repository
-    application: android.app.Application, // Change type to android.app.Application
-    promptBackupManager: PromptBackupManager, // Add promptBackupManager
-    viewModelFactory: PromptViewModelFactory,
     onThemeChange: () -> Unit // Add the callback parameter
 ) {
     val navController = rememberNavController()
@@ -155,31 +122,24 @@ fun PromptMasterApp(
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Home.route) { backStackEntry ->
-                val promptViewModel: PromptViewModel = viewModel(
-                    viewModelStoreOwner = backStackEntry,
-                    factory = viewModelFactory
-                )
+            composable(Screen.Home.route) {
+                val promptViewModel: PromptViewModel = hiltViewModel()
 
                 // Trigger refresh when the Home screen is composed or re-composed due to navigation
-                LaunchedEffect(backStackEntry) {
+                LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
                     promptViewModel.refresh()
                 }
 
                 HomeScreen(
-                    viewModelFactory = viewModelFactory, // Pass the factory
                     onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) }
                 )
             }
-            composable(Screen.Favorites.route) { backStackEntry ->
-                val favoritesViewModel: FavoritesViewModel = viewModel(
-                    viewModelStoreOwner = backStackEntry,
-                    factory = FavoritesViewModelFactory(repository, application, promptBackupManager, repository.databaseReadyEvent)
-                )
-                val coroutineScope = rememberCoroutineScope() // Move coroutineScope outside lambda
+            composable(Screen.Favorites.route) {
+                val favoritesViewModel: FavoritesViewModel = hiltViewModel()
+                val coroutineScope = rememberCoroutineScope()
 
                 // Trigger refresh when the Favorites screen is composed or re-composed due to navigation
-                LaunchedEffect(backStackEntry) {
+                LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
                     android.util.Log.d("MainActivity", "Favorites tab LaunchedEffect triggered. Refreshing data.")
                     favoritesViewModel.refresh()
                 }
@@ -200,16 +160,7 @@ fun PromptMasterApp(
                 arguments = listOf(navArgument("promptId") { type = NavType.IntType; defaultValue = 0 })
             ) { backStackEntry ->
                 val promptId = backStackEntry.arguments?.getInt("promptId")
-                val combinedViewModelFactory = remember {
-                    CombinedViewModelFactory(
-                        promptViewModelFactory = viewModelFactory,
-                        favoritesViewModelFactory = FavoritesViewModelFactory(repository, application, promptBackupManager, repository.databaseReadyEvent)
-                    )
-                }
-                val promptOperationsViewModel: PromptOperationsViewModel = viewModel(
-                    viewModelStoreOwner = backStackEntry,
-                    factory = combinedViewModelFactory
-                ) as PromptOperationsViewModel
+                val promptOperationsViewModel: PromptOperationsViewModel = hiltViewModel()
 
                 EditPromptScreen(
                     promptId = promptId ?: 0,
@@ -217,11 +168,8 @@ fun PromptMasterApp(
                     onBack = { navController.popBackStack() }
                 )
             }
-            composable(Screen.Settings.route) { backStackEntry ->
-                val promptViewModel: PromptViewModel = viewModel(
-                    viewModelStoreOwner = backStackEntry,
-                    factory = viewModelFactory
-                )
+            composable(Screen.Settings.route) {
+                val promptViewModel: PromptViewModel = hiltViewModel()
                 SettingsScreen(
                     viewModel = promptViewModel,
                     onThemeChange = onThemeChange
@@ -302,6 +250,7 @@ fun DefaultPreview() {
     PromptMasterTheme {
         val mockPromptDao = object : PromptDao {
             override suspend fun insert(prompt: Prompt): Long = 0L
+            override suspend fun insertAll(prompts: List<Prompt>) {}
             override suspend fun update(prompt: Prompt) {}
             override suspend fun delete(prompt: Prompt) {}
             override fun getPrompt(id: Int): Flow<Prompt> = flowOf()
@@ -354,16 +303,7 @@ fun DefaultPreview() {
         }
         val mockApplication = com.promptmaster.MainActivity.MockApplication() // Create mock Application
         val mockPromptBackupManager = PromptBackupManager(mockPromptDao, mockApplication) // Create mock PromptBackupManager
-        val mockPromptRepository = PromptRepository(mockPromptDao, mockApplication) // Pass mockApplication to mockPromptRepository
         PromptMasterApp(
-            repository = mockPromptRepository, // Pass mock repository
-            application = mockApplication, // Pass mock application
-            promptBackupManager = mockPromptBackupManager, // Pass mock promptBackupManager
-            viewModelFactory = PromptViewModelFactory(
-                mockPromptRepository,
-                application = mockApplication,
-                mockPromptBackupManager
-            ), // Provide mock repository, mock Application, and mock PromptBackupManager
             onThemeChange = {} // Provide a dummy lambda for the preview
         )
     }

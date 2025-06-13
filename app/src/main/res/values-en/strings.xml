@@ -56,6 +56,8 @@
     
 <string name="delete_prompt_dialog_title">Confirm deletion</string>
 <string name="delete_prompt_dialog_message">Are you sure you want to delete this prompt?</string>
+    <string name="import_prompts_dialog_title">Confirm Import</string>
+    <string name="import_prompts_dialog_message">Are you sure you want to import prompts? This may overwrite existing prompts.</string>
 
 
 </resources>

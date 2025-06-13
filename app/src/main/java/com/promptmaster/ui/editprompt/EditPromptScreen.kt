@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import com.promptmaster.R
 import com.promptmaster.data.Prompt
 
-import com.promptmaster.ui.PromptViewModel
 import com.promptmaster.ui.PromptOperationsViewModel // New import
 import androidx.activity.compose.BackHandler // Import BackHandler
 import com.promptmaster.ui.components.ConfirmationDialog // Import ConfirmationDialog

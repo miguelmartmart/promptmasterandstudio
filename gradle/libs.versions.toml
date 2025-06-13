@@ -1,4 +1,5 @@
 [versions]
+javapoet = "1.13.0"
 hilt = "2.51"
 agp = "8.8.0"
 kotlin = "1.9.23"
@@ -23,6 +24,7 @@ coilCompose = "2.6.0"
 gson = "2.10.1"
 
 [libraries]
+javapoet = { group = "com.squareup", name = "javapoet", version.ref = "javapoet" }
 # Kotlin & Android Core
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }

@@ -57,5 +57,7 @@
 
     <string name="delete_prompt_dialog_title">Confirmar exclusão</string>
 <string name="delete_prompt_dialog_message">Tem certeza de que deseja excluir este prompt?</string>
+    <string name="import_prompts_dialog_title">Confirmar importação</string>
+    <string name="import_prompts_dialog_message">Tem certeza de que deseja importar prompts? Isso pode sobrescrever prompts existentes.</string>
 
 </resources>

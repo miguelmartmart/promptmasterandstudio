@@ -1,8 +1,9 @@
 package com.promptmaster.data
 
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject // Import Inject
 
-class PromptDataOperations(
+class PromptDataOperations @Inject constructor(
     private val repository: PromptRepository,
     private val promptBackupManager: PromptBackupManager
 ) {

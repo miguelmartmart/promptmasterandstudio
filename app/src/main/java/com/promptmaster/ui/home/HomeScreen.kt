@@ -6,18 +6,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.promptmaster.data.PromptViewModelFactory
-import com.promptmaster.ui.PromptViewModel
-
+import androidx.compose.ui.tooling.preview.Preview // Add Preview import for potential future use
+import androidx.hilt.navigation.compose.hiltViewModel // Import hiltViewModel
+import com.promptmaster.ui.PromptViewModel // Import PromptViewModel
 import com.promptmaster.ui.components.PromptListScreen // Import the new Composable
 
 @Composable
 fun HomeScreen(
-    viewModelFactory: PromptViewModelFactory,
     onPromptClick: (Int) -> Unit
 ) {
-    val viewModel: PromptViewModel = viewModel(factory = viewModelFactory)
+    val viewModel: PromptViewModel = hiltViewModel()
 
     Column(
         modifier = Modifier

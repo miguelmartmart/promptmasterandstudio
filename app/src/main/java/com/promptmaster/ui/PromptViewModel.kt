@@ -12,19 +12,18 @@ import android.app.Application // Import Application
 import androidx.lifecycle.AndroidViewModel // Import AndroidViewModel
 import com.promptmaster.utils.PromptUtils // Import PromptUtils
 import com.promptmaster.data.PromptDataOperations // Import PromptDataOperations
-
 import com.promptmaster.data.PromptDataFetcher // Import PromptDataFetcher
+import dagger.hilt.android.lifecycle.HiltViewModel // Import HiltViewModel
+import javax.inject.Inject // Import Inject
 
-class PromptViewModel(
+@HiltViewModel
+class PromptViewModel @Inject constructor(
     private val repository: PromptRepository,
     application: Application, // Accept Application in constructor
-    private val promptBackupManager: PromptBackupManager // Add PromptBackupManager
+    private val promptBackupManager: PromptBackupManager, // Add PromptBackupManager
+    private val promptUtils: PromptUtils, // Inject PromptUtils
+    private val promptDataOperations: PromptDataOperations // Inject PromptDataOperations
 ) : AndroidViewModel(application), PromptOperationsViewModel { // Extend AndroidViewModel to get application context and implement interface
-
-    private val promptUtils =
-        PromptUtils(application, repository, promptBackupManager) // Instantiate PromptUtils
-    private val promptDataOperations =
-        PromptDataOperations(repository, promptBackupManager) // Instantiate PromptDataOperations
 
     // State for search query and filters
     private val _searchQuery = MutableStateFlow("")

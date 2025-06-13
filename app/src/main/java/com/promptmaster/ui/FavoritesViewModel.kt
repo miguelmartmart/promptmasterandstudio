@@ -16,8 +16,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.*
+import dagger.hilt.android.lifecycle.HiltViewModel // Import HiltViewModel
+import javax.inject.Inject // Import Inject
 
-class FavoritesViewModel(
+@HiltViewModel
+class FavoritesViewModel @Inject constructor(
     private val repository: PromptRepository,
     application: Application,
     private val promptBackupManager: PromptBackupManager
@@ -108,20 +111,5 @@ class FavoritesViewModel(
 
     fun refresh() {
         promptDataFetcher.refreshPrompts(forceReload = true, showFavoritesOnly = true) // Explicitly pass showFavoritesOnly for Favorites
-    }
-}
-
-class FavoritesViewModelFactory(
-    private val repository: PromptRepository,
-    private val application: Application,
-    private val promptBackupManager: PromptBackupManager,
-    private val databaseReadyEvent: SharedFlow<Unit> // New parameter
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(FavoritesViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return FavoritesViewModel(repository, application, promptBackupManager) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

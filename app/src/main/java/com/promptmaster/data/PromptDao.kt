@@ -13,6 +13,9 @@ interface PromptDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(prompt: Prompt): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(prompts: List<Prompt>)
+
     @Update
     suspend fun update(prompt: Prompt)
 

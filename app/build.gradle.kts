@@ -2,8 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.hilt.android)  apply false
 }
+
+apply(plugin = "com.google.dagger.hilt.android")
 
 android {
     namespace = "com.promptmaster"
@@ -13,8 +15,8 @@ android {
         applicationId = "com.promptmaster"
         minSdk = 24
         targetSdk = 35
-        versionCode = 9
-        versionName = "9.0"
+        versionCode = 10
+        versionName = "10.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -88,6 +90,13 @@ dependencies {
 
     // Coil
     implementation("io.coil-kt:coil-compose:2.6.0")
+
+    // LiveData ReactiveStreams for Flow to LiveData conversion in Java
+    implementation("androidx.lifecycle:lifecycle-reactivestreams-ktx:2.6.1")
+
+    // WorkManager for database pre-population
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.hilt:hilt-work:1.2.0") // For Hilt integration with WorkManager
 
     // Testing
     testImplementation(libs.junit)

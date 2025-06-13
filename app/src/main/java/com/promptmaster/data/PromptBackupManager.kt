@@ -7,8 +7,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
+import javax.inject.Inject // Import Inject
 
-class PromptBackupManager(private val promptDao: PromptDao, private val context: Context) {
+class PromptBackupManager @Inject constructor(private val promptDao: PromptDao, private val context: Context) {
 
     private val backupFileName = "prompts_backup.json"
 
