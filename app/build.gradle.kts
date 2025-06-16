@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)  apply false
+    id("com.google.gms.google-services")
 }
 
 apply(plugin = "com.google.dagger.hilt.android")
@@ -15,8 +16,8 @@ android {
         applicationId = "com.promptmaster"
         minSdk = 24
         targetSdk = 35
-        versionCode = 10
-        versionName = "10.0"
+        versionCode = 11
+        versionName = "11.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -108,4 +109,7 @@ dependencies {
 
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
+
+    // AdMob
+    implementation("com.google.android.gms:play-services-ads:23.0.0")
 }

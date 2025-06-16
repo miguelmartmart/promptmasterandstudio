@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "27061762412",
+    "project_id": "promptmaster-pro-5a3d5",
+    "storage_bucket": "promptmaster-pro-5a3d5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:27061762412:android:36b2f320a14a72ff975b49",
+        "android_client_info": {
+          "package_name": "com.promptmaster"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_LHXweRCMBHnR_ZtjG9SxvnrZrnAYDEU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

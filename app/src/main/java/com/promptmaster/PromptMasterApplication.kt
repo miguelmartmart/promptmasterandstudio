@@ -13,6 +13,7 @@ import android.content.ContextWrapper
 import java.util.Locale
 import androidx.preference.PreferenceManager
 import com.promptmaster.utils.setLocale // Import the setLocale extension function
+import com.google.android.gms.ads.MobileAds // Import MobileAds
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -38,6 +39,8 @@ class PromptMasterApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        // Initialize the Mobile Ads SDK.
+        MobileAds.initialize(this) {}
         android.util.Log.d("PromptMasterApplication", "Application onCreate called. Enqueuing PromptPrepopulateWorker.")
         val prepopulateRequest = OneTimeWorkRequest.Builder(PromptPrepopulateWorker::class.java)
             .build()

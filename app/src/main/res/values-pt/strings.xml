@@ -59,5 +59,6 @@
 <string name="delete_prompt_dialog_message">Tem certeza de que deseja excluir este prompt?</string>
     <string name="import_prompts_dialog_title">Confirmar importação</string>
     <string name="import_prompts_dialog_message">Tem certeza de que deseja importar prompts? Isso pode sobrescrever prompts existentes.</string>
+<string name="fab_content_description">Enviar e-mail</string>
 
 </resources>

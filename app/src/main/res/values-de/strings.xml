@@ -59,6 +59,7 @@
 <string name="delete_prompt_dialog_message">Möchten Sie diesen Prompt wirklich löschen?</string>
     <string name="import_prompts_dialog_title">Import bestätigen</string>
     <string name="import_prompts_dialog_message">Möchten Sie die Prompts wirklich importieren? Vorhandene Prompts können überschrieben werden.</string>
+<string name="fab_content_description">E-Mail senden</string>
 
 
 </resources>

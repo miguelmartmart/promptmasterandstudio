@@ -60,6 +60,7 @@
 <string name="delete_prompt_dialog_message">Êtes-vous sûr de vouloir supprimer ce prompt?</string>
     <string name="import_prompts_dialog_title">Confirmer l\'importation</string>
     <string name="import_prompts_dialog_message">Êtes-vous sûr de vouloir importer des prompts? Cela peut écraser les prompts existants.</string>
+<string name="fab_content_description">Envoyer un e-mail</string>
 
 
 </resources>

@@ -33,6 +33,9 @@ import com.promptmaster.ui.theme.PromptMasterTheme
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.LaunchedEffect
 import com.promptmaster.data.Prompt
 import com.promptmaster.data.PromptDao
@@ -48,11 +51,15 @@ import com.promptmaster.ui.components.ZoomableContent // Import ZoomableContent
 import com.promptmaster.utils.setLocale // Import the setLocale extension function
 import kotlinx.coroutines.launch // Import launch
 import androidx.compose.runtime.rememberCoroutineScope // Import rememberCoroutineScope
+import androidx.compose.ui.viewinterop.AndroidView
 import dagger.hilt.android.AndroidEntryPoint // Import AndroidEntryPoint
 import javax.inject.Inject // Import Inject
 import androidx.hilt.navigation.compose.hiltViewModel // Import hiltViewModel
 import com.promptmaster.ui.PromptOperationsViewModel // Import PromptOperationsViewModel
 import com.promptmaster.ui.FavoritesViewModel // Import FavoritesViewModel
+import com.google.android.gms.ads.AdRequest // Import AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView // Import AdView
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -105,81 +112,95 @@ fun PromptMasterApp(
     onThemeChange: () -> Unit // Add the callback parameter
 ) {
     val navController = rememberNavController()
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(navController = navController)
-        },
-        floatingActionButton = {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry?.destination?.route
-            if (currentRoute != Screen.EditPrompt.route) {
-                FloatingActionButton(onClick = { navController.navigate(Screen.EditPrompt.createRoute()) }) {
-                    Icon(Icons.Filled.Add, stringResource(R.string.add_new_prompt))
+    Column(modifier = Modifier.fillMaxSize()) { // Use Column to stack Scaffold and AdView
+        Scaffold(
+            modifier = Modifier.weight(1f), // Make Scaffold take up remaining space
+            bottomBar = {
+                BottomNavigationBar(navController = navController)
+            },
+            floatingActionButton = {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+                if (currentRoute != Screen.EditPrompt.route) {
+                    FloatingActionButton(onClick = { navController.navigate(Screen.EditPrompt.createRoute()) }) {
+                        Icon(Icons.Filled.Add, stringResource(R.string.add_new_prompt))
+                    }
                 }
             }
-        }
-    ) { innerPadding ->
-        ZoomableContent(modifier = Modifier.padding(innerPadding)) {
-            NavHost(
-                navController = navController,
-                startDestination = Screen.Home.route,
-            ) {
-                composable(Screen.Home.route) {
-                    val promptViewModel: PromptViewModel = hiltViewModel()
+        ) { innerPadding ->
+            ZoomableContent(modifier = Modifier.padding(innerPadding)) {
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.Home.route,
+                ) {
+                    composable(Screen.Home.route) {
+                        val promptViewModel: PromptViewModel = hiltViewModel()
 
-                    // Trigger refresh when the Home screen is composed or re-composed due to navigation
-                    LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
-                        promptViewModel.refresh()
-                    }
-
-                    HomeScreen(
-                        onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) }
-                    )
-                }
-                composable(Screen.Favorites.route) {
-                    val favoritesViewModel: FavoritesViewModel = hiltViewModel()
-                    val coroutineScope = rememberCoroutineScope()
-
-                    // Trigger refresh when the Favorites screen is composed or re-composed due to navigation
-                    LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
-                        android.util.Log.d("MainActivity", "Favorites tab LaunchedEffect triggered. Refreshing data.")
-                        favoritesViewModel.refresh()
-                    }
-
-                    PromptListScreen(
-                        viewModel = favoritesViewModel,
-                        onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) },
-                        onCopyDescriptionClick = { promptId, description ->
-                            coroutineScope.launch {
-                                // Only mark as used, as copyToClipboard is in PromptViewModel's PromptUtils
-                                favoritesViewModel.markPromptAsUsed(promptId)
-                            }
+                        // Trigger refresh when the Home screen is composed or re-composed due to navigation
+                        LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
+                            promptViewModel.refresh()
                         }
-                    )
-                }
-                composable(
-                    route = Screen.EditPrompt.route,
-                    arguments = listOf(navArgument("promptId") { type = NavType.IntType; defaultValue = 0 })
-                ) { backStackEntry ->
-                    val promptId = backStackEntry.arguments?.getInt("promptId")
-                    val promptOperationsViewModel: PromptViewModel = hiltViewModel()
 
-                    EditPromptScreen(
-                        promptId = promptId ?: 0,
-                        promptViewModel = promptOperationsViewModel,
-                        onBack = { navController.popBackStack() }
-                    )
+                        HomeScreen(
+                            onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) }
+                        )
+                    }
+                    composable(Screen.Favorites.route) {
+                        val favoritesViewModel: FavoritesViewModel = hiltViewModel()
+                        val coroutineScope = rememberCoroutineScope()
+
+                        // Trigger refresh when the Favorites screen is composed or re-composed due to navigation
+                        LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
+                            android.util.Log.d("MainActivity", "Favorites tab LaunchedEffect triggered. Refreshing data.")
+                            favoritesViewModel.refresh()
+                        }
+
+                        PromptListScreen(
+                            viewModel = favoritesViewModel,
+                            onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) },
+                            onCopyDescriptionClick = { promptId, description ->
+                                coroutineScope.launch {
+                                    // Only mark as used, as copyToClipboard is in PromptViewModel's PromptUtils
+                                    favoritesViewModel.markPromptAsUsed(promptId)
+                                }
+                            }
+                        )
+                    }
+                    composable(
+                        route = Screen.EditPrompt.route,
+                        arguments = listOf(navArgument("promptId") { type = NavType.IntType; defaultValue = 0 })
+                    ) { backStackEntry ->
+                        val promptId = backStackEntry.arguments?.getInt("promptId")
+                        val promptOperationsViewModel: PromptViewModel = hiltViewModel()
+
+                        EditPromptScreen(
+                            promptId = promptId ?: 0,
+                            promptViewModel = promptOperationsViewModel,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+                    composable(Screen.Settings.route) {
+                        val promptViewModel: PromptViewModel = hiltViewModel()
+                        SettingsScreen(
+                            viewModel = promptViewModel,
+                            onThemeChange = onThemeChange
+                        )
+                    }
+                    // TODO: Add other screen composables
                 }
-                composable(Screen.Settings.route) {
-                    val promptViewModel: PromptViewModel = hiltViewModel()
-                    SettingsScreen(
-                        viewModel = promptViewModel,
-                        onThemeChange = onThemeChange
-                    )
-                }
-                // TODO: Add other screen composables
             }
         }
+        // AdMob Banner Ad
+        AndroidView(
+            modifier = Modifier.fillMaxWidth(),
+            factory = { context ->
+                AdView(context).apply {
+                    setAdSize(AdSize.BANNER)
+                    adUnitId = "ca-app-pub-3940256099942544/6300978111" // Test Ad Unit ID
+                    loadAd(AdRequest.Builder().build())
+                }
+            }
+        )
     }
 }
 
