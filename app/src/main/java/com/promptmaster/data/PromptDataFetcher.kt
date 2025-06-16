@@ -49,6 +49,7 @@ class PromptDataFetcher(
 
                 android.util.Log.d("PromptMasterDebug", "PromptDataFetcher: combine triggered, fetching prompts...")
                 _isLoading.value = true
+                android.util.Log.d("PromptMasterDebug", "PromptDataFetcher: Entering try block to fetch prompts.")
                 try {
                     val fetchedPrompts = repository.getFilteredAndSortedPrompts(
                         searchQuery = query,
@@ -58,6 +59,7 @@ class PromptDataFetcher(
                         limit = repository.pageSize,
                         offset = page * repository.pageSize
                     )
+                    android.util.Log.d("PromptMasterDebug", "PromptDataFetcher: Fetched prompts count: ${fetchedPrompts.size}")
 
                     _lastFetchedSize.value = fetchedPrompts.size
 
@@ -69,12 +71,13 @@ class PromptDataFetcher(
                         }
                     }
                 } catch (e: Exception) {
-                    android.util.Log.e("PromptDataFetcher", "Error fetching prompts: ${e.message}", e)
+                    android.util.Log.e("PromptMasterDebug", "PromptDataFetcher: Error fetching prompts: ${e.message}", e) // Changed tag to PromptMasterDebug
                     if (page == 0) {
                         _prompts.value = emptyList()
                     }
                 } finally {
                     _isLoading.value = false
+                    android.util.Log.d("PromptMasterDebug", "PromptDataFetcher: Exiting try/catch block.")
                 }
             }.collect()
         }

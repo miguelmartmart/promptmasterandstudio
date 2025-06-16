@@ -44,6 +44,7 @@ import com.promptmaster.utils.rememberBooleanPreference // Import the helper fun
 import androidx.preference.PreferenceManager // Import PreferenceManager
 import com.promptmaster.data.PromptBackupManager
 import com.promptmaster.ui.components.PromptListScreen // Import PromptListScreen
+import com.promptmaster.ui.components.ZoomableContent // Import ZoomableContent
 import com.promptmaster.utils.setLocale // Import the setLocale extension function
 import kotlinx.coroutines.launch // Import launch
 import androidx.compose.runtime.rememberCoroutineScope // Import rememberCoroutineScope
@@ -63,6 +64,7 @@ class MainActivity : ComponentActivity() {
         val preferences = PreferenceManager.getDefaultSharedPreferences(newBase!!)
         val language = preferences.getString("appLanguage", Locale.getDefault().language) ?: "en"
         val context = newBase.setLocale(language)
+        applyOverrideConfiguration(context.resources.configuration)
         super.attachBaseContext(context)
     }
 
@@ -117,65 +119,66 @@ fun PromptMasterApp(
             }
         }
     ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = Screen.Home.route,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(Screen.Home.route) {
-                val promptViewModel: PromptViewModel = hiltViewModel()
+        ZoomableContent(modifier = Modifier.padding(innerPadding)) {
+            NavHost(
+                navController = navController,
+                startDestination = Screen.Home.route,
+            ) {
+                composable(Screen.Home.route) {
+                    val promptViewModel: PromptViewModel = hiltViewModel()
 
-                // Trigger refresh when the Home screen is composed or re-composed due to navigation
-                LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
-                    promptViewModel.refresh()
-                }
-
-                HomeScreen(
-                    onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) }
-                )
-            }
-            composable(Screen.Favorites.route) {
-                val favoritesViewModel: FavoritesViewModel = hiltViewModel()
-                val coroutineScope = rememberCoroutineScope()
-
-                // Trigger refresh when the Favorites screen is composed or re-composed due to navigation
-                LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
-                    android.util.Log.d("MainActivity", "Favorites tab LaunchedEffect triggered. Refreshing data.")
-                    favoritesViewModel.refresh()
-                }
-
-                PromptListScreen(
-                    viewModel = favoritesViewModel,
-                    onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) },
-                    onCopyDescriptionClick = { promptId, description ->
-                        coroutineScope.launch {
-                            // Only mark as used, as copyToClipboard is in PromptViewModel's PromptUtils
-                            favoritesViewModel.markPromptAsUsed(promptId)
-                        }
+                    // Trigger refresh when the Home screen is composed or re-composed due to navigation
+                    LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
+                        promptViewModel.refresh()
                     }
-                )
-            }
-            composable(
-                route = Screen.EditPrompt.route,
-                arguments = listOf(navArgument("promptId") { type = NavType.IntType; defaultValue = 0 })
-            ) { backStackEntry ->
-                val promptId = backStackEntry.arguments?.getInt("promptId")
-                val promptOperationsViewModel: PromptOperationsViewModel = hiltViewModel()
 
-                EditPromptScreen(
-                    promptId = promptId ?: 0,
-                    promptViewModel = promptOperationsViewModel,
-                    onBack = { navController.popBackStack() }
-                )
+                    HomeScreen(
+                        onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) }
+                    )
+                }
+                composable(Screen.Favorites.route) {
+                    val favoritesViewModel: FavoritesViewModel = hiltViewModel()
+                    val coroutineScope = rememberCoroutineScope()
+
+                    // Trigger refresh when the Favorites screen is composed or re-composed due to navigation
+                    LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
+                        android.util.Log.d("MainActivity", "Favorites tab LaunchedEffect triggered. Refreshing data.")
+                        favoritesViewModel.refresh()
+                    }
+
+                    PromptListScreen(
+                        viewModel = favoritesViewModel,
+                        onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) },
+                        onCopyDescriptionClick = { promptId, description ->
+                            coroutineScope.launch {
+                                // Only mark as used, as copyToClipboard is in PromptViewModel's PromptUtils
+                                favoritesViewModel.markPromptAsUsed(promptId)
+                            }
+                        }
+                    )
+                }
+                composable(
+                    route = Screen.EditPrompt.route,
+                    arguments = listOf(navArgument("promptId") { type = NavType.IntType; defaultValue = 0 })
+                ) { backStackEntry ->
+                    val promptId = backStackEntry.arguments?.getInt("promptId")
+                    val promptOperationsViewModel: PromptViewModel = hiltViewModel()
+
+                    EditPromptScreen(
+                        promptId = promptId ?: 0,
+                        promptViewModel = promptOperationsViewModel,
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.Settings.route) {
+                    val promptViewModel: PromptViewModel = hiltViewModel()
+                    SettingsScreen(
+                        viewModel = promptViewModel,
+                        onThemeChange = onThemeChange
+                    )
+                }
+                // TODO: Add other screen composables
             }
-            composable(Screen.Settings.route) {
-                val promptViewModel: PromptViewModel = hiltViewModel()
-                SettingsScreen(
-                    viewModel = promptViewModel,
-                    onThemeChange = onThemeChange
-                )
-            }
-            // TODO: Add other screen composables
         }
     }
 }
@@ -244,6 +247,7 @@ fun BottomNavigationBar(navController: NavHostController) {
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
@@ -308,3 +312,4 @@ fun DefaultPreview() {
         )
     }
 }
+*/

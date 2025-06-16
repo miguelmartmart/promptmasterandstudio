@@ -29,7 +29,12 @@
             android:layout_marginTop="4dp"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
-            android:text="Prompt Description" />
+            android:text="Prompt Description"
+            android:scrollbars="vertical"
+            android:maxLines="5"
+            android:ellipsize="end"
+            android:isScrollContainer="true"
+            android:fadeScrollbars="false" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

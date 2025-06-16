@@ -7,15 +7,18 @@ import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import java.io.InputStreamReader
+import com.promptmaster.ChildWorkerFactory
 
 @HiltWorker
 class PromptPrepopulateWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val promptDao: PromptDao,
-    private val gson: Gson
+    private val gson: Gson,
+    private val promptRepository: PromptRepository // Inject PromptRepository
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
@@ -27,10 +30,17 @@ class PromptPrepopulateWorker @AssistedInject constructor(
                 promptDao.insertAll(prompts)
                 android.util.Log.d("PromptPrepopulateWorker", "Initial prompts loaded successfully: ${prompts.size} prompts")
             }
+            promptRepository.setDatabaseReady() // Signal that the database is ready
             Result.success()
         } catch (e: Exception) {
             android.util.Log.e("PromptPrepopulateWorker", "Error loading initial prompts: ${e.message}", e)
             Result.failure()
         }
     }
+
+    @AssistedFactory
+    interface Factory : ChildWorkerFactory {
+        override fun create(appContext: Context, workerParameters: WorkerParameters): PromptPrepopulateWorker
+    }
 }
+

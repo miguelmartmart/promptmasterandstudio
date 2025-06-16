@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    ksp("androidx.hilt:hilt-compiler:1.2.0") // Explicitly add Hilt WorkManager compiler
 
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")

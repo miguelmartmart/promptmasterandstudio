@@ -84,4 +84,10 @@ object AppModule {
     ): PromptDataOperations {
         return PromptDataOperations(repository, promptBackupManager)
     }
+
+    @Singleton
+    @Provides
+    fun provideGson(): Gson {
+        return Gson()
+    }
 }

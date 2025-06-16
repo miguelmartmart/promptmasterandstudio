@@ -2,8 +2,6 @@ package com.promptmaster.ui
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.promptmaster.data.Prompt
 import com.promptmaster.data.PromptBackupManager
@@ -12,8 +10,6 @@ import com.promptmaster.data.PromptRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.*
 import dagger.hilt.android.lifecycle.HiltViewModel // Import HiltViewModel

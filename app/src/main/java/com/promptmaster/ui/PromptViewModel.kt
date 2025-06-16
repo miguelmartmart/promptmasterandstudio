@@ -10,6 +10,8 @@ import kotlinx.coroutines.launch
 import android.content.Context
 import android.app.Application // Import Application
 import androidx.lifecycle.AndroidViewModel // Import AndroidViewModel
+import androidx.lifecycle.LiveData // Import LiveData
+import androidx.lifecycle.asLiveData // Import asLiveData
 import com.promptmaster.utils.PromptUtils // Import PromptUtils
 import com.promptmaster.data.PromptDataOperations // Import PromptDataOperations
 import com.promptmaster.data.PromptDataFetcher // Import PromptDataFetcher
@@ -63,7 +65,8 @@ class PromptViewModel @Inject constructor(
 
     // Expose data and loading state from PromptDataFetcher
     override val isLoading: StateFlow<Boolean> = promptDataFetcher.isLoading
-    override val prompts: StateFlow<List<Prompt>> = promptDataFetcher.prompts
+    override val prompts: StateFlow<List<Prompt>> = promptDataFetcher.prompts // Re-add for interface implementation
+    val promptsLiveData: LiveData<List<Prompt>> = promptDataFetcher.prompts.asLiveData() // Expose as LiveData for Java
 
     override fun setSearchQuery(query: String) {
         _searchQuery.value = query

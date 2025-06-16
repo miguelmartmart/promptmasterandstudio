@@ -10,6 +10,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow // Explicitly import asSharedFlow
+import androidx.lifecycle.LiveData // Import LiveData
+import androidx.lifecycle.MutableLiveData // Import MutableLiveData
+import androidx.lifecycle.asLiveData // Import asLiveData
+import androidx.lifecycle.liveData // Import liveData builder
+import kotlinx.coroutines.flow.onEach // Import onEach
+import kotlinx.coroutines.flow.onStart // Import onStart
+import kotlinx.coroutines.flow.combine // Import combine
+import kotlinx.coroutines.flow.distinctUntilChanged // Import distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest // Import flatMapLatest
+import kotlinx.coroutines.Dispatchers // Import Dispatchers
+import kotlinx.coroutines.withContext // Import withContext
 import java.io.File
 import java.io.IOException
 import android.app.Application // Import Application
@@ -27,9 +38,23 @@ class PromptRepository @Inject constructor(
 
     private val _databaseReadyEvent = MutableSharedFlow<Unit>(replay = 1) // Replay 1 to ensure late collectors get the last event
     val databaseReadyEvent: SharedFlow<Unit> = _databaseReadyEvent.asSharedFlow()
+    val databaseReadyLiveData: LiveData<Unit> = databaseReadyEvent.asLiveData() // Expose as LiveData
+
+    // LiveData to hold all prompts, updated when database is ready
+    val allPromptsLiveData: LiveData<List<Prompt>> = liveData {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: allPromptsLiveData init. Waiting for databaseReadyEvent.")
+        // Wait for the database to be ready
+        databaseReadyEvent.collect {
+            android.util.Log.d("PromptMasterDebug", "PromptRepository: databaseReadyEvent received. Fetching all prompts.")
+            // Once ready, start emitting prompts from the DAO
+            promptDao.getAllPrompts().collect { prompts ->
+                emit(prompts)
+            }
+        }
+    }
 
     suspend fun setDatabaseReady() {
-        android.util.Log.d("PromptMasterDebug", "PromptRepository: setDatabaseReady called")
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: setDatabaseReady called, emitting databaseReadyEvent.")
         _databaseReadyEvent.emit(Unit)
     }
 
@@ -95,6 +120,7 @@ class PromptRepository @Inject constructor(
         return promptDao.getAllCategories()
     }
 
+    // This function is no longer directly used by HomeViewModel, but kept for other potential uses
     fun getPromptsFiltered(category: String?): Flow<List<Prompt>> {
         android.util.Log.d("PromptMasterDebug", "PromptRepository: getPromptsFiltered for category: $category")
         return promptDao.getPromptsFiltered(category)

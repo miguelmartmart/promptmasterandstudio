@@ -32,6 +32,7 @@ fun PromptListScreen(
 
     // Always collect prompts from the main prompts flow, filtering is handled in the ViewModel/Repository
     val prompts by viewModel.prompts.collectAsState()
+    android.util.Log.d("PromptMasterDebug", "PromptListScreen: Prompts collected: ${prompts.size}")
 
     val isLoading by viewModel.isLoading.collectAsState()
     val categories by viewModel.getAllCategories().collectAsState(initial = emptyList())
@@ -175,7 +176,7 @@ fun PromptListScreen(
                         }
                     )
                     subcategories.filter {
-                        it.contains(subcategorySearchText, ignoreCase = true)
+                        it?.contains(subcategorySearchText, ignoreCase = true) == true
                     }.forEach { subcategory ->
                         DropdownMenuItem(
                             text = { Text(subcategory as String) },
