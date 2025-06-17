@@ -1,32 +1,92 @@
 {
-  "https://amzn.to/4jWRLR7": {
+  "trendingpc_gaming": {
     "imageUrl": "https://m.media-amazon.com/images/I/61j-PrU49JL._AC_SY450_.jpg",
     "title": "TrendingPC PC Gaming Intel Core Ultra 9 • RTX 5090 32gb • 64gb DDR5 • SSD m.2 2tb • Refrigeración Líquida",
-    "description": "TrendingPC PC Gaming Intel Core Ultra 9 285K 24 x 5,70ghz • NVIDIA RTX 5090 32gb • 64gb RAM DDR5 6400mhz • WiFi 6 y BT 5.2 • SSD m.2 2tb • Refrigeración Líquida 360mm • Windows 11 Pro • PC Gamer"
+    "description": "TrendingPC PC Gaming Intel Core Ultra 9 285K 24 x 5,70ghz • NVIDIA RTX 5090 32gb • 64gb RAM DDR5 6400mhz • WiFi 6 y BT 5.2 • SSD m.2 2tb • Refrigeración Líquida 360mm • Windows 11 Pro • PC Gamer",
+    "links": {
+      "ES": "https://amzn.to/4jWRLR7",
+      "US": "https://www.amazon.com/dp/B0CXXXXXXX?tag=yourtagus-20",
+      "DE": "https://www.amazon.de/dp/B0CXXXXXXX?tag=yourtagde-21",
+      "FR": "https://www.amazon.fr/dp/B0CXXXXXXX?tag=yourtagfr-21",
+      "PT": "https://www.amazon.com.br/dp/B0CXXXXXXX?tag=yourtagbr-20",
+      "IT": "https://www.amazon.it/dp/B0CXXXXXXX?tag=yourtagit-21",
+      "UK": "https://www.amazon.co.uk/dp/B0CXXXXXXX?tag=yourtaguk-21",
+      "default": "https://amzn.to/4jWRLR7"
+    }
   },
-  "https://amzn.to/444ZQ0g": {
+  "samsung_galaxy_s25_ultra": {
     "imageUrl": "https://m.media-amazon.com/images/I/61BatAP94aL.__AC_SX300_SY300_QL70_ML2_.jpg",
     "title": "Samsung Galaxy S25 Ultra 512GB",
-    "description": "Samsung Galaxy S25 Ultra 512GB Teléfono Móvil con IA, Galaxy AI, 12GB RAM, Cámara 200MP, Dual SIM, IP68, Garantía del Fabricante 3 Años + 1 Año Extra, Titanio Gris (Versión Española)"
+    "description": "Samsung Galaxy S25 Ultra 512GB Teléfono Móvil con IA, Galaxy AI, 12GB RAM, Cámara 200MP, Dual SIM, IP68, Garantía del Fabricante 3 Años + 1 Año Extra, Titanio Gris (Versión Española)",
+    "links": {
+      "ES": "https://amzn.to/444ZQ0g",
+      "US": "https://www.amazon.com/dp/B0CYYYYYYY?tag=yourtagus-20",
+      "DE": "https://www.amazon.de/dp/B0CYYYYYYY?tag=yourtagde-21",
+      "FR": "https://www.amazon.fr/dp/B0CYYYYYYY?tag=yourtagfr-21",
+      "PT": "https://www.amazon.com.br/dp/B0CYYYYYYY?tag=yourtagbr-20",
+      "IT": "https://www.amazon.it/dp/B0CYYYYYYY?tag=yourtagit-21",
+      "UK": "https://www.amazon.co.uk/dp/B0CYYYYYYY?tag=yourtaguk-21",
+      "default": "https://amzn.to/444ZQ0g"
+    }
   },
-  "https://amzn.to/460fXii": {
+  "sandisk_pendrive_64gb": {
     "imageUrl": "https://m.media-amazon.com/images/I/61T85CGI4ZL.__AC_SX300_SY300_QL70_ML2_.jpg",
     "title": "SanDisk Pendrive 64 GB",
-    "description": "SanDisk Pendrive 64 GB Ultra Memoria flash USB 3.0 hasta 130 MB/s, (SecureAccess Software, Protección de contraseñas) Negro"
+    "description": "SanDisk Pendrive 64 GB Ultra Memoria flash USB 3.0 hasta 130 MB/s, (SecureAccess Software, Protección de contraseñas) Negro",
+    "links": {
+      "ES": "https://amzn.to/460fXii",
+      "US": "https://www.amazon.com/dp/B0CZZZZZZZ?tag=yourtagus-20",
+      "DE": "https://www.amazon.de/dp/B0CZZZZZZZ?tag=yourtagde-21",
+      "FR": "https://www.amazon.fr/dp/B0CZZZZZZZ?tag=yourtagfr-21",
+      "PT": "https://www.amazon.com.br/dp/B0CZZZZZZZ?tag=yourtagbr-20",
+      "IT": "https://www.amazon.it/dp/B0CZZZZZZZ?tag=yourtagit-21",
+      "UK": "https://www.amazon.co.uk/dp/B0CZZZZZZZ?tag=yourtaguk-21",
+      "default": "https://amzn.to/460fXii"
+    }
   },
-  "https://amzn.to/44jCiWM": {
+  "tp_link_re330_wifi_repeater": {
     "imageUrl": "https://m.media-amazon.com/images/I/41-UwuabaUL._AC_SY450_.jpg",
-    "title": "TP-Link RE330 WiFi Repeater",
-    "description": "TP-Link RE330 WiFi Repeater, AC1200 Amplifier, Extender up to 120 m2, Powerful Repeater with Ethernet Port, EasyMesh, Compatible with All Internet Boxes"
+    "title": "TP-Link RE330 WiFi Repeater, AC1200 Amplifier, Extender up to 120 m2, Powerful Repeater with Ethernet Port, EasyMesh, Compatible with All Internet Boxes",
+    "description": "TP-Link RE330 WiFi Repeater, AC1200 Amplifier, Extender up to 120 m2, Powerful Repeater with Ethernet Port, EasyMesh, Compatible with All Internet Boxes",
+    "links": {
+      "ES": "https://amzn.to/44jCiWM",
+      "US": "https://www.amazon.com/dp/B0CAAAAAAA?tag=yourtagus-20",
+      "DE": "https://www.amazon.de/dp/B0CAAAAAAA?tag=yourtagde-21",
+      "FR": "https://www.amazon.fr/dp/B0CAAAAAAA?tag=yourtagfr-21",
+      "PT": "https://www.amazon.com.br/dp/B0CAAAAAAA?tag=yourtagbr-20",
+      "IT": "https://www.amazon.it/dp/B0CAAAAAAA?tag=yourtagit-21",
+      "UK": "https://www.amazon.co.uk/dp/B0CAAAAAAA?tag=yourtaguk-21",
+      "default": "https://amzn.to/44jCiWM"
+    }
   },
-  "https://amzn.to/4kSbRO4": {
+  "hp_deskjet_printer": {
     "imageUrl": "https://m.media-amazon.com/images/I/41-UwuabaUL._AC_SY450_.jpg",
     "title": "HP DeskJet, Impresora multifunción de inyección de tinta",
-    "description": "HP DeskJet 2820e 588K9B, Impresora multifunción de inyección de tinta A4 a color, Conexión Wi-Fi, Impresión a doble cara manual, Hasta 7,5 ppm, 3 meses de impresión Instant Ink con HP+, Blanca"
+    "description": "HP DeskJet 2820e 588K9B, Impresora multifunción de inyección de tinta A4 a color, Conexión Wi-Fi, Impresión a doble cara manual, Hasta 7,5 ppm, 3 meses de impresión Instant Ink con HP+, Blanca",
+    "links": {
+      "ES": "https://amzn.to/4kSbRO4",
+      "US": "https://www.amazon.com/dp/B0CBBBBBBB?tag=yourtagus-20",
+      "DE": "https://www.amazon.de/dp/B0CBBBBBBB?tag=yourtagde-21",
+      "FR": "https://www.amazon.fr/dp/B0CBBBBBBB?tag=yourtagfr-21",
+      "PT": "https://www.amazon.com.br/dp/B0CBBBBBBB?tag=yourtagbr-20",
+      "IT": "https://www.amazon.it/dp/B0CBBBBBBB?tag=yourtagit-21",
+      "UK": "https://www.amazon.co.uk/dp/B0CBBBBBBB?tag=yourtaguk-21",
+      "default": "https://amzn.to/4kSbRO4"
+    }
   },
-  "https://amzn.to/445qp5B": {
+  "external_hard_drive_2tb": {
     "imageUrl": "https://m.media-amazon.com/images/I/51IsjmbfmZL._AC_SY450_.jpg",
     "title": "Disco Duro Externo de 2TB",
-    "description": "Disco Duro Externo de 2TB, Ultra Delgado y Portátil de 2.5\" con Conexión USB, Almacenamiento Compatible con PC, Ordenador Portátil y Computadora (Negro)"
+    "description": "Disco Duro Externo de 2TB, Ultra Delgado y Portátil de 2.5\" con Conexión USB, Almacenamiento Compatible con PC, Ordenador Portátil y Computadora (Negro)",
+    "links": {
+      "ES": "https://amzn.to/445qp5B",
+      "US": "https://www.amazon.com/dp/B0CCCCCCC?tag=yourtagus-20",
+      "DE": "https://www.amazon.de/dp/B0CCCCCCC?tag=yourtagde-21",
+      "FR": "https://www.amazon.fr/dp/B0CCCCCCC?tag=yourtagfr-21",
+      "PT": "https://www.amazon.com.br/dp/B0CCCCCCC?tag=yourtagbr-20",
+      "IT": "https://www.amazon.it/dp/B0CCCCCCC?tag=yourtagit-21",
+      "UK": "https://www.amazon.co.uk/dp/B0CCCCCCC?tag=yourtaguk-21",
+      "default": "https://amzn.to/445qp5B"
+    }
   }
 }

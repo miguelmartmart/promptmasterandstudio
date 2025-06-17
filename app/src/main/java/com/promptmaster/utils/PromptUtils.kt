@@ -101,24 +101,14 @@ class PromptUtils(
         }
     }
 
-    suspend fun exportPrompts(): android.net.Uri? {
+    suspend fun exportPrompts(): String? {
         return try {
-            val json = repository.exportPromptsToJson()
-
-            val fileName = "prompts_backup_${System.currentTimeMillis()}.json"
-            val file = java.io.File(context.cacheDir, fileName) // Use cacheDir for temporary file
-            file.writeText(json)
-
-            val uri = androidx.core.content.FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.fileprovider", // Use the fileprovider authority defined in AndroidManifest.xml
-                file
-            )
-            _statusChannel.send("Prompts exported successfully. You will be prompted to choose where to save the file.") // Add status message
-            uri // Explicitly return the uri
+            val json = repository.exportPromptsToJson() // Corrected function call
+            _statusChannel.send("Prompts data prepared for export.")
+            json
         } catch (e: Exception) {
             e.printStackTrace()
-            _statusChannel.send("Error exporting prompts: ${e.message}")
+            _statusChannel.send("Error preparing prompts for export: ${e.message}")
             null
         }
     }

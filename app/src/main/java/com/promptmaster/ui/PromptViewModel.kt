@@ -162,7 +162,7 @@ class PromptViewModel @Inject constructor(
         promptDataFetcher.refreshPrompts(forceReload = true, showFavoritesOnly = false) // Force reload after import, explicitly pass showFavoritesOnly
     }
 
-    suspend fun exportPrompts(context: Context): android.net.Uri? {
+    suspend fun exportPrompts(context: Context): String? { // Change return type to String?
         android.util.Log.d("PromptMasterDebug", "PromptViewModel: exportPrompts")
         return promptUtils.exportPrompts()
     }

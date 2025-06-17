@@ -68,4 +68,5 @@
     <string name="language_german">Allemand</string>
     <string name="language_portuguese">Portugais</string>
     <string name="language_italian">Italien</string>
+    <string name="affiliate_disclaimer">Ceci est un lien d\'affiliation : nous pourrions recevoir une petite commission sans coût supplémentaire pour vous.</string>
 </resources>

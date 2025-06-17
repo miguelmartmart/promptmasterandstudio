@@ -37,6 +37,7 @@ import androidx.compose.runtime.LaunchedEffect // Import LaunchedEffect
 import androidx.activity.compose.rememberLauncherForActivityResult // Import rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts // Import ActivityResultContracts
 import android.net.Uri // Import Uri
+import java.io.OutputStreamWriter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,14 +58,39 @@ fun SettingsScreen(
     var showResetConfirmationDialog by remember { mutableStateOf(false) } // State for dialog visibility
     var showImportConfirmationDialog by remember { mutableStateOf(false) } // State for import confirmation dialog
 
-    // Import Prompts Option
-    val importLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+    // Launcher for importing prompts (Open Document)
+    val openDocumentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         uri?.let {
             coroutineScope.launch {
-                // TODO: Call ViewModel function to import prompts
                 viewModel.importPrompts(context, it)
+            }
+        }
+    }
+
+    // Launcher for exporting prompts (Create Document)
+    val createDocumentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json") // MIME type for JSON
+    ) { uri: Uri? ->
+        uri?.let { outputUri ->
+            coroutineScope.launch {
+                val jsonString = viewModel.exportPrompts(context) // Get JSON string from ViewModel
+                if (jsonString != null) {
+                    try {
+                        context.contentResolver.openOutputStream(outputUri)?.use { outputStream ->
+                            OutputStreamWriter(outputStream).use { writer ->
+                                writer.write(jsonString)
+                            }
+                        }
+                        Toast.makeText(context, "Prompts exported successfully!", Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Error exporting prompts: ${e.message}", Toast.LENGTH_LONG).show()
+                        e.printStackTrace()
+                    }
+                } else {
+                    Toast.makeText(context, "No prompts data to export.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -153,18 +179,8 @@ fun SettingsScreen(
             // Export Prompts Option
             Button(
                 onClick = {
-                    coroutineScope.launch {
-                        val fileUri = viewModel.exportPrompts(context)
-                        fileUri?.let { uri ->
-                            val intent = Intent(Intent.ACTION_SEND).apply {
-                                type = "application/json"
-                                putExtra(Intent.EXTRA_SUBJECT, "PromptMaster Prompts Backup")
-                                putExtra(Intent.EXTRA_STREAM, uri)
-                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            }
-                            context.startActivity(Intent.createChooser(intent, "Share Prompts Backup"))
-                        }
-                    }
+                    // Launch the document creation intent with a suggested filename
+                    createDocumentLauncher.launch("prompts_backup_${System.currentTimeMillis()}.json")
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -219,7 +235,7 @@ fun SettingsScreen(
             confirmButtonText = stringResource(id = R.string.dialog_confirm),
             cancelButtonText = stringResource(id = R.string.dialog_cancel),
             onConfirm = {
-                importLauncher.launch("application/json") // Launch file picker for JSON files
+                openDocumentLauncher.launch(arrayOf("application/json")) // Launch file picker for JSON files
                 showImportConfirmationDialog = false // Hide dialog after confirming
             },
             onCancel = { showImportConfirmationDialog = false } // Hide dialog on cancel

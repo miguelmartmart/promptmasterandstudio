@@ -66,4 +66,5 @@
     <string name="language_german">German</string>
     <string name="language_portuguese">Portuguese</string>
     <string name="language_italian">Italian</string>
+    <string name="affiliate_disclaimer">This is an affiliate link: we might receive a small commission at no additional cost to you.</string>
 </resources>
