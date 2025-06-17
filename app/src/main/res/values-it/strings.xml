@@ -1,0 +1,70 @@
+<resources>
+    <string name="app_name">PromptMaster AI</string>
+    <string name="navigation_drawer_open">Apri il cassetto di navigazione</string>
+    <string name="navigation_drawer_close">Chiudi il cassetto di navigazione</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Intestazione di navigazione</string>
+    <string name="action_settings">Impostazioni</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Galleria</string>
+    <string name="menu_slideshow">Presentazione</string>
+    <string name="menu_favorites">Preferiti</string>
+    <string name="menu_settings">Impostazioni</string>
+    <string name="add_new_prompt">Aggiungi Nuovo Prompt</string>
+    <string name="edit_prompt">Modifica Prompt</string>
+    <string name="title_label">Titolo</string>
+    <string name="description_label">Descrizione</string>
+    <string name="category_label">Categoria</string>
+    <string name="tags_label">Tag (separati da virgola)</string>
+    <string name="recommended_model_label">Modello Consigliato</string>
+    <string name="customizable_fields_label">Campi Personalizzabili (JSON o simile)</string>
+    <string name="save_prompt_button">Salva Prompt</string>
+    <string name="update_prompt_button">Aggiorna Prompt</string>
+    <string name="delete_prompt_content_description">Elimina prompt</string>
+    <string name="add_to_favorites_content_description">Aggiungi ai preferiti</string>
+    <string name="remove_from_favorites_content_description">Rimuovi dai preferiti</string>
+    <string name="duplicate_prompt_content_description">Duplica prompt</string>
+    <string name="copy_prompt_description_content_description">Copia descrizione prompt</string>
+    <string name="dark_mode_setting">Modalità Scura</string>
+    <string name="search_prompts_label">Cerca Prompt</string>
+    <string name="prompt_list_title">Elenco Prompt</string>
+    <string name="back_button_content_description">Pulsante Indietro</string>
+    <string name="favorite_prompts_title">Prompt Preferiti</string>
+    <string name="all_categories_label">Tutte le Categorie</string>
+    <string name="clear_search_button_description">Elimina</string>
+    <string name="clear_text_button_description">Elimina</string>
+    <string name="clear_category_button_description">Elimina</string>
+    <string name="all_subcategories_label">Tutte le sottocategorie</string>
+    <string name="subcategory_label">Sottocategoria</string>
+    <string name="reset_application_button">Ripristina applicazione</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Conferma Ripristino</string>
+    <string name="reset_app_dialog_message">Sei sicuro di voler ripristinare l\'applicazione allo stato iniziale? Tutti i prompt e le impostazioni salvate verranno eliminati.</string>
+    <string name="edit_prompt_dialog_title">Scarta Modifiche</string>
+    <string name="edit_prompt_dialog_message">Hai modifiche non salvate. Vuoi scartarle e uscire?</string>
+    <string name="dialog_confirm">Conferma</string>
+    <string name="dialog_cancel">Annulla</string>
+
+    <string name="empty_fields_error">Titolo, Descrizione e Categoria non possono essere vuoti.</string>
+    <string name="copy_description_content_description">Copia Descrizione</string>
+    <string name="clear_subcategory_button_description">Cancella filtro sottocategoria</string>
+    <string name="language_setting">Lingua</string>
+    <string name="export_prompts_button">Esporta Prompt</string>
+    <string name="import_prompts_button">Importa Prompt</string>
+    
+    <string name="delete_prompt_dialog_title">Conferma eliminazione</string>
+    <string name="delete_prompt_dialog_message">Sei sicuro di voler eliminare questo prompt?</string>
+    <string name="import_prompts_dialog_title">Conferma Importazione</string>
+    <string name="import_prompts_dialog_message">Sei sicuro di voler importare i prompt? Questo potrebbe sovrascrivere i prompt esistenti.</string>
+    <string name="fab_content_description">Invia email</string>
+
+    <string name="language_english">Inglese</string>
+    <string name="language_spanish">Spagnolo</string>
+    <string name="language_french">Francese</string>
+    <string name="language_german">Tedesco</string>
+    <string name="language_portuguese">Portoghese</string>
+    <string name="language_italian">Italiano</string>
+</resources>

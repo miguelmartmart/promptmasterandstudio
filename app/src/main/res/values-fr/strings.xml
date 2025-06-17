@@ -50,17 +50,22 @@
 
 
     <string name="empty_fields_error">Le titre, la description et la catégorie ne peuvent pas être vides.</string>
-    <string name="copy_description_content_description">Beschreibung kopieren</string>
-    <string name="clear_subcategory_button_description">Unterkategorie-Filter löschen</string>
-    <string name="language_setting">Sprache</string>
-    <string name="export_prompts_button">Prompts exportieren</string>
-    <string name="import_prompts_button">Prompts importieren</string>
+    <string name="copy_description_content_description">Copier la description</string>
+    <string name="clear_subcategory_button_description">Effacer le filtre de sous-catégorie</string>
+    <string name="language_setting">Langue</string>
+    <string name="export_prompts_button">Exporter les prompts</string>
+    <string name="import_prompts_button">Importer les prompts</string>
 
     <string name="delete_prompt_dialog_title">Confirmer la suppression</string>
-<string name="delete_prompt_dialog_message">Êtes-vous sûr de vouloir supprimer ce prompt?</string>
+    <string name="delete_prompt_dialog_message">Êtes-vous sûr de vouloir supprimer ce prompt?</string>
     <string name="import_prompts_dialog_title">Confirmer l\'importation</string>
     <string name="import_prompts_dialog_message">Êtes-vous sûr de vouloir importer des prompts? Cela peut écraser les prompts existants.</string>
-<string name="fab_content_description">Envoyer un e-mail</string>
+    <string name="fab_content_description">Envoyer un e-mail</string>
 
-
+    <string name="language_english">Anglais</string>
+    <string name="language_spanish">Espagnol</string>
+    <string name="language_french">Français</string>
+    <string name="language_german">Allemand</string>
+    <string name="language_portuguese">Portugais</string>
+    <string name="language_italian">Italien</string>
 </resources>

@@ -23,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 import java.io.InputStreamReader
 import javax.inject.Singleton
 
@@ -89,5 +90,12 @@ object AppModule {
     @Provides
     fun provideGson(): Gson {
         return Gson()
+    }
+
+    @Singleton
+    @Provides
+    fun provideOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .build()
     }
 }

@@ -60,5 +60,10 @@
     <string name="import_prompts_dialog_message">Are you sure you want to import prompts? This may overwrite existing prompts.</string>
 <string name="fab_content_description">Send email</string>
 
-
+    <string name="language_english">English</string>
+    <string name="language_spanish">Spanish</string>
+    <string name="language_french">French</string>
+    <string name="language_german">German</string>
+    <string name="language_portuguese">Portuguese</string>
+    <string name="language_italian">Italian</string>
 </resources>

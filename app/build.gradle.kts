@@ -16,8 +16,8 @@ android {
         applicationId = "com.promptmaster"
         minSdk = 24
         targetSdk = 35
-        versionCode = 11
-        versionName = "11.0"
+        versionCode = 12
+        versionName = "12.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -112,4 +112,8 @@ dependencies {
 
     // AdMob
     implementation("com.google.android.gms:play-services-ads:23.0.0")
+
+    // Web Scraping
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.jsoup:jsoup:1.17.2")
 }

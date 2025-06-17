@@ -103,7 +103,7 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Language Selection
-            val languages = listOf("en", "es", "fr", "de", "pt") // Use language codes
+            val languages = listOf("en", "es", "fr", "de", "pt", "it") // Add "it" for Italian
             var expanded by remember { mutableStateOf(false) }
             var selectedLanguage by remember { mutableStateOf(sharedPreferences.getString("appLanguage", currentLanguage) ?: currentLanguage) }
 
@@ -112,7 +112,7 @@ fun SettingsScreen(
                 onExpandedChange = { expanded = !expanded }
             ) {
                 TextField(
-                    value = selectedLanguage,
+                    value = getLanguageDisplayName(selectedLanguage), // Display full language name
                     onValueChange = {},
                     readOnly = true,
                     label = { Text(stringResource(R.string.language_setting)) },
@@ -125,7 +125,7 @@ fun SettingsScreen(
                 ) {
                     languages.forEach { language ->
                         DropdownMenuItem(
-                            text = { Text(language) }, // TODO: Use full language names from string resources
+                            text = { Text(getLanguageDisplayName(language)) }, // Display full language name
                             onClick = {
                                 selectedLanguage = language
                                 expanded = false
@@ -231,6 +231,19 @@ fun SettingsScreen(
         viewModel.status.collect { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
+    }
+}
+
+@Composable
+private fun getLanguageDisplayName(languageCode: String): String {
+    return when (languageCode) {
+        "en" -> stringResource(R.string.language_english)
+        "es" -> stringResource(R.string.language_spanish)
+        "fr" -> stringResource(R.string.language_french)
+        "de" -> stringResource(R.string.language_german)
+        "pt" -> stringResource(R.string.language_portuguese)
+        "it" -> stringResource(R.string.language_italian)
+        else -> languageCode // Fallback to code if name not found
     }
 }
 

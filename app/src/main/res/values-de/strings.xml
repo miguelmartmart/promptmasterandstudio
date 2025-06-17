@@ -61,5 +61,10 @@
     <string name="import_prompts_dialog_message">Möchten Sie die Prompts wirklich importieren? Vorhandene Prompts können überschrieben werden.</string>
 <string name="fab_content_description">E-Mail senden</string>
 
-
+    <string name="language_english">Englisch</string>
+    <string name="language_spanish">Spanisch</string>
+    <string name="language_french">Französisch</string>
+    <string name="language_german">Deutsch</string>
+    <string name="language_portuguese">Portugiesisch</string>
+    <string name="language_italian">Italienisch</string>
 </resources>

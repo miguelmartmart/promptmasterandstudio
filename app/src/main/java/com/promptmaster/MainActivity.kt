@@ -57,9 +57,12 @@ import javax.inject.Inject // Import Inject
 import androidx.hilt.navigation.compose.hiltViewModel // Import hiltViewModel
 import com.promptmaster.ui.PromptOperationsViewModel // Import PromptOperationsViewModel
 import com.promptmaster.ui.FavoritesViewModel // Import FavoritesViewModel
-import com.google.android.gms.ads.AdRequest // Import AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView // Import AdView
+// Removed AdMob imports: import androidx.compose.ui.viewinterop.AndroidView, import com.google.android.gms.ads.AdRequest, import com.google.android.gms.ads.AdSize, import com.google.android.gms.ads.AdView
+
+import com.promptmaster.ui.ads.AdViewModel // Import AdViewModel
+import com.promptmaster.ui.components.ads.AdView // Import AdView
+import androidx.compose.runtime.collectAsState // Import collectAsState
+import kotlinx.coroutines.delay // Import delay
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -112,6 +115,17 @@ fun PromptMasterApp(
     onThemeChange: () -> Unit // Add the callback parameter
 ) {
     val navController = rememberNavController()
+    val adViewModel: AdViewModel = hiltViewModel() // Get AdViewModel instance
+    val currentAd by adViewModel.currentAd.collectAsState() // Collect current ad state
+
+    // LaunchedEffect to alternate ads every 10 seconds
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(10000) // Wait for 10 seconds
+            adViewModel.showNextAd()
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) { // Use Column to stack Scaffold and AdView
         Scaffold(
             modifier = Modifier.weight(1f), // Make Scaffold take up remaining space
@@ -190,17 +204,10 @@ fun PromptMasterApp(
                 }
             }
         }
-        // AdMob Banner Ad
-        AndroidView(
-            modifier = Modifier.fillMaxWidth(),
-            factory = { context ->
-                AdView(context).apply {
-                    setAdSize(AdSize.BANNER)
-                    adUnitId = "ca-app-pub-3940256099942544/6300978111" // Test Ad Unit ID
-                    loadAd(AdRequest.Builder().build())
-                }
-            }
-        )
+        // Custom Affiliate Ad View
+        currentAd?.let { ad ->
+            AdView(ad = ad, modifier = Modifier.fillMaxWidth())
+        }
     }
 }
 
