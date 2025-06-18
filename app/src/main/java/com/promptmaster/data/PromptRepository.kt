@@ -60,10 +60,34 @@ class PromptRepository @Inject constructor(
 
     val favoritePrompts: Flow<List<Prompt>> = promptDao.getFavoritePrompts()
 
-    suspend fun insert(prompt: Prompt): Int {
+    suspend fun insert(prompt: Prompt): Int { // Keep original insert for other uses if needed
         android.util.Log.d("PromptMasterDebug", "PromptRepository: insert prompt: ${prompt.title}")
         val newPromptId = promptDao.insert(prompt)
         return newPromptId.toInt()
+    }
+
+    suspend fun insertOrUpdatePrompt(prompt: Prompt) {
+        val existingPrompt = promptDao.getPromptByContent(prompt.title, prompt.description)
+        if (existingPrompt != null) {
+            // Prompt with same title and description exists, update it
+            android.util.Log.d("PromptMasterDebug", "PromptRepository: Updating existing prompt: ${existingPrompt.id} - ${existingPrompt.title}")
+            // Preserve original ID, isFavorite, and lastUsed if they are not meant to be overwritten by import
+            val updatedPrompt = existingPrompt.copy(
+                category = prompt.category,
+                subcategory = prompt.subcategory,
+                tags = prompt.tags,
+                recommendedModel = prompt.recommendedModel,
+                description = prompt.description,
+                // Keep existing isFavorite and lastUsed unless explicitly changing them
+                isFavorite = existingPrompt.isFavorite,
+                lastUsed = existingPrompt.lastUsed
+            )
+            promptDao.update(updatedPrompt)
+        } else {
+            // Prompt does not exist, insert new one
+            android.util.Log.d("PromptMasterDebug", "PromptRepository: Inserting new prompt: ${prompt.title}")
+            promptDao.insert(prompt)
+        }
     }
 
     suspend fun update(prompt: Prompt) {

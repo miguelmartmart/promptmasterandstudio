@@ -16,8 +16,8 @@ android {
         applicationId = "com.promptmaster"
         minSdk = 24
         targetSdk = 35
-        versionCode = 12
-        versionName = "12.0"
+        versionCode = 13
+        versionName = "13.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -49,7 +49,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.13"
+        kotlinCompilerExtensionVersion = "1.5.12"
     }
 
     packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -73,6 +73,7 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx")
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.foundation.layout.android)
+    implementation("androidx.compose.foundation:foundation:1.7.2") // Explicitly add foundation library
     implementation(libs.preference.ktx)
 
     // Room

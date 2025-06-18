@@ -135,4 +135,7 @@ interface PromptDao {
 
     @Query("SELECT COUNT(*) FROM prompts WHERE title = :title AND description = :description")
     suspend fun getPromptCountByContent(title: String, description: String): Int
+
+    @Query("SELECT * FROM prompts WHERE title = :title AND description = :description LIMIT 1")
+    suspend fun getPromptByContent(title: String, description: String): Prompt?
 }

@@ -68,7 +68,7 @@ class PromptUtils(
             val prompts: List<Prompt> = Gson().fromJson(reader, promptListType)
 
             prompts.forEach { prompt ->
-                repository.insert(prompt)
+                repository.insertOrUpdatePrompt(prompt)
             }
             _statusChannel.send("Application data reset to initial prompts successfully")
         } catch (e: IOException) {
@@ -88,7 +88,7 @@ class PromptUtils(
                 val prompts: List<Prompt> = Gson().fromJson(reader, promptListType)
 
                 prompts.forEach { prompt ->
-                    repository.insert(prompt)
+                    repository.insertOrUpdatePrompt(prompt)
                 }
                 _statusChannel.send("Prompts imported successfully")
             }

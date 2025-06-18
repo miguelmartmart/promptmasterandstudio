@@ -51,15 +51,21 @@ class FavoritesViewModel @Inject constructor(
 
     override fun setSearchQuery(query: String) {
         _searchQuery.value = query
+        refresh() // Refresh prompts when search query changes
     }
 
     override fun setSelectedCategory(category: String?) {
-        _selectedCategory.value = category
-        _selectedSubcategory.value = null
+        // Only reset subcategory if the category is actually changing or being cleared
+        if (_selectedCategory.value != category) {
+            _selectedCategory.value = category
+            _selectedSubcategory.value = null // Reset subcategory when category changes
+            refresh() // Refresh prompts when category changes
+        }
     }
 
     override fun setSelectedSubcategory(subcategory: String?) {
         _selectedSubcategory.value = subcategory
+        refresh() // Refresh prompts when subcategory changes
     }
 
     override fun loadNextPage() {

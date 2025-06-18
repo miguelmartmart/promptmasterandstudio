@@ -18,6 +18,7 @@ import com.promptmaster.data.Prompt
 import com.promptmaster.ui.PromptOperationsViewModel // New import
 import androidx.activity.compose.BackHandler // Import BackHandler
 import com.promptmaster.ui.components.ConfirmationDialog // Import ConfirmationDialog
+import kotlinx.coroutines.flow.first // Import first for Flow
 import kotlinx.coroutines.launch // Import launch
 import androidx.compose.runtime.saveable.rememberSaveable // Import rememberSaveable
 
@@ -43,7 +44,21 @@ fun EditPromptScreen(
     var description by rememberSaveable { mutableStateOf("") }
     var category by rememberSaveable { mutableStateOf("") }
     var subcategory by rememberSaveable { mutableStateOf("") }
+    var showSubcategorySuggestions by remember { mutableStateOf(false) } // Moved declaration
     var tags by rememberSaveable { mutableStateOf("") }
+
+    // Reset subcategory when category changes, if current subcategory is not valid for new category
+    LaunchedEffect(category) {
+        if (category.isEmpty()) {
+            subcategory = "" // Always clear subcategory if category is cleared
+        } else if (subcategory.isNotEmpty()) {
+            // Fetch subcategories for the new category to check validity
+            val subcategoriesForNewCategory = promptViewModel.getAllSubcategories(category).first() // Reverted to original, now with import
+            if (!subcategoriesForNewCategory.contains(subcategory)) {
+                subcategory = "" // Reset if current subcategory is not valid for new category
+            }
+        }
+    }
     var recommendedModel by rememberSaveable { mutableStateOf("") }
     var customizableFields by rememberSaveable { mutableStateOf("") }
     var imagePath by rememberSaveable { mutableStateOf("") }
@@ -65,6 +80,8 @@ fun EditPromptScreen(
             videoPath = it.videoPath ?: ""
             isFavorite = it.isFavorite
         }
+        // Ensure suggestions are shown for initially loaded subcategory if not empty
+        showSubcategorySuggestions = subcategory.isNotEmpty()
     }
 
     val hasUnsavedChanges = remember(
@@ -156,9 +173,16 @@ fun EditPromptScreen(
                     .fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
+            // Category Input with Suggestions
+            val allCategories by promptViewModel.getAllCategories().collectAsState(initial = emptyList())
+            var showCategorySuggestions by remember { mutableStateOf(false) }
+
             OutlinedTextField(
                 value = category,
-                onValueChange = { category = it }, // Simplified onValueChange
+                onValueChange = { newValue ->
+                    category = newValue
+                    showCategorySuggestions = newValue.isNotEmpty() // Show suggestions if typing
+                },
                 label = { Text(stringResource(R.string.category_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
@@ -172,23 +196,80 @@ fun EditPromptScreen(
                     }
                 }
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = subcategory,
-                onValueChange = { subcategory = it }, // Simplified onValueChange
-                label = { Text(stringResource(R.string.subcategory_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                trailingIcon = {
-                    if (subcategory.isNotEmpty()) {
-                        IconButton(onClick = { subcategory = "" }) {
-                            Icon(
-                                imageVector = Icons.Filled.Clear,
-                                contentDescription = stringResource(R.string.clear_text_button_description)
-                            )
+            if (showCategorySuggestions) {
+                val filteredCategories = allCategories.filter {
+                    it.contains(category, ignoreCase = true)
+                }
+                if (filteredCategories.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp)
+                    ) {
+                        filteredCategories.forEach { suggestion ->
+                            TextButton(
+                                onClick = {
+                                    category = suggestion
+                                    showCategorySuggestions = false // Hide suggestions after selection
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(suggestion)
+                            }
                         }
                     }
                 }
-            )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Subcategory Input with Suggestions (only visible if a category is selected)
+            if (category.isNotEmpty()) {
+                val allSubcategories by promptViewModel.getAllSubcategories(category).collectAsState(initial = emptyList())
+
+                OutlinedTextField(
+                    value = subcategory,
+                    onValueChange = { newValue ->
+                        subcategory = newValue
+                        showSubcategorySuggestions = newValue.isNotEmpty() // Show suggestions if typing
+                    },
+                    label = { Text(stringResource(R.string.subcategory_label)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = {
+                        if (subcategory.isNotEmpty()) {
+                            IconButton(onClick = { subcategory = "" }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Clear,
+                                    contentDescription = stringResource(R.string.clear_text_button_description)
+                                )
+                            }
+                        }
+                    }
+                )
+                if (showSubcategorySuggestions) {
+                    val filteredSubcategories = allSubcategories.filter {
+                        it?.contains(subcategory, ignoreCase = true) == true
+                    }
+                    if (filteredSubcategories.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp)
+                        ) {
+                            filteredSubcategories.forEach { suggestion ->
+                                TextButton(
+                                    onClick = {
+                                        subcategory = suggestion as String
+                                        showSubcategorySuggestions = false // Hide suggestions after selection
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(suggestion)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = tags,

@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -36,13 +35,10 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.LaunchedEffect
-import com.promptmaster.data.Prompt
-import com.promptmaster.data.PromptDao
 import java.util.Locale
 import androidx.core.view.WindowCompat
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import com.promptmaster.utils.rememberBooleanPreference // Import the helper function
 import androidx.preference.PreferenceManager // Import PreferenceManager
 import com.promptmaster.data.PromptBackupManager
@@ -51,18 +47,23 @@ import com.promptmaster.ui.components.ZoomableContent // Import ZoomableContent
 import com.promptmaster.utils.setLocale // Import the setLocale extension function
 import kotlinx.coroutines.launch // Import launch
 import androidx.compose.runtime.rememberCoroutineScope // Import rememberCoroutineScope
-import androidx.compose.ui.viewinterop.AndroidView
 import dagger.hilt.android.AndroidEntryPoint // Import AndroidEntryPoint
 import javax.inject.Inject // Import Inject
 import androidx.hilt.navigation.compose.hiltViewModel // Import hiltViewModel
-import com.promptmaster.ui.PromptOperationsViewModel // Import PromptOperationsViewModel
 import com.promptmaster.ui.FavoritesViewModel // Import FavoritesViewModel
+import androidx.compose.foundation.layout.Arrangement // Import Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.Alignment // Import Alignment
+import androidx.compose.foundation.layout.fillMaxHeight // Import fillMaxHeight
+import androidx.compose.foundation.layout.size
 // Removed AdMob imports: import androidx.compose.ui.viewinterop.AndroidView, import com.google.android.gms.ads.AdRequest, import com.google.android.gms.ads.AdSize, import com.google.android.gms.ads.AdView
 
 import com.promptmaster.ui.ads.AdViewModel // Import AdViewModel
 import com.promptmaster.ui.components.ads.AdView // Import AdView
 import androidx.compose.runtime.collectAsState // Import collectAsState
 import kotlinx.coroutines.delay // Import delay
+import androidx.compose.ui.unit.dp // Import dp
+import androidx.compose.ui.tooling.preview.Preview // Attempt to force Gradle sync
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -244,31 +245,49 @@ fun BottomNavigationBar(navController: NavHostController) {
         Screen.Favorites,
         Screen.Settings
     )
-    NavigationBar {
+
+    NavigationBar(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp), // Altura más segura
+        tonalElevation = 0.dp // Para evitar sombras innecesarias
+    ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
+
         items.forEach { screen ->
-            // Only show items with icons and resource IDs in the bottom bar
             if (screen.icon != null && screen.resourceId != null) {
                 NavigationBarItem(
-                    icon = { Icon(screen.icon, contentDescription = null) },
-                    label = { Text(stringResource(screen.resourceId)) },
+                    icon = {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .padding(vertical = 1.dp)
+                        ) {
+                            Icon(
+                                imageVector = screen.icon,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = stringResource(screen.resourceId),
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                    },
                     selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                     onClick = {
                         navController.navigate(screen.route) {
-                            // Pop up to the start destination of the graph to
-                            // avoid building up a large stack of destinations
-                            // on the back stack as users select items
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }
-                            // Avoid multiple copies of the same destination when
-                            // reselecting the same item
                             launchSingleTop = true
-                            // Restore state when reselecting a previously selected item
                             restoreState = true
                         }
-                    }
+                    },
+                    alwaysShowLabel = true
                 )
             }
         }
