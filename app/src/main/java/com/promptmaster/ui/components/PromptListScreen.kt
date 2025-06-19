@@ -12,12 +12,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.promptmaster.ui.PromptViewModel
 import com.promptmaster.ui.PromptOperationsViewModel // New import
 import androidx.compose.ui.res.stringResource // Import stringResource
 import com.promptmaster.R // Import R
 import androidx.compose.foundation.layout.wrapContentSize // Import wrapContentSize
 import androidx.compose.ui.Alignment // Import Alignment
+import androidx.compose.ui.unit.Dp
 import kotlinx.coroutines.launch // Import launch
 
 
@@ -26,7 +26,8 @@ import kotlinx.coroutines.launch // Import launch
 fun PromptListScreen(
     viewModel: PromptOperationsViewModel, // Change to PromptOperationsViewModel
     onPromptClick: (Int) -> Unit,
-    onCopyDescriptionClick: (Int, String) -> Unit // Modify to accept prompt ID and description
+    onCopyDescriptionClick: (Int, String) -> Unit, // Modify to accept prompt ID and description
+    horizontalPadding: Dp // Add horizontalPadding parameter
 ) {
     val coroutineScope = rememberCoroutineScope() // Define coroutine scope once at the top
 
@@ -43,7 +44,7 @@ fun PromptListScreen(
     val selectedCategory by viewModel.selectedCategory.collectAsState() // Collect selected category state from ViewModel
     val selectedSubcategory by viewModel.selectedSubcategory.collectAsState() // Collect selected subcategory state
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column { // Removed fixed padding, now handled by HomeScreen
         // General Search Field
         TextField(
             value = searchQuery,
@@ -231,7 +232,8 @@ fun PromptListScreen(
                     onCopyDescriptionClick = { description -> // Modify lambda to receive description
                         android.util.Log.d("PromptMasterDebug", "PromptListScreen: onCopyDescriptionClick for ID: ${prompt.id}")
                         onCopyDescriptionClick(prompt.id, description) // Call the lambda with prompt ID and description
-                    }
+                    },
+                    horizontalPadding = horizontalPadding // Pass horizontalPadding
                 )
             }
 

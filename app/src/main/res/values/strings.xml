@@ -66,4 +66,7 @@
     <string name="language_portuguese">Portugués</string>
     <string name="language_italian">Italiano</string>
     <string name="affiliate_disclaimer">Este enlace es de afiliado: podríamos recibir una pequeña comisión sin coste adicional para ti.</string>
+    <string name="favorite_icon_description">Icono de favorito</string>
+    <string name="copy_icon_description">Icono de copiar</string>
+    <string name="share_icon_description">Icono de compartir</string>
 </resources>

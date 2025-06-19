@@ -35,7 +35,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.LaunchedEffect
 import java.util.Locale
 import androidx.core.view.WindowCompat
@@ -52,21 +51,23 @@ import javax.inject.Inject // Import Inject
 import androidx.hilt.navigation.compose.hiltViewModel // Import hiltViewModel
 import com.promptmaster.ui.FavoritesViewModel // Import FavoritesViewModel
 import androidx.compose.foundation.layout.Arrangement // Import Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.Alignment // Import Alignment
 import androidx.compose.foundation.layout.fillMaxHeight // Import fillMaxHeight
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.ui.unit.sp // Import sp for font sizes
 // Removed AdMob imports: import androidx.compose.ui.viewinterop.AndroidView, import com.google.android.gms.ads.AdRequest, import com.google.android.gms.ads.AdSize, import com.google.android.gms.ads.AdView
 
 import com.promptmaster.ui.ads.AdViewModel // Import AdViewModel
 import com.promptmaster.ui.components.ads.AdView // Import AdView
 import androidx.compose.runtime.collectAsState // Import collectAsState
 import kotlinx.coroutines.delay // Import delay
-import androidx.compose.ui.unit.dp // Import dp
-import androidx.compose.ui.tooling.preview.Preview // Attempt to force Gradle sync
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalConfiguration // Import LocalConfiguration
+import androidx.compose.ui.text.style.TextOverflow
 
-@AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+@AndroidEntryPoint // Add AndroidEntryPoint annotation
+class MainActivity : ComponentActivity() { // Define MainActivity as a class
 
     @Inject lateinit var repository: PromptRepository
     @Inject lateinit var promptBackupManager: PromptBackupManager
@@ -118,6 +119,8 @@ fun PromptMasterApp(
     val navController = rememberNavController()
     val adViewModel: AdViewModel = hiltViewModel() // Get AdViewModel instance
     val currentAd by adViewModel.currentAd.collectAsState() // Collect current ad state
+    val screenWidth = LocalConfiguration.current.screenWidthDp // Get screen width for adaptive padding
+    val horizontalPadding = 16.dp // Set a fixed padding based on user preference for Favorites tab
 
     // LaunchedEffect to alternate ads every 10 seconds
     LaunchedEffect(Unit) {
@@ -129,9 +132,9 @@ fun PromptMasterApp(
 
     Column(modifier = Modifier.fillMaxSize()) { // Use Column to stack Scaffold and AdView
         Scaffold(
-            modifier = Modifier.weight(1f), // Make Scaffold take up remaining space
+            modifier = Modifier.weight(1f), // Scaffold takes all remaining vertical space
             bottomBar = {
-                BottomNavigationBar(navController = navController)
+                BottomNavigationBar(navController = navController) // Removed metrics
             },
             floatingActionButton = {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -157,7 +160,8 @@ fun PromptMasterApp(
                         }
 
                         HomeScreen(
-                            onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) }
+                            onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) },
+                            horizontalPadding = horizontalPadding // Pass horizontalPadding to HomeScreen
                         )
                     }
                     composable(Screen.Favorites.route) {
@@ -178,7 +182,8 @@ fun PromptMasterApp(
                                     // Only mark as used, as copyToClipboard is in PromptViewModel's PromptUtils
                                     favoritesViewModel.markPromptAsUsed(promptId)
                                 }
-                            }
+                            },
+                            horizontalPadding = horizontalPadding // Pass horizontalPadding to PromptListScreen
                         )
                     }
                     composable(
@@ -207,7 +212,13 @@ fun PromptMasterApp(
         }
         // Custom Affiliate Ad View
         currentAd?.let { ad ->
-            AdView(ad = ad, modifier = Modifier.fillMaxWidth())
+            AdView(
+                ad = ad,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp) // Apply horizontal padding
+                    .heightIn(min = 120.dp, max = 160.dp) // Set adaptive height range
+            )
         }
     }
 }
@@ -238,8 +249,9 @@ fun FavoritesScreenContent(
 }
 */
 
+
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
+fun BottomNavigationBar(navController: NavHostController) { // Removed metrics parameter
     val items = listOf(
         Screen.Home,
         Screen.Favorites,
@@ -249,8 +261,8 @@ fun BottomNavigationBar(navController: NavHostController) {
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp), // Altura más segura
-        tonalElevation = 0.dp // Para evitar sombras innecesarias
+            .heightIn(min = 64.dp, max = 72.dp), // Increased height range for more vertical space
+        tonalElevation = 0.dp
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
@@ -264,16 +276,18 @@ fun BottomNavigationBar(navController: NavHostController) {
                             verticalArrangement = Arrangement.Center,
                             modifier = Modifier
                                 .fillMaxHeight()
-                                .padding(vertical = 1.dp)
+                                .padding(vertical = 4.dp) // Adjusted vertical padding
                         ) {
                             Icon(
                                 imageVector = screen.icon,
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(24.dp)
                             )
                             Text(
                                 text = stringResource(screen.resourceId),
-                                style = MaterialTheme.typography.labelSmall
+                                fontSize = 10.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis // Ensure text doesn't overflow if too long
                             )
                         }
                     },

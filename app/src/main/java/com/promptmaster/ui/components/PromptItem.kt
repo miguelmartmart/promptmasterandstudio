@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import com.promptmaster.R
 import androidx.compose.runtime.* // Import remember and mutableStateOf
+import androidx.compose.ui.unit.Dp
 
 // Reusable PromptItem Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,17 +36,18 @@ fun PromptItem(
     onDeleteClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onDuplicateClick: () -> Unit,
-    onCopyDescriptionClick: (String) -> Unit // Add new parameter for copying description
+    onCopyDescriptionClick: (String) -> Unit, // Add new parameter for copying description
+    horizontalPadding: Dp // Add horizontalPadding parameter
 ) {
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) } // State for delete confirmation dialog
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp, horizontal = horizontalPadding), // Apply adaptive horizontal padding
         onClick = onPromptClick
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) { // Keep internal padding for now, might need adjustment
             Text(
                 text = prompt.title,
                 style = MaterialTheme.typography.titleMedium,
@@ -61,12 +63,12 @@ fun PromptItem(
             Text(
                 text = prompt.description,
                 style = MaterialTheme.typography.bodyMedium,
-                maxLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             // Add more UI elements for tags, model, etc. as needed
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),

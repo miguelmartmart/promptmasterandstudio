@@ -15,14 +15,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp // Import sp for font sizes
 import coil.compose.AsyncImage
 import com.promptmaster.data.ads.Ad
 import java.util.Locale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.dimensionResource
 import com.promptmaster.R
+// Removed ScreenMetrics import
 
 @Composable
-fun AdView(ad: Ad, modifier: Modifier = Modifier) {
+fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
     val context = LocalContext.current
     val userCountryCode = Locale.getDefault().country.uppercase(Locale.ROOT)
     val selectedAffiliateLink = ad.links[userCountryCode] ?: ad.links["default"]
@@ -30,7 +33,8 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .wrapContentHeight() // Permitir que el Card se ajuste a su contenido
+            .padding(dimensionResource(R.dimen.ad_card_padding))
             .clickable {
                 selectedAffiliateLink?.let {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
@@ -41,18 +45,20 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(dimensionResource(R.dimen.ad_column_padding))
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
                     model = ad.imageUrl,
                     contentDescription = ad.title,
                     modifier = Modifier
-                        .size(100.dp)
-                        .padding(end = 8.dp),
+                        .size(dimensionResource(R.dimen.ad_image_size))
+                        .padding(end = dimensionResource(R.dimen.ad_image_padding_end)),
                     contentScale = ContentScale.Crop
                 )
                 Column(
@@ -60,26 +66,30 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) {
                 ) {
                     Text(
                         text = ad.title,
-                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = dimensionResource(R.dimen.ad_title_font_size).value.sp,
                         fontWeight = FontWeight.Bold,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(dimensionResource(R.dimen.ad_spacer_height_small)))
                     Text(
                         text = ad.description,
-                        style = MaterialTheme.typography.bodySmall,
+                        fontSize = dimensionResource(R.dimen.ad_description_font_size).value.sp,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.ad_spacer_height_medium)))
             Text(
                 text = stringResource(R.string.affiliate_disclaimer),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = dimensionResource(R.dimen.ad_disclaimer_font_size).value.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(top = dimensionResource(R.dimen.ad_disclaimer_padding_top))
             )
         }
     }

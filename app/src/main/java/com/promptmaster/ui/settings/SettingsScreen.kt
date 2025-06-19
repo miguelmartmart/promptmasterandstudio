@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext // Import LocalContext
 import androidx.compose.foundation.isSystemInDarkTheme
 import java.util.Locale
 import android.app.Activity
-import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import kotlinx.coroutines.launch // Import launch
@@ -38,6 +37,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult // Import rem
 import androidx.activity.result.contract.ActivityResultContracts // Import ActivityResultContracts
 import android.net.Uri // Import Uri
 import java.io.OutputStreamWriter
+import androidx.compose.foundation.rememberScrollState // Import rememberScrollState
+import androidx.compose.foundation.verticalScroll // Import verticalScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,11 +101,13 @@ fun SettingsScreen(
             TopAppBar(title = { Text(stringResource(R.string.menu_settings)) }) // Use stringResource
         }
     ) { paddingValues ->
+        val scrollState = rememberScrollState() // Create a scroll state
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(16.dp)
                 .fillMaxSize()
+                .verticalScroll(scrollState) // Apply vertical scroll modifier
         ) {
             // Dark Mode Setting
             val initialDarkMode = sharedPreferences.getBoolean("darkModeEnabled", isSystemInDarkTheme())

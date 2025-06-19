@@ -1,40 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:layout_margin="@dimen/card_margin"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="@dimen/card_elevation"
+    tools:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingTop="@dimen/card_padding"
+        android:paddingStart="@dimen/card_padding"
+        android:paddingEnd="@dimen/card_padding"
+        android:paddingBottom="@dimen/prompt_item_content_padding_bottom">
 
         <TextView
             android:id="@+id/prompt_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
             android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
+            android:textColor="?attr/colorOnSurface"
             android:text="Prompt Title" />
 
         <TextView
             android:id="@+id/prompt_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
+            android:layout_marginTop="@dimen/prompt_description_margin_top"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:text="Prompt Description"
             android:scrollbars="vertical"
-            android:maxLines="5"
-            android:ellipsize="end"
-            android:isScrollContainer="true"
-            android:fadeScrollbars="false" />
+            android:maxLines="1"
+            android:ellipsize="end" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/prompt_icons_margin_top"
+            android:gravity="end">
+
+            <ImageView
+                android:id="@+id/favorite_icon"
+                android:layout_width="@dimen/prompt_icon_size"
+                android:layout_height="@dimen/prompt_icon_size"
+                android:src="@drawable/ic_menu_gallery"
+                android:layout_marginEnd="@dimen/prompt_icon_margin_end"
+                android:contentDescription="@string/favorite_icon_description" />
+
+            <ImageView
+                android:id="@+id/copy_icon"
+                android:layout_width="@dimen/prompt_icon_size"
+                android:layout_height="@dimen/prompt_icon_size"
+                android:src="@drawable/ic_menu_camera"
+                android:layout_marginEnd="@dimen/prompt_icon_margin_end"
+                android:contentDescription="@string/copy_icon_description" />
+
+            <ImageView
+                android:id="@+id/share_icon"
+                android:layout_width="@dimen/prompt_icon_size"
+                android:layout_height="@dimen/prompt_icon_size"
+                android:src="@drawable/ic_menu_slideshow"
+                android:contentDescription="@string/share_icon_description" />
+        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

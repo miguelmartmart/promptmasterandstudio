@@ -68,4 +68,8 @@
     <string name="language_portuguese">Português</string>
     <string name="language_italian">Italiano</string>
     <string name="affiliate_disclaimer">Este é um link de afiliado: podemos receber uma pequena comissão sem custo adicional para você.</string>
+    <string name="favorite_icon_description">Ícone de favorito</string>
+    <string name="copy_icon_description">Ícone de copiar</string>
+    <string name="share_icon_description">Ícone de compartilhar</string>
+
 </resources>
