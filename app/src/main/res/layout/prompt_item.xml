@@ -25,7 +25,7 @@
             android:textAppearance="?attr/textAppearanceTitleMedium"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"
-            android:text="Prompt Title" />
+            android:text="@string/prompt_title_placeholder" />
 
         <TextView
             android:id="@+id/prompt_description"
@@ -34,7 +34,7 @@
             android:layout_marginTop="@dimen/prompt_description_margin_top"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorOnSurfaceVariant"
-            android:text="Prompt Description"
+            android:text="@string/prompt_description_placeholder"
             android:scrollbars="vertical"
             android:maxLines="1"
             android:ellipsize="end" />
@@ -50,7 +50,7 @@
                 android:id="@+id/favorite_icon"
                 android:layout_width="@dimen/prompt_icon_size"
                 android:layout_height="@dimen/prompt_icon_size"
-                android:src="@drawable/ic_menu_gallery"
+                android:src="@drawable/ic_menu_favorites"
                 android:layout_marginEnd="@dimen/prompt_icon_margin_end"
                 android:contentDescription="@string/favorite_icon_description" />
 
@@ -58,7 +58,7 @@
                 android:id="@+id/copy_icon"
                 android:layout_width="@dimen/prompt_icon_size"
                 android:layout_height="@dimen/prompt_icon_size"
-                android:src="@drawable/ic_menu_camera"
+                android:src="@drawable/ic_menu_copy"
                 android:layout_marginEnd="@dimen/prompt_icon_margin_end"
                 android:contentDescription="@string/copy_icon_description" />
 
@@ -66,7 +66,7 @@
                 android:id="@+id/share_icon"
                 android:layout_width="@dimen/prompt_icon_size"
                 android:layout_height="@dimen/prompt_icon_size"
-                android:src="@drawable/ic_menu_slideshow"
+                android:src="@drawable/ic_menu_share"
                 android:contentDescription="@string/share_icon_description" />
         </LinearLayout>
     </LinearLayout>

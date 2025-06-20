@@ -50,7 +50,9 @@ fun PromptListScreen(
             value = searchQuery,
             onValueChange = { viewModel.setSearchQuery(it) },
             label = { Text(stringResource(R.string.search_prompts_label)) }, // Use stringResource
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding),
             trailingIcon = {
                 if (searchQuery.isNotEmpty()) {
                     IconButton(onClick = { viewModel.setSearchQuery("") }) {
@@ -95,6 +97,7 @@ fun PromptListScreen(
                 modifier = Modifier
                     .menuAnchor()
                     .fillMaxWidth()
+                    .padding(horizontal = horizontalPadding)
             )
             ExposedDropdownMenu(
                 expanded = expanded,
@@ -162,6 +165,7 @@ fun PromptListScreen(
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth()
+                        .padding(horizontal = horizontalPadding)
                 )
                 ExposedDropdownMenu(
                     expanded = subcategoryExpanded,

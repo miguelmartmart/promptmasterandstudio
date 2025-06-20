@@ -39,7 +39,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.PromptMaster.NoActionBar">
+            android:theme="@style/Theme.PromptMaster">
             <!-- This activity will now use Jetpack Compose -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

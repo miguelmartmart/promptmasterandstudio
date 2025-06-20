@@ -16,8 +16,8 @@ android {
         applicationId = "com.promptmaster"
         minSdk = 24
         targetSdk = 35
-        versionCode = 13
-        versionName = "13.0"
+        versionCode = 15
+        versionName = "15.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

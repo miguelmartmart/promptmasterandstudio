@@ -1,0 +1,3950 @@
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\ads\Ad.kt ---
+package com.promptmaster.data.ads
+
+data class Ad(
+    val productId: String, // New field for product ID
+    val imageUrl: String,
+    val title: String,
+    val description: String,
+    val links: Map<String, String> // Changed to a map for geo-localized links
+)
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\ads\AdRepository.kt ---
+package com.promptmaster.data.ads
+
+import android.content.Context
+import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import java.util.Locale // Import Locale
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class AdRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val okHttpClient: OkHttpClient, // Keep OkHttpClient for potential future scraping or other network needs
+    private val gson: Gson
+) {
+    private val cachedAds = mutableListOf<Ad>()
+    private var manualAdsConfig: Map<String, ManualAdData> = emptyMap()
+
+    init {
+        loadManualAdsConfig()
+    }
+
+    private fun loadManualAdsConfig() {
+        try {
+            val jsonString = context.assets.open("manual_ads_config.json").bufferedReader().use { it.readText() }
+            // Updated TypeToken to match the new JSON structure with productId as key
+            val type = object : TypeToken<Map<String, ManualAdData>>() {}.type
+            manualAdsConfig = gson.fromJson(jsonString, type)
+            Log.d("AdRepository", "Manual ads config loaded: ${manualAdsConfig.size} entries.")
+        } catch (e: Exception) {
+            Log.e("AdRepository", "Error loading manual_ads_config.json", e)
+            manualAdsConfig = emptyMap()
+        }
+    }
+
+    suspend fun getAds(): List<Ad> = withContext(Dispatchers.IO) {
+        Log.d("AdRepository", "getAds() called. Cached ads size: ${cachedAds.size}")
+        if (cachedAds.isNotEmpty()) {
+            Log.d("AdRepository", "Returning cached ads.")
+            return@withContext cachedAds
+        }
+
+        val fetchedAds = mutableListOf<Ad>()
+        val userCountryCode = getUserCountryCode()
+        Log.d("AdRepository", "Detected user country code: $userCountryCode")
+
+        // Iterate through manual ads config to create Ad objects
+        for ((productId, manualData) in manualAdsConfig) {
+            val selectedLink = manualData.links[userCountryCode] ?: manualData.links["default"]
+            if (selectedLink != null) {
+                val ad = Ad(
+                    productId = productId,
+                    imageUrl = manualData.imageUrl ?: "https://via.placeholder.com/150/CCCCCC/000000?text=No+Image",
+                    title = manualData.title ?: "Product Title Not Found",
+                    description = manualData.description ?: "No description available.",
+                    links = manualData.links // Pass the entire links map
+                )
+                fetchedAds.add(ad)
+                Log.d("AdRepository", "Successfully created ad for $productId (Country: $userCountryCode, Link: $selectedLink)")
+            } else {
+                Log.w("AdRepository", "No suitable link found for product $productId in country $userCountryCode. Skipping ad.")
+            }
+        }
+
+        cachedAds.clear()
+        cachedAds.addAll(fetchedAds)
+        Log.d("AdRepository", "Finished fetching ads. Total fetched: ${fetchedAds.size}")
+        return@withContext fetchedAds
+    }
+
+    // Helper function to get the user's country code
+    private fun getUserCountryCode(): String {
+        return Locale.getDefault().country.uppercase(Locale.ROOT)
+    }
+}
+
+// Data class to represent the structure of manual ad data in JSON
+data class ManualAdData(
+    val imageUrl: String?,
+    val title: String?,
+    val description: String?,
+    val links: Map<String, String> // New field for geo-localized links
+)
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\Converters.kt ---
+package com.promptmaster.data
+
+
+import androidx.room.TypeConverter
+
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+
+class Converters {
+    @TypeConverter
+    fun fromStringList(value: List<String>?): String? {
+        val gson = Gson()
+        return gson.toJson(value)
+    }
+
+    @TypeConverter
+    fun toStringList(value: String?): List<String>? {
+        val gson = Gson()
+        val type = object : TypeToken<List<String>>() {}.type
+        return gson.fromJson(value, type)
+    }
+
+    @TypeConverter
+    fun fromStringMap(value: Map<String, String>?): String? {
+        val gson = Gson()
+        return gson.toJson(value)
+    }
+
+    @TypeConverter
+    fun toStringMap(value: String?): Map<String, String>? {
+        val gson = Gson()
+        val type = object : TypeToken<Map<String, String>>() {}.type
+        return gson.fromJson(value, type)
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\Prompt.kt ---
+package com.promptmaster.data
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+
+@Entity(tableName = "prompts")
+data class Prompt(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val title: String,
+    val description: String,
+    val category: String,
+    val subcategory: String?,
+    val tags: List<String>, // Will need a TypeConverter
+    val recommendedModel: String?,
+    val customizableFields: Map<String, String>, // Will need a TypeConverter
+    val imagePath: String?, // Path to image in internal storage
+    val videoPath: String?, // Path to video in internal storage (optional)
+    val isFavorite: Boolean = false,
+    val lastUsed: Long = 0L
+)
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\PromptBackupManager.kt ---
+package com.promptmaster.data
+
+import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.IOException
+import javax.inject.Inject // Import Inject
+
+class PromptBackupManager @Inject constructor(private val promptDao: PromptDao, private val context: Context) {
+
+    private val backupFileName = "prompts_backup.json"
+
+    internal fun getBackupFile(): File? {
+        val externalFilesDir = context.getExternalFilesDir(null)
+        return if (externalFilesDir != null) {
+            File(externalFilesDir, backupFileName)
+        } else {
+            null
+        }
+    }
+
+    suspend fun createBackup() = withContext(Dispatchers.IO) {
+        val prompts = promptDao.getAllPromptsList()
+        val json = Gson().toJson(prompts)
+        val backupFile = getBackupFile()
+        if (backupFile != null) {
+            try {
+                backupFile.writeText(json)
+                // TODO: Add logging or status update
+            } catch (e: IOException) {
+                e.printStackTrace()
+                // TODO: Handle error
+            }
+        } else {
+            // TODO: Handle case where external files directory is not available
+        }
+    }
+
+    suspend fun restoreBackup(): Boolean = withContext(Dispatchers.IO) {
+        val backupFile = getBackupFile()
+        if (backupFile != null && backupFile.exists()) {
+            try {
+                val json = backupFile.readText()
+                val promptListType = object : TypeToken<List<Prompt>>() {}.type
+                val prompts: List<Prompt> = Gson().fromJson(json, promptListType)
+
+                prompts.forEach { prompt ->
+                    // Check if a prompt with the same title and description already exists
+                    val existingPromptCount = promptDao.getPromptCountByContent(prompt.title, prompt.description)
+                    if (existingPromptCount == 0) {
+                        // If no duplicate exists, insert the prompt
+                        promptDao.insert(prompt)
+                    } else {
+                        // TODO: Handle duplicate (e.g., log a message)
+                    }
+                }
+                // TODO: Add logging or status update
+                true
+            } catch (e: IOException) {
+                e.printStackTrace()
+                // TODO: Handle error
+                false
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // TODO: Handle error
+                false
+            }
+        } else {
+            // TODO: Handle case where backup file does not exist
+            false
+        }
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\PromptDao.kt ---
+package com.promptmaster.data
+
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface PromptDao {
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(prompt: Prompt): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(prompts: List<Prompt>)
+
+    @Update
+    suspend fun update(prompt: Prompt)
+
+    @Delete
+    suspend fun delete(prompt: Prompt)
+
+    @Query("DELETE FROM prompts")
+    suspend fun deleteAllPrompts()
+
+    @Query("SELECT * FROM prompts WHERE id = :id")
+    fun getPrompt(id: Int): Flow<Prompt>
+
+    @Query("SELECT * FROM prompts ORDER BY title ASC")
+    fun getAllPrompts(): Flow<List<Prompt>>
+
+    @Query("""
+        SELECT * FROM prompts
+        WHERE (:searchQuery IS NULL OR :searchQuery = '' OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' OR tags LIKE '%' || :searchQuery || '%' OR category LIKE '%' || :searchQuery || '%' OR subcategory LIKE '%' || :searchQuery || '%')
+        AND (:category IS NULL OR category = :category)
+        AND (:recommendedModel IS NULL OR recommendedModel = :recommendedModel)
+        AND (:tag IS NULL OR tags LIKE '%' || :tag || '%')
+        ORDER BY title ASC
+    """)
+    fun searchPrompts(
+        searchQuery: String?,
+        category: String?,
+        recommendedModel: String?,
+        tag: String?
+    ): Flow<List<Prompt>>
+
+    @Query("SELECT * FROM prompts WHERE isFavorite = 1 ORDER BY lastUsed DESC")
+    fun getFavoritePrompts(): Flow<List<Prompt>>
+
+    @Query("SELECT DISTINCT category FROM prompts ORDER BY category")
+    fun getAllCategories(): Flow<List<String>>
+
+    @Query("SELECT * FROM prompts WHERE (:category IS NULL OR category = :category) ORDER BY lastUsed DESC")
+    fun getPromptsFiltered(category: String?): Flow<List<Prompt>>
+
+    @Query("UPDATE prompts SET lastUsed = :timestamp WHERE id = :id")
+    suspend fun updateLastUsed(id: Int, timestamp: Long)
+
+    @Query("""
+        SELECT * FROM prompts
+        WHERE (:searchQuery IS NULL OR :searchQuery = '' OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' OR subcategory LIKE '%' || :searchQuery || '%')
+        AND (category = :category OR :category IS NULL)
+        AND (subcategory = :subcategory OR :subcategory IS NULL)
+        AND (NOT :showFavoritesOnly OR isFavorite = 1)
+        ORDER BY isFavorite DESC, lastUsed DESC
+    """)
+    fun getFilteredAndSortedPrompts(
+        searchQuery: String?,
+        category: String?,
+        subcategory: String?,
+        showFavoritesOnly: Boolean
+    ): Flow<List<Prompt>>
+
+    @Query("SELECT DISTINCT subcategory FROM prompts WHERE (:category IS NULL OR category = :category) ORDER BY subcategory")
+    fun getAllSubcategories(category: String?): Flow<List<String>>
+
+    @Query("SELECT * FROM prompts ORDER BY title ASC LIMIT :limit OFFSET :offset")
+    fun getPaginatedPrompts(limit: Int, offset: Int): Flow<List<Prompt>>
+
+    @Query("""
+        SELECT * FROM prompts
+        WHERE (:searchQuery IS NULL OR :searchQuery = '' OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%' OR subcategory LIKE '%' || :searchQuery || '%')
+        AND (:category IS NULL OR category = :category)
+        AND (:subcategory IS NULL OR subcategory = :subcategory)
+        AND (NOT :showFavoritesOnly OR isFavorite = 1)
+        ORDER BY isFavorite DESC, lastUsed DESC
+        LIMIT :limit OFFSET :offset
+""")
+    suspend fun getPaginatedFilteredAndSortedPrompts(
+        searchQuery: String?,
+        category: String?,
+        subcategory: String?,
+        showFavoritesOnly: Boolean,
+        limit: Int,
+        offset: Int
+    ): List<Prompt>
+
+    @Query("""
+    SELECT * FROM prompts
+    WHERE (:searchQuery IS NULL OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%')
+      AND (category = :category OR :category IS NULL)
+      AND (subcategory = :subcategory OR :subcategory IS NULL)
+      AND (NOT :showFavoritesOnly OR isFavorite = 1)
+    ORDER BY isFavorite DESC, lastUsed DESC
+        LIMIT :limit OFFSET :offset
+""")
+    suspend fun getPaginatedFilteredAndSortedPromptsList(
+        searchQuery: String?,
+        category: String?,
+        subcategory: String?,
+        showFavoritesOnly: Boolean,
+        limit: Int,
+        offset: Int
+    ): List<Prompt>
+
+    @Query("""
+        SELECT * FROM prompts
+        WHERE (:searchQuery IS NULL OR :searchQuery = '' OR title LIKE '%' || :searchQuery || '%' OR description LIKE '%' || :searchQuery || '%')
+        AND (category = :category OR :category IS NULL)
+        AND (subcategory = :subcategory OR :subcategory IS NULL)
+        AND (NOT :showFavoritesOnly OR isFavorite = 1)
+        ORDER BY isFavorite DESC, lastUsed DESC
+    """)
+    suspend fun getAllFilteredAndSortedPromptsList(
+        searchQuery: String?,
+        category: String?,
+        subcategory: String?,
+        showFavoritesOnly: Boolean
+    ): List<Prompt>
+
+    @Query("SELECT * FROM prompts ORDER BY title ASC")
+    suspend fun getAllPromptsList(): List<Prompt>
+
+    @Query("SELECT COUNT(*) FROM prompts WHERE title = :title AND description = :description")
+    suspend fun getPromptCountByContent(title: String, description: String): Int
+
+    @Query("SELECT * FROM prompts WHERE title = :title AND description = :description LIMIT 1")
+    suspend fun getPromptByContent(title: String, description: String): Prompt?
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\PromptDataFetcher.kt ---
+package com.promptmaster.data
+
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+
+class PromptDataFetcher(
+    private val repository: PromptRepository,
+    private val searchQuery: StateFlow<String>,
+    private val selectedCategory: StateFlow<String?>,
+    private val selectedSubcategory: StateFlow<String?>,
+    private val showFavoritesOnly: StateFlow<Boolean>,
+    private val viewModelScope: kotlinx.coroutines.CoroutineScope, // Pass the ViewModel's scope
+    private val databaseReadyEvent: SharedFlow<Unit> // Keep this parameter
+) {
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val _prompts = MutableStateFlow<List<Prompt>>(emptyList())
+    val prompts: StateFlow<List<Prompt>> = _prompts.asStateFlow()
+
+    private val _currentPage = MutableStateFlow(0)
+    private val _lastFetchedSize = MutableStateFlow(0)
+
+    // New refresh trigger
+    private val _refreshTrigger = MutableStateFlow(0) // Use MutableStateFlow<Int>
+    val refreshTrigger: StateFlow<Int> = _refreshTrigger.asStateFlow() // Expose as StateFlow
+
+    init {
+        viewModelScope.launch {
+            // Emit initial value to trigger first fetch
+            // No need to emit explicitly here, as StateFlow has an initial value
+
+            combine(
+                searchQuery,
+                selectedCategory,
+                selectedSubcategory,
+                showFavoritesOnly,
+                _currentPage,
+                databaseReadyEvent,
+                _refreshTrigger // Include refresh trigger in combine
+            ) { args -> // Use a single 'args' parameter for combined values
+                val query = args[0] as String?
+                val category = args[1] as String?
+                val subcategory = args[2] as String?
+                val favoritesOnly = args[3] as Boolean
+                val page = args[4] as Int
+                // args[5] is Unit from databaseReadyEvent, args[6] is Int from _refreshTrigger
+
+                android.util.Log.d("PromptMasterDebug", "PromptDataFetcher: combine triggered, fetching prompts...")
+                _isLoading.value = true
+                android.util.Log.d("PromptMasterDebug", "PromptDataFetcher: Entering try block to fetch prompts.")
+                try {
+                    val fetchedPrompts = repository.getFilteredAndSortedPrompts(
+                        searchQuery = query,
+                        category = category,
+                        subcategory = subcategory,
+                        showFavoritesOnly = favoritesOnly,
+                        limit = repository.pageSize,
+                        offset = page * repository.pageSize
+                    )
+                    android.util.Log.d("PromptMasterDebug", "PromptDataFetcher: Fetched prompts count: ${fetchedPrompts.size}")
+
+                    _lastFetchedSize.value = fetchedPrompts.size
+
+                    if (page == 0) {
+                        _prompts.value = fetchedPrompts.toList() // .toList() ensures a new list instance
+                    } else {
+                        _prompts.update { currentList ->
+                            currentList + fetchedPrompts
+                        }
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.e("PromptMasterDebug", "PromptDataFetcher: Error fetching prompts: ${e.message}", e) // Changed tag to PromptMasterDebug
+                    if (page == 0) {
+                        _prompts.value = emptyList()
+                    }
+                } finally {
+                    _isLoading.value = false
+                    android.util.Log.d("PromptMasterDebug", "PromptDataFetcher: Exiting try/catch block.")
+                }
+            }.collect()
+        }
+    }
+
+    fun loadNextPage() {
+        if (!_isLoading.value && _lastFetchedSize.value == repository.pageSize) {
+            _currentPage.update { it + 1 }
+        }
+    }
+
+    fun refreshPrompts(forceReload: Boolean = false, showFavoritesOnly: Boolean) {
+        viewModelScope.launch {
+            android.util.Log.d("PromptMasterDebug", "PromptDataFetcher: refreshPrompts: Refreshing data with forceReload = $forceReload, showFavoritesOnly = $showFavoritesOnly")
+            _currentPage.value = 0 // Reset page to 0 for a refresh
+            _refreshTrigger.value++ // Increment to trigger a new fetch
+        }
+    }
+
+    // Function to mark a prompt as used
+    suspend fun markPromptAsUsed(id: Int) { // Make it a suspend function
+        repository.updateLastUsed(id, System.currentTimeMillis())
+        android.util.Log.d(
+            "PromptDataFetcher",
+            "markPromptAsUsed: Updated lastUsed for prompt ID $id"
+        )
+        // No need to call loadNextPage here, the ViewModel will call refreshPrompts
+    }
+
+    // Expose getAllCategories from the repository
+    fun getAllCategories(): Flow<List<String>> = repository.getAllCategories()
+        .onEach { categories ->
+            android.util.Log.d("PromptDataFetcher", "Categories emitted: ${categories.size}")
+            categories.forEach { category ->
+                android.util.Log.d("PromptDataFetcher", "Category: $category")
+            }
+        }
+
+    // Expose getAllSubcategories from the repository
+    fun getAllSubcategories(category: String?): Flow<List<String>> =
+        repository.getAllSubcategories(category)
+            .onEach { subcategories ->
+                android.util.Log.d(
+                    "PromptDataFetcher",
+                    "Subcategories emitted: ${subcategories.size}"
+                )
+                subcategories.forEach { subcategory ->
+                    android.util.Log.d("PromptDataFetcher", "Subcategory: $subcategory")
+                }
+            }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\PromptDataOperations.kt ---
+package com.promptmaster.data
+
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject // Import Inject
+
+class PromptDataOperations @Inject constructor(
+    private val repository: PromptRepository,
+    private val promptBackupManager: PromptBackupManager
+) {
+
+    suspend fun insert(prompt: Prompt): Int {
+        android.util.Log.d("PromptMasterDebug", "PromptDataOperations: insert prompt: ${prompt.title}")
+        val newPromptId = repository.insert(prompt)
+        repository.updateLastUsed(newPromptId, System.currentTimeMillis()) // newPromptId is already Int
+        promptBackupManager.createBackup() // Create backup after insert
+        return newPromptId
+    }
+
+    suspend fun update(prompt: Prompt) {
+        android.util.Log.d("PromptMasterDebug", "PromptDataOperations: update prompt: ${prompt.id} - ${prompt.title}, isFavorite: ${prompt.isFavorite}")
+        repository.update(prompt)
+        repository.updateLastUsed(prompt.id, System.currentTimeMillis()) // Update lastUsed timestamp
+        promptBackupManager.createBackup() // Create backup after update
+    }
+
+    suspend fun delete(prompt: Prompt) {
+        android.util.Log.d("PromptMasterDebug", "PromptDataOperations: delete prompt: ${prompt.id} - ${prompt.title}")
+        repository.delete(prompt)
+        promptBackupManager.createBackup() // Create backup after delete
+    }
+
+    fun getPrompt(id: Int): Flow<Prompt> {
+        android.util.Log.d("PromptMasterDebug", "PromptDataOperations: getPrompt for ID: $id")
+        return repository.getPrompt(id)
+    }
+
+    suspend fun duplicatePrompt(prompt: Prompt) {
+        android.util.Log.d("PromptMasterDebug", "PromptDataOperations: duplicatePrompt: ${prompt.id} - ${prompt.title}")
+        val newPrompt = prompt.copy(id = 0) // Create a copy with default ID
+        val newPromptId = repository.insert(newPrompt) // Insert the new prompt
+        repository.updateLastUsed(newPromptId, System.currentTimeMillis()) // newPromptId is already Int
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\PromptFilters.kt ---
+package com.promptmaster.data
+
+data class PromptFilters(
+    val searchQuery: String? = null,
+    val category: String? = null,
+    val subcategory: String? = null,
+    val showFavoritesOnly: Boolean = false,
+    val page: Int = 0
+)
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\PromptPrepopulateWorker.kt ---
+package com.promptmaster.data
+
+import android.content.Context
+import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import java.io.InputStreamReader
+import com.promptmaster.ChildWorkerFactory
+
+@HiltWorker
+class PromptPrepopulateWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParams: WorkerParameters,
+    private val promptDao: PromptDao,
+    private val gson: Gson,
+    private val promptRepository: PromptRepository // Inject PromptRepository
+) : CoroutineWorker(appContext, workerParams) {
+
+    override suspend fun doWork(): Result {
+        return try {
+            applicationContext.assets.open("initial_prompts.json").use { inputStream ->
+                val reader = InputStreamReader(inputStream)
+                val promptListType = object : TypeToken<List<Prompt>>() {}.type
+                val prompts: List<Prompt> = gson.fromJson(reader, promptListType)
+                promptDao.insertAll(prompts)
+                android.util.Log.d("PromptPrepopulateWorker", "Initial prompts loaded successfully: ${prompts.size} prompts")
+            }
+            promptRepository.setDatabaseReady() // Signal that the database is ready
+            Result.success()
+        } catch (e: Exception) {
+            android.util.Log.e("PromptPrepopulateWorker", "Error loading initial prompts: ${e.message}", e)
+            Result.failure()
+        }
+    }
+
+    @AssistedFactory
+    interface Factory : ChildWorkerFactory {
+        override fun create(appContext: Context, workerParameters: WorkerParameters): PromptPrepopulateWorker
+    }
+}
+
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\PromptRepository.kt ---
+package com.promptmaster.data
+
+import android.content.Context
+import android.os.Environment
+import com.google.gson.Gson
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow // Explicitly import asSharedFlow
+import androidx.lifecycle.LiveData // Import LiveData
+import androidx.lifecycle.MutableLiveData // Import MutableLiveData
+import androidx.lifecycle.asLiveData // Import asLiveData
+import androidx.lifecycle.liveData // Import liveData builder
+import kotlinx.coroutines.flow.onEach // Import onEach
+import kotlinx.coroutines.flow.onStart // Import onStart
+import kotlinx.coroutines.flow.combine // Import combine
+import kotlinx.coroutines.flow.distinctUntilChanged // Import distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest // Import flatMapLatest
+import kotlinx.coroutines.Dispatchers // Import Dispatchers
+import kotlinx.coroutines.withContext // Import withContext
+import java.io.File
+import java.io.IOException
+import android.app.Application // Import Application
+import javax.inject.Inject // Import Inject
+
+class PromptRepository @Inject constructor(
+    private val promptDao: PromptDao,
+    private val application: Application // Accept Application in constructor
+) {
+
+    val pageSize = 20 // Define your page size
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val _databaseReadyEvent = MutableSharedFlow<Unit>(replay = 1) // Replay 1 to ensure late collectors get the last event
+    val databaseReadyEvent: SharedFlow<Unit> = _databaseReadyEvent.asSharedFlow()
+    val databaseReadyLiveData: LiveData<Unit> = databaseReadyEvent.asLiveData() // Expose as LiveData
+
+    // LiveData to hold all prompts, updated when database is ready
+    val allPromptsLiveData: LiveData<List<Prompt>> = liveData {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: allPromptsLiveData init. Waiting for databaseReadyEvent.")
+        // Wait for the database to be ready
+        databaseReadyEvent.collect {
+            android.util.Log.d("PromptMasterDebug", "PromptRepository: databaseReadyEvent received. Fetching all prompts.")
+            // Once ready, start emitting prompts from the DAO
+            promptDao.getAllPrompts().collect { prompts ->
+                emit(prompts)
+            }
+        }
+    }
+
+    suspend fun setDatabaseReady() {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: setDatabaseReady called, emitting databaseReadyEvent.")
+        _databaseReadyEvent.emit(Unit)
+    }
+
+    val favoritePrompts: Flow<List<Prompt>> = promptDao.getFavoritePrompts()
+
+    suspend fun insert(prompt: Prompt): Int { // Keep original insert for other uses if needed
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: insert prompt: ${prompt.title}")
+        val newPromptId = promptDao.insert(prompt)
+        return newPromptId.toInt()
+    }
+
+    suspend fun insertOrUpdatePrompt(prompt: Prompt) {
+        val existingPrompt = promptDao.getPromptByContent(prompt.title, prompt.description)
+        if (existingPrompt != null) {
+            // Prompt with same title and description exists, update it
+            android.util.Log.d("PromptMasterDebug", "PromptRepository: Updating existing prompt: ${existingPrompt.id} - ${existingPrompt.title}")
+            // Preserve original ID, isFavorite, and lastUsed if they are not meant to be overwritten by import
+            val updatedPrompt = existingPrompt.copy(
+                category = prompt.category,
+                subcategory = prompt.subcategory,
+                tags = prompt.tags,
+                recommendedModel = prompt.recommendedModel,
+                description = prompt.description,
+                // Keep existing isFavorite and lastUsed unless explicitly changing them
+                isFavorite = existingPrompt.isFavorite,
+                lastUsed = existingPrompt.lastUsed
+            )
+            promptDao.update(updatedPrompt)
+        } else {
+            // Prompt does not exist, insert new one
+            android.util.Log.d("PromptMasterDebug", "PromptRepository: Inserting new prompt: ${prompt.title}")
+            promptDao.insert(prompt)
+        }
+    }
+
+    suspend fun update(prompt: Prompt) {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: update prompt: ${prompt.id} - ${prompt.title}, isFavorite: ${prompt.isFavorite}")
+        promptDao.update(prompt)
+    }
+
+    suspend fun delete(prompt: Prompt) {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: delete prompt: ${prompt.id} - ${prompt.title}")
+        promptDao.delete(prompt)
+    }
+
+    suspend fun deleteAllPrompts() {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: deleteAllPrompts")
+        promptDao.deleteAllPrompts()
+    }
+
+    fun getPrompt(id: Int): Flow<Prompt> {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: getPrompt for ID: $id")
+        return promptDao.getPrompt(id)
+    }
+
+    suspend fun getFilteredAndSortedPrompts(
+        searchQuery: String?,
+        category: String?,
+        subcategory: String?,
+        showFavoritesOnly: Boolean,
+        limit: Int,
+        offset: Int
+    ): List<Prompt> {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: getFilteredAndSortedPrompts - Query: '$searchQuery', Cat: '$category', Subcat: '$subcategory', FavOnly: $showFavoritesOnly, Limit: $limit, Offset: $offset")
+        return promptDao.getPaginatedFilteredAndSortedPromptsList(
+            searchQuery,
+            category,
+            subcategory,
+            showFavoritesOnly,
+            limit,
+            offset
+        )
+    }
+
+    suspend fun getAllFilteredAndSortedPromptsList(
+        searchQuery: String?,
+        category: String?,
+        subcategory: String?,
+        showFavoritesOnly: Boolean
+    ): List<Prompt> {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: getAllFilteredAndSortedPromptsList - Query: '$searchQuery', Cat: '$category', Subcat: '$subcategory', FavOnly: $showFavoritesOnly")
+        return promptDao.getAllFilteredAndSortedPromptsList(searchQuery, category, subcategory, showFavoritesOnly)
+    }
+
+    fun getAllCategories(): Flow<List<String>> {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: getAllCategories")
+        return promptDao.getAllCategories()
+    }
+
+    // This function is no longer directly used by HomeViewModel, but kept for other potential uses
+    fun getPromptsFiltered(category: String?): Flow<List<Prompt>> {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: getPromptsFiltered for category: $category")
+        return promptDao.getPromptsFiltered(category)
+    }
+
+    fun getAllSubcategories(category: String?): Flow<List<String>> {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: getAllSubcategories for category: $category")
+        return promptDao.getAllSubcategories(category)
+    }
+
+    suspend fun updateLastUsed(id: Int, timestamp: Long) {
+        android.util.Log.d("PromptMasterDebug", "PromptRepository: updateLastUsed for ID: $id, Timestamp: $timestamp")
+        promptDao.updateLastUsed(id, timestamp)
+    }
+
+    suspend fun exportPromptsToJson(): String {
+        val prompts = promptDao.getAllPromptsList()
+        return Gson().toJson(prompts)
+    }
+
+    suspend fun writeJsonToFile(context: Context, jsonString: String, filename: String): Boolean {
+        return try {
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val file = File(downloadsDir, filename)
+            file.writeText(jsonString)
+            true
+        } catch (e: IOException) {
+            e.printStackTrace()
+            false
+        }
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\PromptRoomDatabase.kt ---
+package com.promptmaster.data
+
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.InputStream
+import java.io.InputStreamReader
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import android.util.Log // Import Log
+
+private val APPLICATION_SCOPE = CoroutineScope(Dispatchers.IO)
+
+@Database(entities = [Prompt::class], version = 6, exportSchema = false)
+@TypeConverters(Converters::class)
+abstract class PromptRoomDatabase : RoomDatabase() {
+
+    abstract fun promptDao(): PromptDao
+
+    companion object {
+        @Volatile
+        private var INSTANCE: PromptRoomDatabase? = null
+
+        fun getDatabase(
+            context: Context,
+            promptBackupManager: PromptBackupManager, // New parameter for injected PromptBackupManager
+            onDatabasePopulated: () -> Unit
+        ): PromptRoomDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    PromptRoomDatabase::class.java,
+                    "prompt_database"
+                )
+                    .fallbackToDestructiveMigration()
+                    .addCallback(PromptDatabaseCallback(context.applicationContext, promptBackupManager, onDatabasePopulated)) // Pass application context, promptBackupManager, and callback
+                    .build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+
+    private class PromptDatabaseCallback(
+        private val applicationContext: Context, // Accept application context
+        private val promptBackupManager: PromptBackupManager, // Injected PromptBackupManager
+        private val onDatabasePopulated: () -> Unit // Callback to signal database population
+    ) : RoomDatabase.Callback() {
+        override fun onCreate(db: SupportSQLiteDatabase) {
+            super.onCreate(db)
+            android.util.Log.d("PromptDatabaseCallback", "Database onCreate called")
+            APPLICATION_SCOPE.launch {
+                // Access the DAO from the already built database instance
+                // INSTANCE is guaranteed to be non-null here because onCreate is called after build()
+                val promptDao = INSTANCE!!.promptDao()
+                populateDatabase(promptDao)
+            }
+        }
+
+        override fun onOpen(db: SupportSQLiteDatabase) {
+            super.onOpen(db)
+            android.util.Log.d("PromptDatabaseCallback", "Database onOpen called")
+            APPLICATION_SCOPE.launch {
+                promptBackupManager.restoreBackup() // Restore backup on open using injected manager
+                onDatabasePopulated() // Invoke the callback after restoring backup
+            }
+        }
+
+        suspend fun populateDatabase(promptDao: PromptDao) {
+            try {
+                val inputStream: InputStream = applicationContext.assets.open("initial_prompts.json")
+                val reader = InputStreamReader(inputStream)
+                val promptListType = object : TypeToken<List<Prompt>>() {}.type
+                val prompts: List<Prompt> = Gson().fromJson(reader, promptListType)
+
+                prompts.forEach { prompt ->
+                    promptDao.insert(prompt)
+                }
+                Log.d("PromptDatabaseCallback", "Prompts preloaded successfully")
+                onDatabasePopulated() // Invoke the callback
+            } catch (e: Exception) {
+                Log.e("PromptDatabaseCallback", "Error preloading prompts", e)
+            }
+        }
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\di\AppModule.kt ---
+package com.promptmaster.di
+
+import android.app.Application
+import android.content.Context
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.promptmaster.data.Prompt
+import com.promptmaster.data.PromptDao
+import com.promptmaster.data.PromptRepository
+import com.promptmaster.data.PromptRoomDatabase
+import com.promptmaster.data.PromptBackupManager
+import com.promptmaster.data.PromptDataOperations
+import com.promptmaster.utils.PromptUtils
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import java.io.InputStreamReader
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+
+    @Singleton
+    @Provides
+    fun providePromptRoomDatabase(
+        @ApplicationContext context: Context
+    ): PromptRoomDatabase {
+        return Room.databaseBuilder(
+            context,
+            PromptRoomDatabase::class.java,
+            "prompt_database"
+        ).build()
+    }
+
+    @Singleton
+    @Provides
+    fun providePromptDao(database: PromptRoomDatabase): PromptDao {
+        return database.promptDao()
+    }
+
+    @Singleton
+    @Provides
+    fun providePromptRepository(
+        promptDao: PromptDao,
+        application: Application
+    ): PromptRepository {
+        return PromptRepository(promptDao, application)
+    }
+
+    @Singleton
+    @Provides
+    fun providePromptBackupManager(
+        promptDao: PromptDao,
+        @ApplicationContext context: Context
+    ): PromptBackupManager {
+        return PromptBackupManager(promptDao, context)
+    }
+
+    @Singleton
+    @Provides
+    fun providePromptUtils(
+        @ApplicationContext context: Context,
+        repository: PromptRepository,
+        promptBackupManager: PromptBackupManager
+    ): PromptUtils {
+        return PromptUtils(context, repository, promptBackupManager)
+    }
+
+    @Singleton
+    @Provides
+    fun providePromptDataOperations(
+        repository: PromptRepository,
+        promptBackupManager: PromptBackupManager
+    ): PromptDataOperations {
+        return PromptDataOperations(repository, promptBackupManager)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGson(): Gson {
+        return Gson()
+    }
+
+    @Singleton
+    @Provides
+    fun provideOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .build()
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\di\WorkerBindingModule.kt ---
+package com.promptmaster.di
+
+import androidx.work.WorkerFactory
+import com.promptmaster.ChildWorkerFactory
+import com.promptmaster.PromptMasterHiltWorkerFactory
+import com.promptmaster.data.PromptPrepopulateWorker
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoMap
+import dagger.multibindings.ClassKey
+
+@InstallIn(SingletonComponent::class)
+@Module
+abstract class WorkerBindingModule {
+    @Binds
+    abstract fun bindWorkerFactory(
+        factory: PromptMasterHiltWorkerFactory
+    ): WorkerFactory
+
+    @Binds
+    @IntoMap
+    @ClassKey(PromptPrepopulateWorker::class)
+    abstract fun bindPromptPrepopulateWorkerFactory(factory: PromptPrepopulateWorker.Factory): ChildWorkerFactory
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\ads\AdViewModel.kt ---
+package com.promptmaster.ui.ads
+
+import android.util.Log // Import Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.promptmaster.data.ads.Ad
+import com.promptmaster.data.ads.AdRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class AdViewModel @Inject constructor(
+    private val adRepository: AdRepository
+) : ViewModel() {
+
+    private val _currentAd = MutableStateFlow<Ad?>(null)
+    val currentAd: StateFlow<Ad?> = _currentAd
+
+    private var allAds: List<Ad> = emptyList()
+    private var currentAdIndex = 0
+
+    init {
+        Log.d("AdViewModel", "AdViewModel initialized. Calling loadAds().")
+        loadAds()
+    }
+
+    private fun loadAds() {
+        viewModelScope.launch {
+            Log.d("AdViewModel", "loadAds() called. Fetching ads from repository.")
+            allAds = adRepository.getAds()
+            Log.d("AdViewModel", "Ads fetched from repository. Total ads: ${allAds.size}")
+            if (allAds.isNotEmpty()) {
+                _currentAd.value = allAds[currentAdIndex]
+                Log.d("AdViewModel", "Initial ad set: Title='${_currentAd.value?.title}'")
+            } else {
+                Log.w("AdViewModel", "No ads fetched from repository. _currentAd remains null.")
+            }
+        }
+    }
+
+    fun showNextAd() {
+        Log.d("AdViewModel", "showNextAd() called. Current index: $currentAdIndex, Total ads: ${allAds.size}")
+        if (allAds.isNotEmpty()) {
+            currentAdIndex = (currentAdIndex + 1) % allAds.size
+            _currentAd.value = allAds[currentAdIndex]
+            Log.d("AdViewModel", "Next ad set: Title='${_currentAd.value?.title}', New index: $currentAdIndex")
+        } else {
+            Log.w("AdViewModel", "Cannot show next ad, allAds list is empty.")
+        }
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\components\ads\AdView.kt ---
+package com.promptmaster.ui.components.ads
+
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp // Import sp for font sizes
+import coil.compose.AsyncImage
+import com.promptmaster.data.ads.Ad
+import java.util.Locale
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.dimensionResource
+import com.promptmaster.R
+// Removed ScreenMetrics import
+
+@Composable
+fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
+    val context = LocalContext.current
+    val userCountryCode = Locale.getDefault().country.uppercase(Locale.ROOT)
+    val selectedAffiliateLink = ad.links[userCountryCode] ?: ad.links["default"]
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(R.dimen.ad_card_padding))
+            .clickable {
+                selectedAffiliateLink?.let {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                    context.startActivity(intent)
+                }
+            }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(R.dimen.ad_column_padding))
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = ad.imageUrl,
+                    contentDescription = ad.title,
+                    modifier = Modifier
+                        .size(dimensionResource(R.dimen.ad_image_size))
+                        .padding(end = dimensionResource(R.dimen.ad_image_padding_end)),
+                    contentScale = ContentScale.Crop
+                )
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = ad.title,
+                        fontSize = dimensionResource(R.dimen.ad_title_font_size).value.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(R.dimen.ad_spacer_height_small)))
+                    Text(
+                        text = ad.description,
+                        fontSize = dimensionResource(R.dimen.ad_description_font_size).value.sp,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.ad_spacer_height_medium)))
+            Text(
+                text = stringResource(R.string.affiliate_disclaimer),
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = dimensionResource(R.dimen.ad_disclaimer_font_size).value.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = dimensionResource(R.dimen.ad_disclaimer_padding_top))
+            )
+        }
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\components\ConfirmationDialog.kt ---
+package com.promptmaster.ui.components
+
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+
+@Composable
+fun ConfirmationDialog(
+    showDialog: Boolean,
+    title: String,
+    text: String,
+    confirmButtonText: String,
+    cancelButtonText: String,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onCancel,
+            title = {
+                Text(text = title)
+            },
+            text = {
+                Text(text = text)
+            },
+            confirmButton = {
+                TextButton(onClick = onConfirm) {
+                    Text(text = confirmButtonText)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onCancel) {
+                    Text(text = cancelButtonText)
+                }
+            }
+        )
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\components\PromptItem.kt ---
+package com.promptmaster.ui.components
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow // Import TextOverflow
+import androidx.compose.ui.unit.dp
+import com.promptmaster.data.Prompt
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.TextSnippet // Import TextSnippet icon
+import androidx.compose.material3.*
+
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
+import com.promptmaster.R
+import androidx.compose.runtime.* // Import remember and mutableStateOf
+import androidx.compose.ui.unit.Dp
+
+// Reusable PromptItem Composable
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PromptItem(
+    prompt: Prompt,
+    onPromptClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
+    onDuplicateClick: () -> Unit,
+    onCopyDescriptionClick: (String) -> Unit, // Add new parameter for copying description
+    horizontalPadding: Dp // Add horizontalPadding parameter
+) {
+    var showDeleteConfirmationDialog by remember { mutableStateOf(false) } // State for delete confirmation dialog
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp, horizontal = horizontalPadding), // Apply adaptive horizontal padding
+        onClick = onPromptClick
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) { // Keep internal padding for now, might need adjustment
+            Text(
+                text = prompt.title,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = prompt.category,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = prompt.description,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            // Add more UI elements for tags, model, etc. as needed
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Favorite Icon
+                IconButton(onClick = onFavoriteClick) {
+                    Icon(
+                        imageVector = if (prompt.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                        contentDescription = if (prompt.isFavorite) stringResource(R.string.remove_from_favorites_content_description) else stringResource(R.string.add_to_favorites_content_description),
+                        tint = MaterialTheme.colorScheme.onSurface // Explicitly set tint color
+                    )
+                }
+
+                // Copy Description Icon
+                IconButton(onClick = { onCopyDescriptionClick(prompt.description) }) { // Use new parameter and pass description
+                    Icon(
+                        imageVector = Icons.Filled.TextSnippet, // Use TextSnippet icon
+                        contentDescription = stringResource(R.string.copy_description_content_description),
+                        tint = MaterialTheme.colorScheme.onSurface // Explicitly set tint color
+                    )
+                }
+
+                // Duplicate Icon
+                IconButton(onClick = onDuplicateClick) {
+                    Icon(
+                        imageVector = Icons.Filled.ContentCopy, // Use ContentCopy icon
+                        contentDescription = stringResource(R.string.duplicate_prompt_content_description),
+                        tint = MaterialTheme.colorScheme.onSurface // Explicitly set tint color
+                    )
+                }
+
+                // Delete Icon
+                IconButton(onClick = { showDeleteConfirmationDialog = true }) { // Show confirmation dialog on click
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = stringResource(R.string.delete_prompt_content_description),
+                        tint = MaterialTheme.colorScheme.onSurface // Explicitly set tint color
+                    )
+                }
+            }
+        }
+    }
+
+    // Delete Confirmation Dialog
+    if (showDeleteConfirmationDialog) {
+        ConfirmationDialog(
+            showDialog = showDeleteConfirmationDialog,
+            title = stringResource(id = R.string.delete_prompt_dialog_title),
+            text = stringResource(id = R.string.delete_prompt_dialog_message),
+            confirmButtonText = stringResource(id = R.string.dialog_confirm),
+            cancelButtonText = stringResource(id = R.string.dialog_cancel),
+            onConfirm = {
+                onDeleteClick() // Call the original delete logic
+                showDeleteConfirmationDialog = false // Hide dialog after confirming
+            },
+            onCancel = { showDeleteConfirmationDialog = false } // Hide dialog on cancel
+        )
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\components\PromptListScreen.kt ---
+package com.promptmaster.ui.components
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.promptmaster.ui.PromptOperationsViewModel // New import
+import androidx.compose.ui.res.stringResource // Import stringResource
+import com.promptmaster.R // Import R
+import androidx.compose.foundation.layout.wrapContentSize // Import wrapContentSize
+import androidx.compose.ui.Alignment // Import Alignment
+import androidx.compose.ui.unit.Dp
+import kotlinx.coroutines.launch // Import launch
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PromptListScreen(
+    viewModel: PromptOperationsViewModel, // Change to PromptOperationsViewModel
+    onPromptClick: (Int) -> Unit,
+    onCopyDescriptionClick: (Int, String) -> Unit, // Modify to accept prompt ID and description
+    horizontalPadding: Dp // Add horizontalPadding parameter
+) {
+    val coroutineScope = rememberCoroutineScope() // Define coroutine scope once at the top
+
+    // Always collect prompts from the main prompts flow, filtering is handled in the ViewModel/Repository
+    val prompts by viewModel.prompts.collectAsState()
+    android.util.Log.d("PromptMasterDebug", "PromptListScreen: Prompts collected: ${prompts.size}")
+
+    val isLoading by viewModel.isLoading.collectAsState()
+    val categories by viewModel.getAllCategories().collectAsState(initial = emptyList())
+
+    var expanded by remember { mutableStateOf(false) }
+    var searchText by remember { mutableStateOf("") }
+    val searchQuery by viewModel.searchQuery.collectAsState() // Collect search query state
+    val selectedCategory by viewModel.selectedCategory.collectAsState() // Collect selected category state from ViewModel
+    val selectedSubcategory by viewModel.selectedSubcategory.collectAsState() // Collect selected subcategory state
+
+    Column { // Removed fixed padding, now handled by HomeScreen
+        // General Search Field
+        TextField(
+            value = searchQuery,
+            onValueChange = { viewModel.setSearchQuery(it) },
+            label = { Text(stringResource(R.string.search_prompts_label)) }, // Use stringResource
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding),
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { viewModel.setSearchQuery("") }) {
+                        Icon(
+                            imageVector = Icons.Filled.Clear,
+                            contentDescription = stringResource(R.string.clear_search_button_description) // Add a string resource for accessibility
+                        )
+                    }
+                }
+            }
+        )
+
+        // Category Filter
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            TextField(
+                value = selectedCategory ?: "", // Use selectedCategory from ViewModel, handle null
+                onValueChange = {
+                    // Update searchText for filtering dropdown items, but don't update ViewModel's selectedCategory here
+                    searchText = it
+                },
+                label = { Text(stringResource(R.string.category_label)) }, // Use stringResource
+                trailingIcon = {
+                    // Show clear icon if a category is selected
+                    if (selectedCategory != null) {
+                        IconButton(onClick = {
+                            viewModel.setSelectedCategory(null) // Clear selected category
+                            searchText = "" // Clear searchText as well
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_category_button_description)
+                            )
+                        }
+                    } else {
+                        // Otherwise, show the default dropdown icon
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    }
+                },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+                    .padding(horizontal = horizontalPadding)
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                // Add "Select All" option
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.all_categories_label)) }, // Use stringResource
+                    onClick = {
+                        expanded = false
+                        viewModel.setSelectedCategory(null) // Set category filter to null in ViewModel
+                        searchText = "" // Clear searchText when "Select All" is selected
+                    }
+                )
+                categories.filter {
+                    it.contains(searchText, ignoreCase = true)
+                }.forEach { category ->
+                    DropdownMenuItem(
+                        text = { Text(category) },
+                        onClick = {
+                            expanded = false
+                            viewModel.setSelectedCategory(category) // Apply filter when item is selected
+                            searchText = category // Update searchText to show selected category
+                        }
+                    )
+                }
+            }
+        }
+
+        // Subcategory Filter (appears when a category is selected)
+        val subcategories by viewModel.getAllSubcategories(selectedCategory).collectAsState(initial = emptyList()) // Get subcategories for selected category
+
+        if (selectedCategory != null) { // Only show subcategory filter if a category is selected
+            var subcategoryExpanded by remember { mutableStateOf(false) }
+            var subcategorySearchText by remember { mutableStateOf("") }
+
+            ExposedDropdownMenuBox(
+                expanded = subcategoryExpanded,
+                onExpandedChange = { subcategoryExpanded = !subcategoryExpanded }
+            ) {
+                TextField(
+                    value = if (selectedSubcategory == null && selectedCategory != null) stringResource(R.string.all_subcategories_label) else selectedSubcategory ?: "",
+                    onValueChange = {
+                        // Update subcategorySearchText for filtering dropdown items
+                        subcategorySearchText = it
+                    },
+                    label = { Text(stringResource(R.string.subcategory_label)) },
+                    trailingIcon = {
+                        // Show clear icon if a subcategory is selected
+                        if (selectedSubcategory != null) {
+                            IconButton(onClick = {
+                                viewModel.setSelectedSubcategory(null) // Clear selected subcategory
+                                subcategorySearchText = "" // Clear subcategorySearchText as well
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Clear,
+                                    contentDescription = stringResource(R.string.clear_subcategory_button_description)
+                                )
+                            }
+                        } else {
+                            // Otherwise, show the default dropdown icon
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = subcategoryExpanded)
+                        }
+                    },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                        .padding(horizontal = horizontalPadding)
+                )
+                ExposedDropdownMenu(
+                    expanded = subcategoryExpanded,
+                    onDismissRequest = { subcategoryExpanded = false }
+                ) {
+                    // Add "Select All" option
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.all_subcategories_label)) },
+                        onClick = {
+                            subcategoryExpanded = false
+                            viewModel.setSelectedSubcategory(null) // Set subcategory filter to null in ViewModel
+                            subcategorySearchText = "" // Clear subcategorySearchText when "All Subcategories" is selected
+                        }
+                    )
+                    subcategories.filter {
+                        it?.contains(subcategorySearchText, ignoreCase = true) == true
+                    }.forEach { subcategory ->
+                        DropdownMenuItem(
+                            text = { Text(subcategory as String) },
+                            onClick = {
+                                subcategoryExpanded = false
+                                viewModel.setSelectedSubcategory(subcategory) // Apply filter when item is selected
+                                subcategorySearchText = subcategory // Update subcategorySearchText to show selected subcategory
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        val listState = rememberLazyListState()
+
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            items(
+                items = prompts,
+                key = { prompt -> prompt.id } // Provide a unique key for each item
+            ) { prompt ->
+                PromptItem( // Assuming PromptItem Composable exists
+                    prompt = prompt,
+                    onPromptClick = {
+                        android.util.Log.d("PromptMasterDebug", "PromptListScreen: onPromptClick for ID: ${prompt.id}")
+                        coroutineScope.launch {
+                            viewModel.markPromptAsUsed(prompt.id)
+                            onPromptClick(prompt.id)
+                        }
+                    },
+                    onDeleteClick = {
+                        android.util.Log.d("PromptMasterDebug", "PromptListScreen: onDeleteClick for ID: ${prompt.id}")
+                        coroutineScope.launch {
+                            viewModel.delete(prompt)
+                        }
+                    }, // Assuming delete exists in ViewModel
+                    onFavoriteClick = {
+                        android.util.Log.d("PromptMasterDebug", "PromptListScreen: onFavoriteClick for ID: ${prompt.id}, current favorite: ${prompt.isFavorite}")
+                        coroutineScope.launch {
+                            viewModel.toggleFavorite(prompt)
+                        }
+                    },
+                    onDuplicateClick = {
+                        android.util.Log.d("PromptMasterDebug", "PromptListScreen: onDuplicateClick for ID: ${prompt.id}")
+                        coroutineScope.launch {
+                            viewModel.duplicatePrompt(prompt)
+                        }
+                    }, // Assuming duplicatePrompt exists in ViewModel
+                    onCopyDescriptionClick = { description -> // Modify lambda to receive description
+                        android.util.Log.d("PromptMasterDebug", "PromptListScreen: onCopyDescriptionClick for ID: ${prompt.id}")
+                        onCopyDescriptionClick(prompt.id, description) // Call the lambda with prompt ID and description
+                    },
+                    horizontalPadding = horizontalPadding // Pass horizontalPadding
+                )
+            }
+
+            // Loading indicator at the end of the list
+            if (isLoading) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .wrapContentSize(Alignment.Center) // Center the indicator
+                    )
+                }
+            }
+        }
+
+        // Load more data when the user scrolls to the end
+        LaunchedEffect(listState) {
+            snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+                .collect { lastVisibleItemIndex ->
+                    // Only load next page if there are prompts and we are at the end of the list
+                    if (prompts.isNotEmpty() && lastVisibleItemIndex != null && lastVisibleItemIndex >= prompts.size - 1 && !isLoading) {
+                        viewModel.loadNextPage()
+                    }
+                }
+        }
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\components\ZoomableContent.kt ---
+package com.promptmaster.ui.components
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.toSize
+
+@Composable
+fun ZoomableContent(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    var scale by remember { mutableStateOf(1f) }
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+    var boxSize by remember { mutableStateOf(IntSize.Zero) } // State to hold the size
+
+    val state = rememberTransformableState { zoomChange, panChange, rotationChange ->
+        scale = (scale * zoomChange).coerceIn(1f, 3f) // Limit zoom from 1x to 3x
+
+        // Calculate bounds for panning using the captured boxSize
+        val currentWidth = boxSize.width.toFloat()
+        val currentHeight = boxSize.height.toFloat()
+
+        val extraWidth = currentWidth * (scale - 1)
+        val extraHeight = currentHeight * (scale - 1)
+
+        val boundX = if (extraWidth > 0) extraWidth / 2f else 0f
+        val boundY = if (extraHeight > 0) extraHeight / 2f else 0f
+
+        val newOffsetX = offsetX + panChange.x * scale
+        val newOffsetY = offsetY + panChange.y * scale
+
+        offsetX = newOffsetX.coerceIn(-boundX, boundX)
+        offsetY = newOffsetY.coerceIn(-boundY, boundY)
+    }
+
+    // Observe the transformation state to reset zoom/pan when gesture ends
+    LaunchedEffect(state.isTransformInProgress) { // Corrected: Observe isTransformInProgress
+        if (!state.isTransformInProgress) { // Corrected: Check isTransformInProgress
+            // Gesture ended, reset scale and offset
+            scale = 1f
+            offsetX = 0f
+            offsetY = 0f
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .onSizeChanged {
+                boxSize = it // Update the boxSize when it changes
+            }
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+                translationX = offsetX
+                translationY = offsetY
+            }
+            .transformable(state = state)
+    ) {
+        content()
+    }
+}
+
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\editprompt\EditPromptScreen.kt ---
+package com.promptmaster.ui.editprompt
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+
+import com.promptmaster.R
+import com.promptmaster.data.Prompt
+
+import com.promptmaster.ui.PromptOperationsViewModel // New import
+import androidx.activity.compose.BackHandler // Import BackHandler
+import com.promptmaster.ui.components.ConfirmationDialog // Import ConfirmationDialog
+import kotlinx.coroutines.flow.first // Import first for Flow
+import kotlinx.coroutines.launch // Import launch
+import androidx.compose.runtime.saveable.rememberSaveable // Import rememberSaveable
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditPromptScreen(
+    promptId: Int,
+    promptViewModel: PromptOperationsViewModel, // Accept generic interface
+    onBack: () -> Unit
+) {
+    // Log the received promptId
+    android.util.Log.d("EditPromptScreen", "Received promptId: $promptId")
+
+    val prompt by promptViewModel.getPrompt(promptId)
+        .collectAsState(initial = null) // Use getPrompt
+
+    // Log the collected prompt object
+    LaunchedEffect(prompt) {
+        android.util.Log.d("EditPromptScreen", "Collected prompt: $prompt")
+    }
+
+    var title by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var category by rememberSaveable { mutableStateOf("") }
+    var subcategory by rememberSaveable { mutableStateOf("") }
+    var showSubcategorySuggestions by remember { mutableStateOf(false) } // Moved declaration
+    var tags by rememberSaveable { mutableStateOf("") }
+
+    // Reset subcategory when category changes, if current subcategory is not valid for new category
+    LaunchedEffect(category) {
+        if (category.isEmpty()) {
+            subcategory = "" // Always clear subcategory if category is cleared
+        } else if (subcategory.isNotEmpty()) {
+            // Fetch subcategories for the new category to check validity
+            val subcategoriesForNewCategory = promptViewModel.getAllSubcategories(category).first() // Reverted to original, now with import
+            if (!subcategoriesForNewCategory.contains(subcategory)) {
+                subcategory = "" // Reset if current subcategory is not valid for new category
+            }
+        }
+    }
+    var recommendedModel by rememberSaveable { mutableStateOf("") }
+    var customizableFields by rememberSaveable { mutableStateOf("") }
+    var imagePath by rememberSaveable { mutableStateOf("") }
+    var videoPath by rememberSaveable { mutableStateOf("") }
+    var isFavorite by rememberSaveable { mutableStateOf(false) }
+
+    var showDiscardConfirmationDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(prompt) {
+        prompt?.let {
+            title = it.title
+            description = it.description ?: "" // Handle null description
+            category = it.category
+            subcategory = it.subcategory ?: ""
+            tags = it.tags.joinToString(",")
+            customizableFields = it.customizableFields?.toString() ?: ""
+            recommendedModel = it.recommendedModel ?: ""
+            imagePath = it.imagePath ?: ""
+            videoPath = it.videoPath ?: ""
+            isFavorite = it.isFavorite
+        }
+        // Ensure suggestions are shown for initially loaded subcategory if not empty
+        showSubcategorySuggestions = subcategory.isNotEmpty()
+    }
+
+    val hasUnsavedChanges = remember(
+        prompt,
+        title,
+        description,
+        category,
+        subcategory,
+        tags,
+        recommendedModel,
+        customizableFields,
+        imagePath,
+        videoPath,
+        isFavorite
+    ) {
+        prompt?.let {
+            it.title != title ||
+                    it.description != description ||
+                    it.category != category ||
+                    it.subcategory != subcategory ||
+                    it.tags.joinToString(",") != tags ||
+                    it.recommendedModel != recommendedModel ||
+                    it.customizableFields?.toString() != customizableFields ||
+                    it.imagePath != imagePath ||
+                    it.videoPath != videoPath ||
+                    it.isFavorite != isFavorite
+        }
+            ?: (title.isNotEmpty() || description.isNotEmpty() || category.isNotEmpty() || subcategory.isNotEmpty() || tags.isNotEmpty() || recommendedModel.isNotEmpty() || customizableFields.isNotEmpty() || imagePath.isNotEmpty() || videoPath.isNotEmpty() || isFavorite) // Consider changes for new prompts
+    }
+
+    BackHandler(enabled = hasUnsavedChanges) {
+        showDiscardConfirmationDialog = true
+    }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.edit_prompt)) },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        if (hasUnsavedChanges) {
+                            showDiscardConfirmationDialog = true
+                        } else {
+                            onBack()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_button_content_description)
+                        )
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it }, // Simplified onValueChange
+                label = { Text(stringResource(R.string.title_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (title.isNotEmpty()) {
+                        IconButton(onClick = { title = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description)
+                            )
+                        }
+                    }
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it }, // Simplified onValueChange
+                label = { Text(stringResource(R.string.description_label)) },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            // Category Input with Suggestions
+            val allCategories by promptViewModel.getAllCategories().collectAsState(initial = emptyList())
+            var showCategorySuggestions by remember { mutableStateOf(false) }
+
+            OutlinedTextField(
+                value = category,
+                onValueChange = { newValue ->
+                    category = newValue
+                    showCategorySuggestions = newValue.isNotEmpty() // Show suggestions if typing
+                },
+                label = { Text(stringResource(R.string.category_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (category.isNotEmpty()) {
+                        IconButton(onClick = { category = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description)
+                            )
+                        }
+                    }
+                }
+            )
+            if (showCategorySuggestions) {
+                val filteredCategories = allCategories.filter {
+                    it.contains(category, ignoreCase = true)
+                }
+                if (filteredCategories.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp)
+                    ) {
+                        filteredCategories.forEach { suggestion ->
+                            TextButton(
+                                onClick = {
+                                    category = suggestion
+                                    showCategorySuggestions = false // Hide suggestions after selection
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(suggestion)
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Subcategory Input with Suggestions (only visible if a category is selected)
+            if (category.isNotEmpty()) {
+                val allSubcategories by promptViewModel.getAllSubcategories(category).collectAsState(initial = emptyList())
+
+                OutlinedTextField(
+                    value = subcategory,
+                    onValueChange = { newValue ->
+                        subcategory = newValue
+                        showSubcategorySuggestions = newValue.isNotEmpty() // Show suggestions if typing
+                    },
+                    label = { Text(stringResource(R.string.subcategory_label)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = {
+                        if (subcategory.isNotEmpty()) {
+                            IconButton(onClick = { subcategory = "" }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Clear,
+                                    contentDescription = stringResource(R.string.clear_text_button_description)
+                                )
+                            }
+                        }
+                    }
+                )
+                if (showSubcategorySuggestions) {
+                    val filteredSubcategories = allSubcategories.filter {
+                        it?.contains(subcategory, ignoreCase = true) == true
+                    }
+                    if (filteredSubcategories.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp)
+                        ) {
+                            filteredSubcategories.forEach { suggestion ->
+                                TextButton(
+                                    onClick = {
+                                        subcategory = suggestion as String
+                                        showSubcategorySuggestions = false // Hide suggestions after selection
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(suggestion)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = tags,
+                onValueChange = { tags = it }, // Simplified onValueChange
+                label = { Text(stringResource(R.string.tags_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (tags.isNotEmpty()) {
+                        IconButton(onClick = { tags = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description)
+                            )
+                        }
+                    }
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = recommendedModel,
+                onValueChange = { recommendedModel = it }, // Simplified onValueChange
+                label = { Text(stringResource(R.string.recommended_model_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (recommendedModel.isNotEmpty()) {
+                        IconButton(onClick = { recommendedModel = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description)
+                            )
+                        }
+                    }
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = customizableFields,
+                onValueChange = { customizableFields = it }, // Simplified onValueChange
+                label = { Text(stringResource(R.string.customizable_fields_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (customizableFields.isNotEmpty()) {
+                        IconButton(onClick = { customizableFields = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description)
+                            )
+                        }
+                    }
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            // TODO: Add fields for image and video paths
+            // TODO: Add checkbox for isFavorite
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            val emptyFieldsMessage = stringResource(R.string.empty_fields_error)
+            Button(
+                onClick = {
+                    if (title.isBlank() || description.isBlank() || category.isBlank()) {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = emptyFieldsMessage,
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                        return@Button
+                    }
+
+                    val promptToSave = Prompt(
+                        id = promptId,
+                        title = title,
+                        description = description,
+                        category = category,
+                        subcategory = subcategory.ifEmpty { null },
+                        tags = tags.split(",").map { it.trim() }.filter { it.isNotEmpty() },
+                        recommendedModel = recommendedModel.ifEmpty { null },
+                        customizableFields = emptyMap(), // Pass emptyMap()
+                        imagePath = imagePath.ifEmpty { null },
+                        videoPath = videoPath.ifEmpty { null },
+                        isFavorite = isFavorite
+                    )
+                    coroutineScope.launch {
+                        if (promptId == 0) {
+                            promptViewModel.insert(promptToSave)
+                        } else {
+                            promptViewModel.update(promptToSave)
+                        }
+                        onBack()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = hasUnsavedChanges
+            ) {
+                Text(stringResource(if (promptId == 0) R.string.save_prompt_button else R.string.update_prompt_button))
+            }
+        }
+        // Confirmation Dialog
+        if (showDiscardConfirmationDialog) {
+            ConfirmationDialog(
+                showDialog = showDiscardConfirmationDialog,
+                title = stringResource(id = R.string.edit_prompt_dialog_title),
+                text = stringResource(id = R.string.edit_prompt_dialog_message),
+                confirmButtonText = stringResource(id = R.string.dialog_confirm),
+                cancelButtonText = stringResource(id = R.string.dialog_cancel),
+                onConfirm = {
+                    showDiscardConfirmationDialog = false
+                    onBack()
+                },
+                onCancel = { showDiscardConfirmationDialog = false }
+            )
+        }
+    }
+}
+
+// TODO: Add Preview
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\favorites\FavoritesFragment.java ---
+package com.promptmaster.ui.favorites;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.promptmaster.databinding.FragmentFavoritesBinding;
+import com.promptmaster.ui.PromptViewModel; // Assuming a shared ViewModel or a specific FavoritesViewModel
+import com.promptmaster.ui.home.PromptAdapter;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
+public class FavoritesFragment extends Fragment {
+
+    private FragmentFavoritesBinding binding;
+    private PromptAdapter favoritesAdapter; // Assuming a similar adapter for favorites
+    private PromptViewModel promptViewModel; // Using the same ViewModel for simplicity, or create a new one
+
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        Log.d("PromptMasterDebug", "FavoritesFragment: onCreateView called.");
+        promptViewModel = new ViewModelProvider(this).get(PromptViewModel.class); // Get PromptViewModel
+        Log.d("PromptMasterDebug", "FavoritesFragment: PromptViewModel obtained.");
+
+        binding = FragmentFavoritesBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+
+        RecyclerView recyclerView = binding.recyclerViewPrompts;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        favoritesAdapter = new PromptAdapter(); // Reusing PromptAdapter, or create FavoritesAdapter
+        recyclerView.setAdapter(favoritesAdapter);
+
+        // Observe favorite prompts from PromptViewModel (assuming a method like getFavoritePromptsLiveData)
+        // For now, observing all prompts, you might need to filter or have a separate LiveData for favorites
+        promptViewModel.getPromptsLiveData().observe(getViewLifecycleOwner(), prompts -> {
+            Log.d("PromptMasterDebug", "FavoritesFragment: Observing favorite prompts. Received " + (prompts != null ? prompts.size() : 0) + " prompts.");
+            // You would typically filter these prompts for favorites here or in the ViewModel
+            favoritesAdapter.setPrompts(prompts); // This will need to be updated to show only favorites
+        });
+        return root;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\gallery\GalleryFragment.java ---
+package com.promptmaster.ui.gallery;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.promptmaster.databinding.FragmentGalleryBinding;
+
+public class GalleryFragment extends Fragment {
+
+    private FragmentGalleryBinding binding;
+
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        GalleryViewModel galleryViewModel =
+                new ViewModelProvider(this).get(GalleryViewModel.class);
+
+        binding = FragmentGalleryBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+
+        final TextView textView = binding.textGallery;
+        galleryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        return root;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\gallery\GalleryViewModel.java ---
+package com.promptmaster.ui.gallery;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
+public class GalleryViewModel extends ViewModel {
+
+    private final MutableLiveData<String> mText;
+
+    public GalleryViewModel() {
+        mText = new MutableLiveData<>();
+        mText.setValue("This is gallery fragment");
+    }
+
+    public LiveData<String> getText() {
+        return mText;
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\home\HomeFragment.java ---
+package com.promptmaster.ui.home;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.util.Log; // Explicitly import Log
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.promptmaster.databinding.FragmentHomeBinding;
+import com.promptmaster.ui.PromptViewModel; // Explicitly import PromptViewModel
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+import java.util.List; // Explicitly import List
+
+@AndroidEntryPoint
+public class HomeFragment extends Fragment {
+
+    private FragmentHomeBinding binding;
+    private PromptAdapter promptAdapter;
+    private PromptViewModel promptViewModel; // Declare PromptViewModel
+
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        Log.d("PromptMasterDebug", "HomeFragment: onCreateView called.");
+        promptViewModel = new ViewModelProvider(this).get(PromptViewModel.class); // Get PromptViewModel
+        Log.d("PromptMasterDebug", "HomeFragment: PromptViewModel obtained.");
+
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+
+        RecyclerView recyclerView = binding.recyclerViewPrompts;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        promptAdapter = new PromptAdapter();
+        recyclerView.setAdapter(promptAdapter);
+
+        // Observe prompts from PromptViewModel
+        promptViewModel.getPromptsLiveData().observe(getViewLifecycleOwner(), prompts -> {
+            Log.d("PromptMasterDebug", "HomeFragment: Observing prompts. Received " + (prompts != null ? prompts.size() : 0) + " prompts.");
+            promptAdapter.setPrompts(prompts);
+        });
+        return root;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\home\HomeScreen.kt ---
+package com.promptmaster.ui.home
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalConfiguration // Import LocalConfiguration
+import androidx.compose.ui.unit.Dp
+import androidx.hilt.navigation.compose.hiltViewModel // Import hiltViewModel
+import com.promptmaster.ui.PromptViewModel // Import PromptViewModel
+import com.promptmaster.ui.components.PromptListScreen // Import the new Composable
+// Removed ScreenMetrics import
+
+@Composable
+fun HomeScreen(
+    onPromptClick: (Int) -> Unit,
+    horizontalPadding: Dp // Accept horizontalPadding as a parameter
+) {
+    val viewModel: PromptViewModel = hiltViewModel()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = horizontalPadding) // Use the passed horizontalPadding
+    ) {
+        // Use the new PromptListScreen Composable
+        PromptListScreen(
+            viewModel = viewModel,
+            onPromptClick = onPromptClick,
+            onCopyDescriptionClick = { promptId, description ->
+                viewModel.onPromptDescriptionCopied(promptId, description)
+            },
+            horizontalPadding = horizontalPadding // Pass horizontalPadding
+        )
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\home\HomeViewModel.java ---
+package com.promptmaster.ui.home;
+
+import android.util.Log; // Import Log
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
+import com.promptmaster.data.Prompt;
+import com.promptmaster.data.PromptRepository;
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import java.util.List;
+import javax.inject.Inject;
+
+@HiltViewModel
+public class HomeViewModel extends ViewModel {
+
+    private final LiveData<List<Prompt>> allPrompts;
+
+    @Inject
+    public HomeViewModel(PromptRepository promptRepository) {
+        Log.d("PromptMasterDebug", "HomeViewModel: Constructor called.");
+        allPrompts = promptRepository.getAllPromptsLiveData();
+
+        // Add an observer to log when allPrompts LiveData changes
+        allPrompts.observeForever(prompts -> {
+            Log.d("PromptMasterDebug", "HomeViewModel: allPrompts LiveData updated with " + (prompts != null ? prompts.size() : 0) + " prompts.");
+        });
+    }
+
+    public LiveData<List<Prompt>> getAllPrompts() {
+        Log.d("PromptMasterDebug", "HomeViewModel: getAllPrompts() called.");
+        return allPrompts;
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\home\PromptAdapter.java ---
+package com.promptmaster.ui.home;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.promptmaster.R;
+import com.promptmaster.data.Prompt;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class PromptAdapter extends RecyclerView.Adapter<PromptAdapter.PromptViewHolder> {
+
+    private List<Prompt> prompts = new ArrayList<>();
+
+    public void setPrompts(List<Prompt> newPrompts) {
+        this.prompts = newPrompts;
+        notifyDataSetChanged();
+    }
+
+    @NonNull
+    @Override
+    public PromptViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.prompt_item, parent, false);
+        return new PromptViewHolder(itemView);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull PromptViewHolder holder, int position) {
+        Prompt currentPrompt = prompts.get(position);
+        holder.titleTextView.setText(currentPrompt.getTitle());
+        holder.descriptionTextView.setText(currentPrompt.getDescription());
+    }
+
+    @Override
+    public int getItemCount() {
+        return prompts.size();
+    }
+
+    static class PromptViewHolder extends RecyclerView.ViewHolder {
+        private final TextView titleTextView;
+        private final TextView descriptionTextView;
+
+        public PromptViewHolder(@NonNull View itemView) {
+            super(itemView);
+            titleTextView = itemView.findViewById(R.id.prompt_title);
+            descriptionTextView = itemView.findViewById(R.id.prompt_description);
+        }
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\settings\SettingsScreen.kt ---
+package com.promptmaster.ui.settings
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.promptmaster.R // Import R
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.TextField
+import androidx.compose.material3.Switch
+import androidx.compose.material3.ListItem
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext // Import LocalContext
+import androidx.compose.foundation.isSystemInDarkTheme
+import java.util.Locale
+import android.app.Activity
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
+import kotlinx.coroutines.launch // Import launch
+import androidx.compose.runtime.rememberCoroutineScope // Import rememberCoroutineScope
+import com.promptmaster.ui.PromptViewModel
+import com.promptmaster.ui.components.ConfirmationDialog // Import ConfirmationDialog
+import android.widget.Toast // Import Toast
+import androidx.compose.runtime.LaunchedEffect // Import LaunchedEffect
+import androidx.activity.compose.rememberLauncherForActivityResult // Import rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts // Import ActivityResultContracts
+import android.net.Uri // Import Uri
+import java.io.OutputStreamWriter
+import androidx.compose.foundation.rememberScrollState // Import rememberScrollState
+import androidx.compose.foundation.verticalScroll // Import verticalScroll
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreen(
+    viewModel: PromptViewModel, // Accept ViewModel
+    onThemeChange: () -> Unit
+) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope() // Create a coroutine scope
+    val sharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context) // Use default shared preferences
+    // Fix for Deprecated Locale
+    val currentLanguage = if (context.resources.configuration.locales.isEmpty) {
+        Locale.getDefault().language
+    } else {
+        context.resources.configuration.locales[0].language
+    }
+
+    var showResetConfirmationDialog by remember { mutableStateOf(false) } // State for dialog visibility
+    var showImportConfirmationDialog by remember { mutableStateOf(false) } // State for import confirmation dialog
+
+    // Launcher for importing prompts (Open Document)
+    val openDocumentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let {
+            coroutineScope.launch {
+                viewModel.importPrompts(context, it)
+            }
+        }
+    }
+
+    // Launcher for exporting prompts (Create Document)
+    val createDocumentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json") // MIME type for JSON
+    ) { uri: Uri? ->
+        uri?.let { outputUri ->
+            coroutineScope.launch {
+                val jsonString = viewModel.exportPrompts(context) // Get JSON string from ViewModel
+                if (jsonString != null) {
+                    try {
+                        context.contentResolver.openOutputStream(outputUri)?.use { outputStream ->
+                            OutputStreamWriter(outputStream).use { writer ->
+                                writer.write(jsonString)
+                            }
+                        }
+                        Toast.makeText(context, "Prompts exported successfully!", Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Error exporting prompts: ${e.message}", Toast.LENGTH_LONG).show()
+                        e.printStackTrace()
+                    }
+                } else {
+                    Toast.makeText(context, "No prompts data to export.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text(stringResource(R.string.menu_settings)) }) // Use stringResource
+        }
+    ) { paddingValues ->
+        val scrollState = rememberScrollState() // Create a scroll state
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp)
+                .fillMaxSize()
+                .verticalScroll(scrollState) // Apply vertical scroll modifier
+        ) {
+            // Dark Mode Setting
+            val initialDarkMode = sharedPreferences.getBoolean("darkModeEnabled", isSystemInDarkTheme())
+            var isDarkModeEnabled by remember {
+                mutableStateOf(initialDarkMode)
+            }
+
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.dark_mode_setting)) }, // TODO: Add string resource
+                trailingContent = {
+                    Switch(
+                        checked = isDarkModeEnabled,
+                        onCheckedChange = {
+                            isDarkModeEnabled = it
+                            sharedPreferences.edit().putBoolean("darkModeEnabled", it).apply()
+                            onThemeChange() // Call the callback to trigger theme change
+                        }
+                    )
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Language Selection
+            val languages = listOf("en", "es", "fr", "de", "pt", "it") // Add "it" for Italian
+            var expanded by remember { mutableStateOf(false) }
+            var selectedLanguage by remember { mutableStateOf(sharedPreferences.getString("appLanguage", currentLanguage) ?: currentLanguage) }
+
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded }
+            ) {
+                TextField(
+                    value = getLanguageDisplayName(selectedLanguage), // Display full language name
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.language_setting)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier.menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    languages.forEach { language ->
+                        DropdownMenuItem(
+                            text = { Text(getLanguageDisplayName(language)) }, // Display full language name
+                            onClick = {
+                                selectedLanguage = language
+                                expanded = false
+                                sharedPreferences.edit().putString("appLanguage", language).apply()
+                                // Recreate the activity to apply the language change
+                                (context as? Activity)?.recreate()
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Reset Application Option
+            Button(
+                onClick = { showResetConfirmationDialog = true }, // Show dialog on click
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.reset_application_button)) // Use string resource
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Export Prompts Option
+            Button(
+                onClick = {
+                    // Launch the document creation intent with a suggested filename
+                    createDocumentLauncher.launch("prompts_backup_${System.currentTimeMillis()}.json")
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.export_prompts_button))
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Import Prompts Option
+            Button(
+                onClick = { showImportConfirmationDialog = true }, // Show confirmation dialog on click
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.import_prompts_button))
+            }
+
+            // TODO: Add theme selection, text size, backup/restore options
+        }
+    }
+
+    // Reset Confirmation Dialog
+    ConfirmationDialog(
+        showDialog = showResetConfirmationDialog,
+        title = stringResource(id = R.string.reset_app_dialog_title),
+        text = stringResource(id = R.string.reset_app_dialog_message),
+        confirmButtonText = stringResource(id = R.string.dialog_confirm),
+        cancelButtonText = stringResource(id = R.string.dialog_cancel),
+        onConfirm = {
+            coroutineScope.launch {
+                viewModel.resetApplicationData() // Call the reset function
+                // Reset SharedPreferences
+                sharedPreferences.edit().apply {
+                    remove("search_history") // Clear search history
+                    remove("appLanguage") // Reset language to default
+                    remove("darkModeEnabled") // Reset dark mode to default
+                    apply()
+                }
+                // Recreate activity to apply language and theme changes
+                (context as? Activity)?.recreate()
+            }
+            showResetConfirmationDialog = false // Hide dialog after confirming
+        },
+        onCancel = { showResetConfirmationDialog = false } // Hide dialog on cancel
+    )
+
+    // Import Confirmation Dialog
+    if (showImportConfirmationDialog) {
+        ConfirmationDialog(
+            showDialog = showImportConfirmationDialog,
+            title = stringResource(id = R.string.import_prompts_dialog_title),
+            text = stringResource(id = R.string.import_prompts_dialog_message),
+            confirmButtonText = stringResource(id = R.string.dialog_confirm),
+            cancelButtonText = stringResource(id = R.string.dialog_cancel),
+            onConfirm = {
+                openDocumentLauncher.launch(arrayOf("application/json")) // Launch file picker for JSON files
+                showImportConfirmationDialog = false // Hide dialog after confirming
+            },
+            onCancel = { showImportConfirmationDialog = false } // Hide dialog on cancel
+        )
+    }
+
+    // Observe status and show Toast
+    LaunchedEffect(viewModel.status) {
+        viewModel.status.collect { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+}
+
+@Composable
+private fun getLanguageDisplayName(languageCode: String): String {
+    return when (languageCode) {
+        "en" -> stringResource(R.string.language_english)
+        "es" -> stringResource(R.string.language_spanish)
+        "fr" -> stringResource(R.string.language_french)
+        "de" -> stringResource(R.string.language_german)
+        "pt" -> stringResource(R.string.language_portuguese)
+        "it" -> stringResource(R.string.language_italian)
+        else -> languageCode // Fallback to code if name not found
+    }
+}
+
+// TODO: Add Preview
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\slideshow\SlideshowFragment.java ---
+package com.promptmaster.ui.slideshow;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.promptmaster.databinding.FragmentSlideshowBinding;
+
+
+public class SlideshowFragment extends Fragment {
+
+    private FragmentSlideshowBinding binding;
+
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        SlideshowViewModel slideshowViewModel =
+                new ViewModelProvider(this).get(SlideshowViewModel.class);
+
+        binding = FragmentSlideshowBinding.inflate(inflater, container, false);
+        View root = binding.textSlideshow.getRootView();
+
+        final TextView textView = binding.textSlideshow;
+        slideshowViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        return root;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\slideshow\SlideshowViewModel.java ---
+package com.promptmaster.ui.slideshow;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
+public class SlideshowViewModel extends ViewModel {
+
+    private final MutableLiveData<String> mText;
+
+    public SlideshowViewModel() {
+        mText = new MutableLiveData<>();
+        mText.setValue("This is slideshow fragment");
+    }
+
+    public LiveData<String> getText() {
+        return mText;
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\theme\Color.kt ---
+package com.promptmaster.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val Purple80 = Color(0xFFD0BCFF)
+val PurpleGrey80 = Color(0xFFCCC2DC)
+val Pink80 = Color(0xFFEFB8C8)
+
+val Purple40 = Color(0xFF6650a4)
+val PurpleGrey40 = Color(0xFF625b71)
+val Pink40 = Color(0xFF7D5260)
+
+// Define custom colors for your app here
+// Example:
+val md_theme_light_primary = Color(0xFF6750A4)
+val md_theme_light_onPrimary = Color(0xFFFFFFFF)
+val md_theme_light_primaryContainer = Color(0xFFEADDFF)
+val md_theme_light_onPrimaryContainer = Color(0xFF21005D)
+val md_theme_light_secondary = Color(0xFF625B71)
+val md_theme_light_onSecondary = Color(0xFFFFFFFF)
+val md_theme_light_secondaryContainer = Color(0xFFE8DEF8)
+val md_theme_light_onSecondaryContainer = Color(0xFF1D192B)
+val md_theme_light_tertiary = Color(0xFF7D5260)
+val md_theme_light_onTertiary = Color(0xFFFFFFFF)
+val md_theme_light_tertiaryContainer = Color(0xFFFFD8E4)
+val md_theme_light_onTertiaryContainer = Color(0xFF31111D)
+val md_theme_light_error = Color(0xFFBA1A1A)
+val md_theme_light_errorContainer = Color(0xFFFFDAD6)
+val md_theme_light_onError = Color(0xFFFFFFFF)
+val md_theme_light_onErrorContainer = Color(0xFF410002)
+val md_theme_light_background = Color(0xFFFFFBFF)
+val md_theme_light_onBackground = Color(0xFF1C1B1F)
+val md_theme_light_surface = Color(0xFFFFFBFF)
+val md_theme_light_onSurface = Color(0xFF1C1B1F)
+val md_theme_light_surfaceVariant = Color(0xFFE7E0EC)
+val md_theme_light_onSurfaceVariant = Color(0xFF49454F)
+val md_theme_light_outline = Color(0xFF79747E)
+val md_theme_light_inverseOnSurface = Color(0xFFF4EFF4)
+val md_theme_light_inverseSurface = Color(0xFF313033)
+val md_theme_light_inversePrimary = Color(0xFFD0BCFF)
+val md_theme_light_surfaceTint = Color(0xFF6750A4)
+val md_theme_light_outlineVariant = Color(0xFFC4C6D0)
+val md_theme_light_scrim = Color(0xFF000000)
+
+val md_theme_dark_primary = Color(0xFFD0BCFF)
+val md_theme_dark_onPrimary = Color(0xFF381E72)
+val md_theme_dark_primaryContainer = Color(0xFF4F378A)
+val md_theme_dark_onPrimaryContainer = Color(0xFFEADDFF)
+val md_theme_dark_secondary = Color(0xFFCCC2DC)
+val md_theme_dark_onSecondary = Color(0xFF332D41)
+val md_theme_dark_secondaryContainer = Color(0xFF4A4458)
+val md_theme_dark_onSecondaryContainer = Color(0xFFE8DEF8)
+val md_theme_dark_tertiary = Color(0xFFEFB8C8)
+val md_theme_dark_onTertiary = Color(0xFF492532)
+val md_theme_dark_tertiaryContainer = Color(0xFF633B48)
+val md_theme_dark_onTertiaryContainer = Color(0xFFFFD8E4)
+val md_theme_dark_error = Color(0xFFFFB4AB)
+val md_theme_dark_errorContainer = Color(0xFF93000A)
+val md_theme_dark_onError = Color(0xFF690005)
+val md_theme_dark_onErrorContainer = Color(0xFFFFDAD6)
+val md_theme_dark_background = Color(0xFF1C1B1F)
+val md_theme_dark_onBackground = Color(0xFFE6E1E5)
+val md_theme_dark_surface = Color(0xFF1C1B1F)
+val md_theme_dark_onSurface = Color(0xFFE6E1E5)
+val md_theme_dark_surfaceVariant = Color(0xFF49454F)
+val md_theme_dark_onSurfaceVariant = Color(0xFFCCC4CF)
+val md_theme_dark_outline = Color(0xFF938F99)
+val md_theme_dark_inverseOnSurface = Color(0xFF1C1B1F)
+val md_theme_dark_inverseSurface = Color(0xFFE6E1E5)
+val md_theme_dark_inversePrimary = Color(0xFF6750A4)
+val md_theme_dark_surfaceTint = Color(0xFFD0BCFF)
+val md_theme_dark_outlineVariant = Color(0xFF49454F)
+val md_theme_dark_scrim = Color(0xFF000000)
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\theme\Theme.kt ---
+package com.promptmaster.ui.theme
+
+import android.app.Activity
+import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
+
+private val DarkColorScheme = darkColorScheme(
+    primary = Purple80,
+    secondary = PurpleGrey80,
+    tertiary = Pink80,
+    /* Other default colors to override
+    background = Color(0xFF1C1B1F),
+    surface = Color(0xFF1C1B1F),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color(0xFFEEEDEF),
+    onSurface = Color(0xFFEEEDEF),
+    */
+)
+
+private val LightColorScheme = lightColorScheme(
+    primary = Purple40,
+    secondary = PurpleGrey40,
+    tertiary = Pink40,
+    /* Other default colors to override
+    background = Color(0xFFFFFBFE),
+    surface = Color(0xFFFFFBFE),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color(0xFF1C1B1F),
+    onSurface = Color(0xFF1C1B1F),
+    */
+)
+
+@Composable
+fun PromptMasterTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    // Dynamic color is available on Android 12+
+    dynamicColor: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+
+        darkTheme -> DarkColorScheme
+        else -> LightColorScheme
+    }
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.statusBarColor = colorScheme.primary.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+        }
+    }
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = Typography,
+        content = content
+    )
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\theme\Type.kt ---
+package com.promptmaster.ui.theme
+
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+
+// Set of Material typography styles to start with
+val Typography = Typography(
+    bodyLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    )
+    /* Other default text styles to override
+    titleLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    )
+    */
+)
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\FavoritesViewModel.kt ---
+package com.promptmaster.ui
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.promptmaster.data.Prompt
+import com.promptmaster.data.PromptBackupManager
+import com.promptmaster.data.PromptDataFetcher
+import com.promptmaster.data.PromptRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
+import dagger.hilt.android.lifecycle.HiltViewModel // Import HiltViewModel
+import javax.inject.Inject // Import Inject
+
+@HiltViewModel
+class FavoritesViewModel @Inject constructor(
+    private val repository: PromptRepository,
+    application: Application,
+    private val promptBackupManager: PromptBackupManager
+) : AndroidViewModel(application), PromptOperationsViewModel {
+
+    // Filters for favorites tab (fixed)
+    private val _searchQuery = MutableStateFlow("") // Still allow search within favorites
+    override val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    private val _selectedCategory = MutableStateFlow<String?>(null)
+    override val selectedCategory: StateFlow<String?> = _selectedCategory.asStateFlow()
+
+    private val _selectedSubcategory = MutableStateFlow<String?>(null)
+    override val selectedSubcategory: StateFlow<String?> = _selectedSubcategory.asStateFlow()
+
+    private val _showFavoritesOnly = MutableStateFlow(true) // Always true for favorites tab
+    val showFavoritesOnly: StateFlow<Boolean> = _showFavoritesOnly.asStateFlow() // This one does not need override as it's not in the interface
+
+    // Instantiate PromptDataFetcher for favorites
+    private val promptDataFetcher = PromptDataFetcher(
+        repository = repository,
+        searchQuery = _searchQuery,
+        selectedCategory = _selectedCategory,
+        selectedSubcategory = _selectedSubcategory,
+        showFavoritesOnly = _showFavoritesOnly, // This will always be true
+        viewModelScope = viewModelScope,
+        databaseReadyEvent = repository.databaseReadyEvent // Pass the database ready event
+    )
+
+    override val isLoading: StateFlow<Boolean> = promptDataFetcher.isLoading
+    override val prompts: StateFlow<List<Prompt>> = promptDataFetcher.prompts
+
+    override fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+        refresh() // Refresh prompts when search query changes
+    }
+
+    override fun setSelectedCategory(category: String?) {
+        // Only reset subcategory if the category is actually changing or being cleared
+        if (_selectedCategory.value != category) {
+            _selectedCategory.value = category
+            _selectedSubcategory.value = null // Reset subcategory when category changes
+            refresh() // Refresh prompts when category changes
+        }
+    }
+
+    override fun setSelectedSubcategory(subcategory: String?) {
+        _selectedSubcategory.value = subcategory
+        refresh() // Refresh prompts when subcategory changes
+    }
+
+    override fun loadNextPage() {
+        promptDataFetcher.loadNextPage()
+    }
+
+    override suspend fun update(prompt: Prompt) {
+        repository.update(prompt)
+        refresh() // Refresh prompts after update (e.g., favorite status change)
+    }
+
+    override suspend fun delete(prompt: Prompt) {
+        repository.delete(prompt)
+        refresh() // Refresh prompts after deletion
+    }
+
+    override suspend fun insert(prompt: Prompt) {
+        repository.insert(prompt)
+        refresh() // Refresh prompts after insert
+    }
+
+    override suspend fun duplicatePrompt(prompt: Prompt) {
+        repository.insert(prompt.copy(id = 0))
+        refresh() // Refresh prompts after duplication
+    }
+
+    override suspend fun markPromptAsUsed(id: Int) {
+        promptDataFetcher.markPromptAsUsed(id)
+    }
+
+    override fun getPrompt(id: Int): Flow<Prompt> {
+        return repository.getPrompt(id)
+    }
+
+    override fun getAllCategories(): Flow<List<String>> = promptDataFetcher.getAllCategories()
+    override fun getAllSubcategories(category: String?): Flow<List<String>> = promptDataFetcher.getAllSubcategories(category)
+
+    override fun toggleFavorite(prompt: Prompt) {
+        viewModelScope.launch {
+            val updatedPrompt = prompt.copy(isFavorite = !prompt.isFavorite)
+            repository.update(updatedPrompt)
+            refresh() // Refresh prompts after favorite status change
+        }
+    }
+
+    fun refresh() {
+        promptDataFetcher.refreshPrompts(forceReload = true, showFavoritesOnly = true) // Explicitly pass showFavoritesOnly for Favorites
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\PromptOperationsViewModel.kt ---
+package com.promptmaster.ui
+
+import com.promptmaster.data.Prompt
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+
+interface PromptOperationsViewModel {
+    // Operations
+    suspend fun insert(prompt: Prompt)
+    suspend fun update(prompt: Prompt)
+    suspend fun delete(prompt: Prompt)
+    suspend fun duplicatePrompt(prompt: Prompt)
+    suspend fun markPromptAsUsed(id: Int)
+    fun toggleFavorite(prompt: Prompt)
+
+    // State and Data Flows
+    fun getPrompt(id: Int): Flow<Prompt>
+    val prompts: StateFlow<List<Prompt>>
+    val isLoading: StateFlow<Boolean>
+    val searchQuery: StateFlow<String>
+    val selectedCategory: StateFlow<String?>
+    val selectedSubcategory: StateFlow<String?>
+
+    // Data fetching/filtering functions
+    fun getAllCategories(): Flow<List<String>>
+    fun getAllSubcategories(category: String?): Flow<List<String>>
+    fun setSearchQuery(query: String)
+    fun setSelectedCategory(category: String?)
+    fun setSelectedSubcategory(subcategory: String?)
+    fun loadNextPage()
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\PromptViewModel.kt ---
+package com.promptmaster.ui
+
+
+import androidx.lifecycle.viewModelScope
+import com.promptmaster.data.Prompt
+import com.promptmaster.data.PromptRepository
+import com.promptmaster.data.PromptBackupManager // Import PromptBackupManager
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import android.content.Context
+import android.app.Application // Import Application
+import androidx.lifecycle.AndroidViewModel // Import AndroidViewModel
+import androidx.lifecycle.LiveData // Import LiveData
+import androidx.lifecycle.asLiveData // Import asLiveData
+import com.promptmaster.utils.PromptUtils // Import PromptUtils
+import com.promptmaster.data.PromptDataOperations // Import PromptDataOperations
+import com.promptmaster.data.PromptDataFetcher // Import PromptDataFetcher
+import dagger.hilt.android.lifecycle.HiltViewModel // Import HiltViewModel
+import javax.inject.Inject // Import Inject
+
+@HiltViewModel
+class PromptViewModel @Inject constructor(
+    private val repository: PromptRepository,
+    application: Application, // Accept Application in constructor
+    private val promptBackupManager: PromptBackupManager, // Add PromptBackupManager
+    private val promptUtils: PromptUtils, // Inject PromptUtils
+    private val promptDataOperations: PromptDataOperations // Inject PromptDataOperations
+) : AndroidViewModel(application), PromptOperationsViewModel { // Extend AndroidViewModel to get application context and implement interface
+
+    // State for search query and filters
+    private val _searchQuery = MutableStateFlow("")
+    override val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    // State for search history
+    private val _searchHistory =
+        MutableStateFlow<List<String>>(promptUtils.loadSearchHistory()) // Load history using PromptUtils
+    val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
+
+    // Channel for one-time events like status messages
+    val status = promptUtils.status // Expose status from PromptUtils
+
+    // TODO: Add MutableStateFlows for filter selections (category, model, tags)
+    private val _selectedCategory = MutableStateFlow<String?>(null)
+    override val selectedCategory: StateFlow<String?> = _selectedCategory.asStateFlow()
+
+    private val _selectedSubcategory = MutableStateFlow<String?>(null) // Add subcategory state
+    override val selectedSubcategory: StateFlow<String?> = _selectedSubcategory.asStateFlow()
+
+    private val _selectedModel = MutableStateFlow<String?>(null)
+    val selectedModel: StateFlow<String?> = _selectedModel.asStateFlow()
+
+    private val _selectedTag = MutableStateFlow<String?>(null)
+    val selectedTag: StateFlow<String?> = _selectedTag.asStateFlow()
+
+    // Instantiate PromptDataFetcher
+    private val promptDataFetcher = PromptDataFetcher(
+        repository = repository,
+        searchQuery = _searchQuery,
+        selectedCategory = _selectedCategory,
+        selectedSubcategory = _selectedSubcategory,
+        showFavoritesOnly = MutableStateFlow(false), // Always false for Home tab
+        viewModelScope = viewModelScope, // Pass the ViewModel's scope
+        databaseReadyEvent = repository.databaseReadyEvent // Pass the database ready event
+    )
+
+    // Expose data and loading state from PromptDataFetcher
+    override val isLoading: StateFlow<Boolean> = promptDataFetcher.isLoading
+    override val prompts: StateFlow<List<Prompt>> = promptDataFetcher.prompts // Re-add for interface implementation
+    val promptsLiveData: LiveData<List<Prompt>> = promptDataFetcher.prompts.asLiveData() // Expose as LiveData for Java
+
+    override fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+        // Save search query to history
+        var currentHistory = _searchHistory.value.toMutableList()
+        if (currentHistory.contains(query)) {
+            currentHistory.remove(query)
+        }
+        currentHistory.add(0, query)
+        if (currentHistory.size > 10) { // Limit history size
+            currentHistory = currentHistory.take(10).toMutableList()
+        }
+        _searchHistory.value = currentHistory
+        promptUtils.saveSearchHistory(currentHistory) // Save updated history
+        refresh() // Refresh prompts when search query changes
+    }
+
+    override fun setSelectedCategory(category: String?) {
+        // Only reset subcategory if the category is actually changing or being cleared
+        if (_selectedCategory.value != category) {
+            _selectedCategory.value = category
+            _selectedSubcategory.value = null // Reset subcategory when category changes
+            refresh() // Refresh prompts when category changes
+        }
+    }
+
+    override fun setSelectedSubcategory(subcategory: String?) {
+        _selectedSubcategory.value = subcategory
+        refresh() // Refresh prompts when subcategory changes
+    }
+
+    override fun loadNextPage() {
+        promptDataFetcher.loadNextPage()
+    }
+
+    override suspend fun markPromptAsUsed(id: Int) {
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: markPromptAsUsed for ID: $id")
+        promptDataFetcher.markPromptAsUsed(id)
+    }
+
+    override fun getAllCategories(): Flow<List<String>> = promptDataFetcher.getAllCategories()
+
+    override fun getAllSubcategories(category: String?): Flow<List<String>> =
+        promptDataFetcher.getAllSubcategories(category)
+
+    override suspend fun insert(prompt: Prompt) {
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: insert prompt: ${prompt.title}")
+        promptDataOperations.insert(prompt)
+    }
+
+    override suspend fun update(prompt: Prompt) {
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: update prompt: ${prompt.id} - ${prompt.title}")
+        promptDataOperations.update(prompt)
+        refresh() // Refresh prompts after update (e.g., favorite status change)
+    }
+
+    override suspend fun delete(prompt: Prompt) {
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: delete prompt: ${prompt.id} - ${prompt.title}")
+        promptDataOperations.delete(prompt)
+        refresh() // Refresh prompts after deletion
+    }
+
+    override fun getPrompt(id: Int) = promptDataOperations.getPrompt(id)
+
+    override suspend fun duplicatePrompt(prompt: Prompt) {
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: duplicatePrompt: ${prompt.id} - ${prompt.title}")
+        promptDataOperations.duplicatePrompt(prompt)
+        refresh() // Refresh prompts after duplication
+    }
+
+    override fun toggleFavorite(prompt: Prompt) {
+        viewModelScope.launch {
+            android.util.Log.d("PromptMasterDebug", "PromptViewModel: toggleFavorite for ID: ${prompt.id}, current favorite: ${prompt.isFavorite}")
+            val updatedPrompt = prompt.copy(isFavorite = !prompt.isFavorite)
+            promptDataOperations.update(updatedPrompt)
+            refresh() // Refresh prompts after favorite status change
+        }
+    }
+
+    fun onPromptDescriptionCopied(promptId: Int, description: String) {
+        viewModelScope.launch {
+            android.util.Log.d("PromptMasterDebug", "PromptViewModel: onPromptDescriptionCopied for ID: $promptId")
+            promptDataFetcher.markPromptAsUsed(promptId)
+            promptUtils.copyToClipboard(description)
+            refresh() // Refresh prompts after copying description (to reorder by lastUsed)
+        }
+    }
+
+    suspend fun resetApplicationData() {
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: resetApplicationData")
+        promptUtils.resetApplicationData()
+        promptDataFetcher.refreshPrompts(forceReload = true, showFavoritesOnly = false) // Force reload after reset, explicitly pass showFavoritesOnly
+    }
+
+    suspend fun importPrompts(context: Context, uri: android.net.Uri) {
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: importPrompts")
+        promptUtils.importPrompts(uri)
+        promptDataFetcher.refreshPrompts(forceReload = true, showFavoritesOnly = false) // Force reload after import, explicitly pass showFavoritesOnly
+    }
+
+    suspend fun exportPrompts(context: Context): String? { // Change return type to String?
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: exportPrompts")
+        return promptUtils.exportPrompts()
+    }
+
+    fun refresh() {
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: refresh() called")
+        promptDataFetcher.refreshPrompts(forceReload = true, showFavoritesOnly = false) // Explicitly pass showFavoritesOnly for Home
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\utils\ContextUtils.kt ---
+package com.promptmaster.utils
+
+import android.content.Context
+import android.content.ContextWrapper
+import android.os.Build
+import java.util.Locale
+
+fun Context.setLocale(language: String): ContextWrapper {
+    val locale = Locale(language)
+    Locale.setDefault(locale)
+
+    val configuration = resources.configuration
+    configuration.setLocale(locale)
+
+    val context = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        createConfigurationContext(configuration)
+    } else {
+        @Suppress("DEPRECATION")
+        resources.updateConfiguration(configuration, resources.displayMetrics)
+        this
+    }
+
+    return ContextWrapper(context)
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\utils\PromptUtils.kt ---
+package com.promptmaster.utils
+
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.promptmaster.data.Prompt
+import com.promptmaster.data.PromptBackupManager
+import com.promptmaster.data.PromptRepository
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+
+class PromptUtils(
+    private val context: Context,
+    private val repository: PromptRepository,
+    private val promptBackupManager: PromptBackupManager
+) {
+
+    private val sharedPreferences: SharedPreferences by lazy {
+        PreferenceManager.getDefaultSharedPreferences(context)
+    }
+
+    // Channel for one-time events like status messages
+    private val _statusChannel = Channel<String>(Channel.BUFFERED)
+    val status = _statusChannel.receiveAsFlow()
+
+    fun loadSearchHistory(): List<String> {
+        return sharedPreferences.getStringList("search_history")
+    }
+
+    fun saveSearchHistory(history: List<String>) {
+        sharedPreferences.edit().apply {
+            putStringList("search_history", history)
+            apply()
+        }
+    }
+
+    // Function to copy text to clipboard
+    fun copyToClipboard(text: String) {
+        val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        val clipData = android.content.ClipData.newPlainText("Prompt Description", text)
+        clipboardManager.setPrimaryClip(clipData)
+    }
+
+    // Function to reset application data to initial state
+    suspend fun resetApplicationData() {
+        repository.deleteAllPrompts()
+
+        // Delete the backup file
+        val backupFile = promptBackupManager.getBackupFile()
+        if (backupFile != null && backupFile.exists()) {
+            try {
+                backupFile.delete()
+                android.util.Log.d("PromptUtils", "Backup file deleted during reset")
+            } catch (e: Exception) {
+                android.util.Log.e("PromptUtils", "Error deleting backup file during reset", e)
+            }
+        }
+
+        try {
+            val inputStream: InputStream = context.assets.open("initial_prompts.json")
+            val reader = InputStreamReader(inputStream)
+            val promptListType = object : TypeToken<List<Prompt>>() {}.type
+            val prompts: List<Prompt> = Gson().fromJson(reader, promptListType)
+
+            prompts.forEach { prompt ->
+                repository.insertOrUpdatePrompt(prompt)
+            }
+            _statusChannel.send("Application data reset to initial prompts successfully")
+        } catch (e: IOException) {
+            e.printStackTrace()
+            _statusChannel.send("Error reading initial_prompts.json: ${e.message}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _statusChannel.send("Error resetting application data: ${e.message}")
+        }
+    }
+
+    suspend fun importPrompts(uri: android.net.Uri) {
+        try {
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                val reader = InputStreamReader(inputStream)
+                val promptListType = object : TypeToken<List<Prompt>>() {}.type
+                val prompts: List<Prompt> = Gson().fromJson(reader, promptListType)
+
+                prompts.forEach { prompt ->
+                    repository.insertOrUpdatePrompt(prompt)
+                }
+                _statusChannel.send("Prompts imported successfully")
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            _statusChannel.send("Error reading prompts file: ${e.message}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _statusChannel.send("Error importing prompts: ${e.message}")
+        }
+    }
+
+    suspend fun exportPrompts(): String? {
+        return try {
+            val json = repository.exportPromptsToJson() // Corrected function call
+            _statusChannel.send("Prompts data prepared for export.")
+            json
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _statusChannel.send("Error preparing prompts for export: ${e.message}")
+            null
+        }
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\utils\SharedPreferencesUtils.kt ---
+package com.promptmaster.utils
+
+import android.content.SharedPreferences
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+
+@Composable
+fun rememberBooleanPreference(
+    key: String,
+    defaultValue: Boolean,
+    preferences: SharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
+): State<Boolean> {
+    val context = LocalContext.current
+    val state = remember { mutableStateOf(preferences.getBoolean(key, defaultValue)) }
+
+    DisposableEffect(preferences, key) {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, changedKey ->
+            if (changedKey == key) {
+                state.value = sharedPreferences.getBoolean(key, defaultValue)
+            }
+        }
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+        onDispose {
+            preferences.unregisterOnSharedPreferenceChangeListener(listener)
+        }
+    }
+
+    return state
+}
+
+fun SharedPreferences.Editor.putStringList(key: String, list: List<String>) {
+    putStringSet(key, list.toSet())
+}
+
+fun SharedPreferences.getStringList(key: String, defaultValue: List<String> = emptyList()): List<String> {
+    return getStringSet(key, defaultValue.toSet())?.toList() ?: defaultValue
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\MainActivity.kt ---
+package com.promptmaster
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.promptmaster.data.PromptRepository
+import com.promptmaster.ui.PromptViewModel
+import com.promptmaster.ui.home.HomeScreen
+import com.promptmaster.ui.editprompt.EditPromptScreen
+import com.promptmaster.ui.settings.SettingsScreen
+import com.promptmaster.ui.theme.PromptMasterTheme
+import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.LaunchedEffect
+import java.util.Locale
+import androidx.core.view.WindowCompat
+import com.promptmaster.utils.rememberBooleanPreference // Import the helper function
+import androidx.preference.PreferenceManager // Import PreferenceManager
+import com.promptmaster.data.PromptBackupManager
+import com.promptmaster.ui.components.PromptListScreen // Import PromptListScreen
+import com.promptmaster.ui.components.ZoomableContent // Import ZoomableContent
+import com.promptmaster.utils.setLocale // Import the setLocale extension function
+import kotlinx.coroutines.launch // Import launch
+import androidx.compose.runtime.rememberCoroutineScope // Import rememberCoroutineScope
+import dagger.hilt.android.AndroidEntryPoint // Import AndroidEntryPoint
+import javax.inject.Inject // Import Inject
+import androidx.hilt.navigation.compose.hiltViewModel // Import hiltViewModel
+import com.promptmaster.ui.FavoritesViewModel // Import FavoritesViewModel
+import androidx.compose.foundation.layout.Arrangement // Import Arrangement
+import androidx.compose.ui.Alignment // Import Alignment
+import androidx.compose.foundation.layout.fillMaxHeight // Import fillMaxHeight
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.unit.sp // Import sp for font sizes
+// Removed AdMob imports: import androidx.compose.ui.viewinterop.AndroidView, import com.google.android.gms.ads.AdRequest, import com.google.android.gms.ads.AdSize, import com.google.android.gms.ads.AdView
+
+import com.promptmaster.ui.ads.AdViewModel // Import AdViewModel
+import com.promptmaster.ui.components.ads.AdView // Import AdView
+import androidx.compose.runtime.collectAsState // Import collectAsState
+import kotlinx.coroutines.delay // Import delay
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalConfiguration // Import LocalConfiguration
+import androidx.compose.ui.text.style.TextOverflow
+
+@AndroidEntryPoint // Add AndroidEntryPoint annotation
+class MainActivity : ComponentActivity() { // Define MainActivity as a class
+
+    @Inject lateinit var repository: PromptRepository
+    @Inject lateinit var promptBackupManager: PromptBackupManager
+
+    override fun attachBaseContext(newBase: Context?) {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(newBase!!)
+        val language = preferences.getString("appLanguage", Locale.getDefault().language) ?: "en"
+        val context = newBase.setLocale(language)
+        applyOverrideConfiguration(context.resources.configuration)
+        super.attachBaseContext(context)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        setContent {
+            val isDarkModeEnabled by rememberBooleanPreference(
+                key = "darkModeEnabled",
+                defaultValue = isSystemInDarkTheme()
+            )
+
+            PromptMasterTheme(darkTheme = isDarkModeEnabled) {
+                PromptMasterApp(
+                    onThemeChange = { recreate() }
+                )
+            }
+        }
+    }
+
+    // Create a mock Application class for previews
+    class MockApplication : android.app.Application()
+}
+
+sealed class Screen(val route: String, val icon: ImageVector? = null, val resourceId: Int? = null) {
+    data object Home : Screen("home", Icons.Filled.Home, R.string.menu_home)
+    data object Favorites : Screen("favorites", Icons.Filled.Favorite, R.string.menu_favorites)
+    data object Settings : Screen("settings", Icons.Filled.Settings, R.string.menu_settings)
+    data object EditPrompt : Screen("editprompt/{promptId}", null, null) {
+        fun createRoute(promptId: Int? = null) = "editprompt/${promptId ?: 0}"
+    }
+    // TODO: Add other screens like Legal, Affiliate Ads
+}
+
+@Composable
+fun PromptMasterApp(
+    onThemeChange: () -> Unit // Add the callback parameter
+) {
+    val navController = rememberNavController()
+    val adViewModel: AdViewModel = hiltViewModel() // Get AdViewModel instance
+    val currentAd by adViewModel.currentAd.collectAsState() // Collect current ad state
+    val screenWidth = LocalConfiguration.current.screenWidthDp // Get screen width for adaptive padding
+    val horizontalPadding = 16.dp // Set a fixed padding based on user preference for Favorites tab
+
+    // LaunchedEffect to alternate ads every 10 seconds
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(10000) // Wait for 10 seconds
+            adViewModel.showNextAd()
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) { // Use Column to stack Scaffold and AdView
+        Scaffold(
+            modifier = Modifier.weight(1f), // Scaffold takes all remaining vertical space
+            bottomBar = {
+                BottomNavigationBar(navController = navController) // Removed metrics
+            },
+            floatingActionButton = {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+                if (currentRoute != Screen.EditPrompt.route) {
+                    FloatingActionButton(onClick = { navController.navigate(Screen.EditPrompt.createRoute()) }) {
+                        Icon(Icons.Filled.Add, stringResource(R.string.add_new_prompt))
+                    }
+                }
+            }
+        ) { innerPadding ->
+            ZoomableContent(modifier = Modifier.padding(innerPadding)) {
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.Home.route,
+                ) {
+                    composable(Screen.Home.route) {
+                        val promptViewModel: PromptViewModel = hiltViewModel()
+
+                        // Trigger refresh when the Home screen is composed or re-composed due to navigation
+                        LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
+                            delay(300) // evitar lock en cold boot
+                            promptViewModel.refresh()
+                        }
+
+                        HomeScreen(
+                            onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) },
+                            horizontalPadding = horizontalPadding // Pass horizontalPadding to HomeScreen
+                        )
+                    }
+                    composable(Screen.Favorites.route) {
+                        val favoritesViewModel: FavoritesViewModel = hiltViewModel()
+                        val coroutineScope = rememberCoroutineScope()
+
+                        // Trigger refresh when the Favorites screen is composed or re-composed due to navigation
+                        LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
+                            android.util.Log.d("MainActivity", "Favorites tab LaunchedEffect triggered. Refreshing data.")
+                            favoritesViewModel.refresh()
+                        }
+
+                        PromptListScreen(
+                            viewModel = favoritesViewModel,
+                            onPromptClick = { promptId -> navController.navigate(Screen.EditPrompt.createRoute(promptId)) },
+                            onCopyDescriptionClick = { promptId, description ->
+                                coroutineScope.launch {
+                                    // Only mark as used, as copyToClipboard is in PromptViewModel's PromptUtils
+                                    favoritesViewModel.markPromptAsUsed(promptId)
+                                }
+                            },
+                            horizontalPadding = horizontalPadding // Pass horizontalPadding to PromptListScreen
+                        )
+                    }
+                    composable(
+                        route = Screen.EditPrompt.route,
+                        arguments = listOf(navArgument("promptId") { type = NavType.IntType; defaultValue = 0 })
+                    ) { backStackEntry ->
+                        val promptId = backStackEntry.arguments?.getInt("promptId")
+                        val promptOperationsViewModel: PromptViewModel = hiltViewModel()
+
+                        EditPromptScreen(
+                            promptId = promptId ?: 0,
+                            promptViewModel = promptOperationsViewModel,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+                    composable(Screen.Settings.route) {
+                        val promptViewModel: PromptViewModel = hiltViewModel()
+                        SettingsScreen(
+                            viewModel = promptViewModel,
+                            onThemeChange = onThemeChange
+                        )
+                    }
+                    // TODO: Add other screen composables
+                }
+            }
+        }
+        // Custom Affiliate Ad View
+        currentAd?.let { ad ->
+            AdView(
+                ad = ad,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp) // Apply horizontal padding
+                    .heightIn(min = 120.dp, max = 160.dp) // Set adaptive height range
+            )
+        }
+    }
+}
+
+/*
+@Composable
+fun FavoritesScreenContent(
+    viewModel: PromptViewModel,
+    onPromptClick: (Int) -> Unit,
+) {
+    val favoritePrompts by viewModel.favoritePrompts.collectAsState()
+
+    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+        Text(text = stringResource(R.string.favorite_prompts_title))
+
+        LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
+            items(favoritePrompts) { prompt ->
+                PromptItem( // Reuse the PromptItem composable from HomeScreen
+                    prompt = prompt,
+                    onPromptClick = { onPromptClick(prompt.id) }, // Fix: Pass prompt.id
+                    onDeleteClick = { viewModel.delete(prompt) }, // Fix: Use prompt instead of it
+                    onFavoriteClick = { viewModel.update(prompt.copy(isFavorite = !prompt.isFavorite)) }, // Fix: Use prompt instead of it
+                    onDuplicateClick = { viewModel.duplicatePrompt(prompt) } // Fix: Use prompt instead of it
+                )
+            }
+        }
+    }
+}
+*/
+
+
+@Composable
+fun BottomNavigationBar(navController: NavHostController) { // Removed metrics parameter
+    val items = listOf(
+        Screen.Home,
+        Screen.Favorites,
+        Screen.Settings
+    )
+
+    NavigationBar(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 72.dp, max = 80.dp), // Increased height range for more vertical space
+        tonalElevation = 0.dp
+    ) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
+
+        items.forEach { screen ->
+            if (screen.icon != null && screen.resourceId != null) {
+                NavigationBarItem(
+                    icon = {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .fillMaxHeight()
+                        ) {
+                            Icon(
+                                imageVector = screen.icon,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                text = stringResource(screen.resourceId),
+                                fontSize = 10.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis // Ensure text doesn't overflow if too long
+                            )
+                        }
+                    },
+                    selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                    onClick = {
+                        navController.navigate(screen.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    alwaysShowLabel = true
+                )
+            }
+        }
+    }
+}
+
+/*
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    PromptMasterTheme {
+        val mockPromptDao = object : PromptDao {
+            override suspend fun insert(prompt: Prompt): Long = 0L
+            override suspend fun insertAll(prompts: List<Prompt>) {}
+            override suspend fun update(prompt: Prompt) {}
+            override suspend fun delete(prompt: Prompt) {}
+            override fun getPrompt(id: Int): Flow<Prompt> = flowOf()
+            override fun getAllPrompts(): Flow<List<Prompt>> = flowOf(emptyList())
+            override fun searchPrompts(
+                searchQuery: String?,
+                category: String?,
+                recommendedModel: String?,
+                tag: String?
+            ): Flow<List<Prompt>> = flowOf(emptyList())
+            override fun getFavoritePrompts(): Flow<List<Prompt>> = flowOf(emptyList())
+            override fun getAllCategories(): Flow<List<String>> = flowOf(emptyList()) // Add dummy implementation
+            override fun getPromptsFiltered(category: String?): Flow<List<Prompt>> = flowOf(emptyList())
+            override fun getAllSubcategories(category: String?): Flow<List<String>> = flowOf(emptyList()) // Add dummy implementation
+            override suspend fun updateLastUsed(id: Int, timestamp: Long) {}
+            override fun getFilteredAndSortedPrompts(
+                searchQuery: String?,
+                category: String?,
+                subcategory: String?,
+                showFavoritesOnly: Boolean
+            ): Flow<List<Prompt>> = flowOf(emptyList())
+
+            override suspend fun deleteAllPrompts() {}
+            override suspend fun getAllPromptsList(): List<Prompt> = emptyList()
+            override suspend fun getPromptCountByContent(title: String, description: String): Int = 0
+            override fun getPaginatedPrompts(limit: Int, offset: Int): Flow<List<Prompt>> = flowOf(emptyList())
+            override suspend fun getPaginatedFilteredAndSortedPrompts(
+                searchQuery: String?,
+                category: String?,
+                subcategory: String?,
+                showFavoritesOnly: Boolean,
+                limit: Int,
+                offset: Int
+            ): List<Prompt> = emptyList() // Corrected return type to List<Prompt>
+            override suspend fun getAllFilteredAndSortedPromptsList(
+                searchQuery: String?,
+                category: String?,
+                subcategory: String?,
+                showFavoritesOnly: Boolean
+            ): List<Prompt> = emptyList() // Added missing implementation
+
+            override suspend fun getPaginatedFilteredAndSortedPromptsList(
+                searchQuery: String?,
+                category: String?,
+                subcategory: String?,
+                showFavoritesOnly: Boolean,
+                limit: Int,
+                offset: Int
+            ): List<Prompt> = emptyList() // Corrected return type to List<Prompt>
+        }
+        val mockApplication = com.promptmaster.MainActivity.MockApplication() // Create mock Application
+        val mockPromptBackupManager = PromptBackupManager(mockPromptDao, mockApplication) // Create mock PromptBackupManager
+        PromptMasterApp(
+            onThemeChange = {} // Provide a dummy lambda for the preview
+        )
+    }
+}
+*/
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\PromptMasterApplication.kt ---
+package com.promptmaster
+
+import android.app.Application
+import android.content.Context
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import com.promptmaster.data.PromptPrepopulateWorker
+import dagger.hilt.android.HiltAndroidApp
+import android.content.ContextWrapper
+import java.util.Locale
+import androidx.preference.PreferenceManager
+import com.promptmaster.utils.setLocale // Import the setLocale extension function
+import com.google.android.gms.ads.MobileAds // Import MobileAds
+import javax.inject.Inject
+
+@HiltAndroidApp
+class PromptMasterApplication : Application(), Configuration.Provider {
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration
+        get() {
+            android.util.Log.d("PromptMasterApplication", "Providing WorkManager configuration with HiltWorkerFactory.")
+            return Configuration.Builder()
+                .setWorkerFactory(workerFactory)
+                .build()
+        }
+
+    override fun attachBaseContext(base: Context?) {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(base!!)
+        val language = preferences.getString("appLanguage", Locale.getDefault().language) ?: "en"
+        val context = base.setLocale(language)
+        super.attachBaseContext(context)
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        // Initialize the Mobile Ads SDK.
+        MobileAds.initialize(this) {}
+        android.util.Log.d("PromptMasterApplication", "Application onCreate called. Enqueuing PromptPrepopulateWorker.")
+        val prepopulateRequest = OneTimeWorkRequest.Builder(PromptPrepopulateWorker::class.java)
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniqueWork(
+            "PromptPrepopulateWork",
+            ExistingWorkPolicy.KEEP,
+            prepopulateRequest
+        )
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\PromptMasterHiltWorkerFactory.kt ---
+package com.promptmaster
+
+import android.content.Context
+import androidx.work.ListenableWorker
+import androidx.work.WorkerFactory
+import androidx.work.WorkerParameters
+import dagger.Reusable
+import javax.inject.Inject
+import javax.inject.Provider
+
+@Reusable
+class PromptMasterHiltWorkerFactory @Inject constructor(
+    private val workerFactories: Map<Class<out ListenableWorker>, @JvmSuppressWildcards Provider<ChildWorkerFactory>>
+) : WorkerFactory() {
+
+    override fun createWorker(
+        appContext: Context,
+        workerClassName: String,
+        workerParameters: WorkerParameters
+    ): ListenableWorker { // Changed return type to non-nullable
+        android.util.Log.d("PromptMasterHiltWorkerFactory", "createWorker called for: $workerClassName")
+        val foundEntry = workerFactories.entries.find {
+            Class.forName(workerClassName).isAssignableFrom(it.key)
+        }
+        val factoryProvider = foundEntry?.value
+            ?: run {
+                android.util.Log.e("PromptMasterHiltWorkerFactory", "Unknown worker class name: $workerClassName")
+                throw IllegalArgumentException("unknown worker class name: $workerClassName")
+            }
+        android.util.Log.d("PromptMasterHiltWorkerFactory", "Found factory for: ${foundEntry.key.simpleName}")
+        return factoryProvider.get().create(appContext, workerParameters)
+    }
+}
+
+interface ChildWorkerFactory {
+    fun create(appContext: Context, workerParameters: WorkerParameters): ListenableWorker
+}
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\xml ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\xml\backup_rules.xml ---
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample backup rules file; uncomment and customize as necessary.
+   See https://developer.android.com/guide/topics/data/autobackup
+   for details.
+   Note: This file is ignored for devices older that API 31
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <!--
+   <include domain="sharedpref" path="."/>
+   <exclude domain="sharedpref" path="device.xml"/>
+-->
+</full-backup-content>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\xml\data_extraction_rules.xml ---
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   for details.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- TODO: Use <include> and <exclude> to control what is backed up.
+        <include .../>
+        <exclude .../>
+        -->
+    </cloud-backup>
+    <!--
+    <device-transfer>
+        <include .../>
+        <exclude .../>
+    </device-transfer>
+    -->
+</data-extraction-rules>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\xml\file_paths.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path name="downloads" path="Download/" />
+    <cache-path name="cache" path="/" />
+</paths>

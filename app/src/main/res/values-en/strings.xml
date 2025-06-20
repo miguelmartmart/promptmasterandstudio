@@ -53,8 +53,10 @@
     <string name="language_setting">Language</string>
     <string name="export_prompts_button">Export Prompts</string>
     <string name="import_prompts_button">Import Prompts</string>
-    
-<string name="delete_prompt_dialog_title">Confirm deletion</string>
+    <string name="search_prompts_hint">Search prompts...</string>
+    <string name="search_favorite_prompts_hint">Search favorite prompts...</string>
+
+    <string name="delete_prompt_dialog_title">Confirm deletion</string>
 <string name="delete_prompt_dialog_message">Are you sure you want to delete this prompt?</string>
     <string name="import_prompts_dialog_title">Confirm Import</string>
     <string name="import_prompts_dialog_message">Are you sure you want to import prompts? This may overwrite existing prompts.</string>
@@ -69,5 +71,7 @@
     <string name="favorite_icon_description">Favorite icon</string>
     <string name="copy_icon_description">Copy icon</string>
     <string name="share_icon_description">Share icon</string>
+    <string name="prompt_title_placeholder">Prompt Title</string>
+    <string name="prompt_description_placeholder">Prompt Description</string>
 
 </resources>

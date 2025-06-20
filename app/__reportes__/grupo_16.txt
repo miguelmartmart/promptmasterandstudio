@@ -1,0 +1,1673 @@
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\androidTest\java ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\androidTest\java\com\promptmaster\ExampleInstrumentedTest.java ---
+package com.promptmaster;
+
+import android.content.Context;
+
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.junit.Assert.*;
+
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ */
+@RunWith(AndroidJUnit4.class)
+public class ExampleInstrumentedTest {
+    @Test
+    public void useAppContext() {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        assertEquals("com.promptmaster", appContext.getPackageName());
+    }
+}
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable\ic_launcher_background.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#3DDC84"
+        android:pathData="M0,0h108v108h-108z" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M9,0L9,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,0L19,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M29,0L29,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M39,0L39,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M49,0L49,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M59,0L59,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M69,0L69,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M79,0L79,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M89,0L89,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M99,0L99,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,9L108,9"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,19L108,19"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,29L108,29"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,39L108,39"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,49L108,49"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,59L108,59"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,69L108,69"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,79L108,79"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,89L108,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,99L108,99"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,29L89,29"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,39L89,39"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,49L89,49"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,59L89,59"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,69L89,69"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,79L89,79"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M29,19L29,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M39,19L39,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M49,19L49,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M59,19L59,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M69,19L69,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M79,19L79,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+</vector>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable\ic_launcher_foreground.xml ---
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="85.84757"
+                android:endY="92.4963"
+                android:startX="42.9492"
+                android:startY="49.59793"
+                android:type="linear">
+                <item
+                    android:color="#44000000"
+                    android:offset="0.0" />
+                <item
+                    android:color="#00000000"
+                    android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="nonZero"
+        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
+        android:strokeWidth="1"
+        android:strokeColor="#00000000" />
+</vector>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable\ic_launcher_iaicon_background.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<vector
+    android:height="108dp"
+    android:width="108dp"
+    android:viewportHeight="108"
+    android:viewportWidth="108"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#3DDC84"
+          android:pathData="M0,0h108v108h-108z"/>
+    <path android:fillColor="#00000000" android:pathData="M9,0L9,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,0L19,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M29,0L29,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M39,0L39,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M49,0L49,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M59,0L59,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M69,0L69,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M79,0L79,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M89,0L89,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M99,0L99,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,9L108,9"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,19L108,19"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,29L108,29"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,39L108,39"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,49L108,49"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,59L108,59"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,69L108,69"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,79L108,79"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,89L108,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,99L108,99"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,29L89,29"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,39L89,39"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,49L89,49"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,59L89,59"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,69L89,69"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,79L89,79"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M29,19L29,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M39,19L39,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M49,19L49,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M59,19L59,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M69,19L69,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M79,19L79,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+</vector>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable\ic_menu_camera.xml ---
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24.0"
+    android:viewportHeight="24.0">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M12,12m-3.2,0a3.2,3.2 0,1 1,6.4 0a3.2,3.2 0,1 1,-6.4 0" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M9,2L7.17,4H4c-1.1,0 -2,0.9 -2,2v12c0,1.1 0.9,2 2,2h16c1.1,0 2,-0.9 2,-2V6c0,-1.1 -0.9,-2 -2,-2h-3.17L15,2H9zm3,15c-2.76,0 -5,-2.24 -5,-5s2.24,-5 5,-5 5,2.24 5,5 -2.24,5 -5,5z" />
+</vector>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable\ic_menu_copy.xml ---
+<vector android:height="24dp" android:tint="#000000"
+    android:viewportHeight="24" android:viewportWidth="24"
+    android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="@android:color/white" android:pathData="M16,1H4C2.9,1 2,1.9 2,3V17H4V3H16V1ZM19,5H8C6.9,5 6,5.9 6,7V21C6,22.1 6.9,23 8,23H19C20.1,23 21,22.1 21,21V7C21,5.9 20.1,5 19,5ZM19,21H8V7H19V21Z"/>
+</vector>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable\ic_menu_favorites.xml ---
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
+</vector>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable\ic_menu_gallery.xml ---
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24.0"
+    android:viewportHeight="24.0">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M22,16V4c0,-1.1 -0.9,-2 -2,-2H8c-1.1,0 -2,0.9 -2,2v12c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2zm-11,-4l2.03,2.71L16,11l4,5H8l3,-4zM2,6v14c0,1.1 0.9,2 2,2h14v-2H4V6H2z" />
+</vector>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable\ic_menu_settings.xml ---
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11.03L21.54,9.32C21.73,9.17 21.78,8.92 21.66,8.72L19.71,5.34C19.59,5.14 19.35,5.07 19.15,5.15L16.72,6.17C16.29,5.88 15.8,5.64 15.27,5.45L14.85,3.03C14.79,2.79 14.58,2.59 14.33,2.5L10.37,2.5C10.12,2.59 9.9,2.79 9.85,3.03L9.43,5.45C8.9,5.64 8.41,5.88 7.98,6.17L5.55,5.15C5.35,5.07 5.11,5.14 4.99,5.34L3.04,8.72C2.92,8.92 2.97,9.17 3.16,9.32L5.27,11.03C5.23,11.34 5.2,11.67 5.2,12C5.2,12.33 5.23,12.65 5.27,12.97L3.16,14.68C2.97,14.83 2.92,15.08 3.04,15.28L4.99,18.66C5.11,18.86 5.35,18.93 5.55,18.85L7.98,17.83C8.41,18.12 8.9,18.36 9.43,18.55L9.85,20.97C9.9,21.21 10.12,21.41 10.37,21.5L14.33,21.5C14.58,21.41 14.79,21.21 14.85,20.97L15.27,18.55C15.8,18.36 16.29,18.12 16.72,17.83L19.15,18.85C19.35,18.93 19.59,18.86 19.71,18.66L21.66,15.28C21.78,15.08 21.73,14.83 21.54,14.68L19.43,12.97Z"/>
+</vector>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable\ic_menu_share.xml ---
+<vector android:height="24dp" android:tint="#000000"
+    android:viewportHeight="24" android:viewportWidth="24"
+    android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="@android:color/white" android:pathData="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.15C16.44,7.62 17.12,7.92 18,7.92C19.66,7.92 21,6.58 21,5C21,3.34 19.66,2 18,2C16.34,2 15,3.34 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.85C7.56,9.38 6.88,9.08 6,9.08C4.34,9.08 3,10.42 3,12C3,13.58 4.34,14.92 6,14.92C6.88,14.92 7.56,14.62 8.04,14.15L15.09,18.3C15.04,18.53 15,18.76 15,19C15,20.66 16.34,22 18,22C19.66,22 21,20.66 21,19C21,17.34 19.66,16.08 18,16.08Z"/>
+</vector>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable\ic_menu_slideshow.xml ---
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24.0"
+    android:viewportHeight="24.0">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M4,6H2v14c0,1.1 0.9,2 2,2h14v-2H4V6zm16,-4H8c-1.1,0 -2,0.9 -2,2v12c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2V4c0,-1.1 -0.9,-2 -2,-2zm-8,12.5v-9l6,4.5 -6,4.5z" />
+</vector>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable\side_nav_bar.xml ---
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="135"
+        android:centerColor="#009688"
+        android:endColor="#00695C"
+        android:startColor="#4DB6AC"
+        android:type="linear" />
+</shape>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable-anydpi\ic_launcher_ai.xml ---
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="#333333"
+    android:alpha="0.6">
+  <path
+      android:pathData="M22,11A4,4 0,0 0,20 7.52,3 3,0 0,0 20,7a3,3 0,0 0,-3 -3l-0.18,0A3,3 0,0 0,12 2.78,3 3,0 0,0 7.18,4L7,4A3,3 0,0 0,4 7a3,3 0,0 0,0 0.52,4 4,0 0,0 -0.55,6.59A4,4 0,0 0,7 20l0.18,0A3,3 0,0 0,12 21.22,3 3,0 0,0 16.82,20L17,20a4,4 0,0 0,3.5 -5.89A4,4 0,0 0,22 11ZM11,8.55a4.72,4.72 0,0 0,-0.68 -0.32,1 1,0 0,0 -0.64,1.9A2,2 0,0 1,11 12v1.55a4.72,4.72 0,0 0,-0.68 -0.32,1 1,0 0,0 -0.64,1.9A2,2 0,0 1,11 17v2a1,1 0,0 1,-1 1,1 1,0 0,1 -0.91,-0.6 4.07,4.07 0,0 0,0.48 -0.33,1 1,0 1,0 -1.28,-1.54A2,2 0,0 1,7 18a2,2 0,0 1,-2 -2,2 2,0 0,1 0.32,-1.06A3.82,3.82 0,0 0,6 15a1,1 0,0 0,0 -2,1.84 1.84,0 0,1 -0.69,-0.13A2,2 0,0 1,5 9.25a3.1,3.1 0,0 0,0.46 0.35,1 1,0 1,0 1,-1.74 0.9,0.9 0,0 1,-0.34 -0.33A0.92,0.92 0,0 1,6 7,1 1,0 0,1 7,6a0.76,0.76 0,0 1,0.21 0,3.85 3.85,0 0,0 0.19,0.47 1,1 0,0 0,1.37 0.37A1,1 0,0 0,9.13 5.5,1.06 1.06,0 0,1 9,5a1,1 0,0 1,2 0ZM18.69,12.87A1.84,1.84 0,0 1,18 13a1,1 0,0 0,0 2,3.82 3.82,0 0,0 0.68,-0.06A2,2 0,0 1,19 16a2,2 0,0 1,-2 2,2 2,0 0,1 -1.29,-0.47 1,1 0,0 0,-1.28 1.54,4.07 4.07,0 0,0 0.48,0.33A1,1 0,0 1,14 20a1,1 0,0 1,-1 -1L13,17a2,2 0,0 1,1.32 -1.87,1 1,0 0,0 -0.64,-1.9 4.72,4.72 0,0 0,-0.68 0.32L13,12a2,2 0,0 1,1.32 -1.87,1 1,0 0,0 -0.64,-1.9 4.72,4.72 0,0 0,-0.68 0.32L13,5a1,1 0,0 1,2 0,1.06 1.06,0 0,1 -0.13,0.5 1,1 0,0 0,0.36 1.37A1,1 0,0 0,16.6 6.5,3.85 3.85,0 0,0 16.79,6 0.76,0.76 0,0 1,17 6a1,1 0,0 1,1 1,1 1,0 0,1 -0.17,0.55 0.9,0.9 0,0 1,-0.33 0.31,1 1,0 0,0 1,1.74A2.66,2.66 0,0 0,19 9.25a2,2 0,0 1,-0.27 3.62Z"
+      android:fillColor="#000000"/>
+</vector>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\activity_main.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
+
+    <include
+        android:id="@+id/app_bar_main"
+        layout="@layout/app_bar_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer" />
+</androidx.drawerlayout.widget.DrawerLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\app_bar_main.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <include layout="@layout/content_main" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin_bottom"
+        app:srcCompat="@android:drawable/ic_dialog_email"
+        android:contentDescription="@string/fab_content_description" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\content_main.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/app_bar_main">
+
+    <fragment
+        android:id="@+id/nav_host_fragment_content_main"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/mobile_navigation" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\fragment_favorites.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.favorites.FavoritesFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/fragment_content_padding"
+        android:paddingEnd="@dimen/fragment_content_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Search filter box -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/search_filter_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/search_favorite_prompts_hint"
+                    android:minHeight="@dimen/search_filter_min_height"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/purple_200"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_prompts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/prompt_item" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\fragment_gallery.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.gallery.GalleryFragment">
+
+    <TextView
+        android:id="@+id/text_gallery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/gallery_text_margin_start_end"
+        android:layout_marginTop="@dimen/gallery_text_margin_top"
+        android:layout_marginEnd="@dimen/gallery_text_margin_start_end"
+        android:textAlignment="center"
+        android:textSize="@dimen/gallery_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\fragment_home.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/fragment_content_padding"
+        android:paddingEnd="@dimen/fragment_content_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Search filter box -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/search_filter_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/search_prompts_hint"
+                    android:minHeight="@dimen/search_filter_min_height"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/purple_200"
+                    android:textCursorDrawable="@null"
+                    android:textAppearance="?attr/textAppearanceBody1"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_prompts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/prompt_item" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\fragment_slideshow.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.slideshow.SlideshowFragment">
+
+        <TextView
+            android:id="@+id/text_slideshow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\nav_header_main.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/nav_header_height"
+    android:background="@drawable/side_nav_bar"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/nav_header_desc"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        app:srcCompat="@mipmap/ic_launcher_round" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:text="@string/nav_header_title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/nav_header_subtitle" />
+</LinearLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\prompt_item.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/card_margin"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="@dimen/card_elevation"
+    tools:theme="@style/Theme.AppCompat.Light.NoActionBar">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/card_padding"
+        android:paddingStart="@dimen/card_padding"
+        android:paddingEnd="@dimen/card_padding"
+        android:paddingBottom="@dimen/prompt_item_content_padding_bottom">
+
+        <TextView
+            android:id="@+id/prompt_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"
+            android:text="@string/prompt_title_placeholder" />
+
+        <TextView
+            android:id="@+id/prompt_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/prompt_description_margin_top"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:text="@string/prompt_description_placeholder"
+            android:scrollbars="vertical"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/prompt_icons_margin_top"
+            android:gravity="end">
+
+            <ImageView
+                android:id="@+id/favorite_icon"
+                android:layout_width="@dimen/prompt_icon_size"
+                android:layout_height="@dimen/prompt_icon_size"
+                android:src="@drawable/ic_menu_favorites"
+                android:layout_marginEnd="@dimen/prompt_icon_margin_end"
+                android:contentDescription="@string/favorite_icon_description" />
+
+            <ImageView
+                android:id="@+id/copy_icon"
+                android:layout_width="@dimen/prompt_icon_size"
+                android:layout_height="@dimen/prompt_icon_size"
+                android:src="@drawable/ic_menu_copy"
+                android:layout_marginEnd="@dimen/prompt_icon_margin_end"
+                android:contentDescription="@string/copy_icon_description" />
+
+            <ImageView
+                android:id="@+id/share_icon"
+                android:layout_width="@dimen/prompt_icon_size"
+                android:layout_height="@dimen/prompt_icon_size"
+                android:src="@drawable/ic_menu_share"
+                android:contentDescription="@string/share_icon_description" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\menu\activity_main_drawer.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single"
+        android:gravity="center_vertical">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/menu_home" />
+        <item
+            android:id="@+id/nav_favorites"
+            android:icon="@drawable/ic_menu_favorites"
+            android:title="@string/menu_favorites" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_menu_settings"
+            android:title="@string/menu_settings" />
+    </group>
+</menu>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\menu\main.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+</menu>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\mipmap-anydpi-v26\ic_launcher.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\mipmap-anydpi-v26\ic_launcher_iaicon.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_iaicon_background"/>
+    <foreground android:drawable="@mipmap/ic_launcher_iaicon_foreground"/>
+</adaptive-icon>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\mipmap-anydpi-v26\ic_launcher_iaicon_round.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_iaicon_background"/>
+    <foreground android:drawable="@mipmap/ic_launcher_iaicon_foreground"/>
+</adaptive-icon>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\mipmap-anydpi-v26\ic_launcher_round.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\navigation\mobile_navigation.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.promptmaster.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_gallery"
+        android:name="com.promptmaster.ui.gallery.GalleryFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_slideshow"
+        android:name="com.promptmaster.ui.slideshow.SlideshowFragment"
+        android:label="@string/menu_slideshow"
+        tools:layout="@layout/fragment_slideshow" />
+</navigation>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values\colors.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values\dimens.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_margin_bottom">16dp</dimen>
+    <dimen name="card_margin">8dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="prompt_description_margin_top">4dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="prompt_icons_margin_top">8dp</dimen>
+    <dimen name="prompt_icon_size">24dp</dimen>
+    <dimen name="prompt_icon_margin_end">8dp</dimen>
+    <dimen name="prompt_item_content_padding_bottom">8dp</dimen>
+    <dimen name="gallery_text_margin_start_end">8dp</dimen>
+    <dimen name="gallery_text_margin_top">8dp</dimen>
+    <dimen name="gallery_text_size">20sp</dimen>
+
+    <!-- AdView dimensions -->
+    <dimen name="ad_card_padding">8dp</dimen>
+    <dimen name="ad_column_padding">8dp</dimen>
+    <dimen name="ad_image_size">70dp</dimen>
+    <dimen name="ad_image_padding_end">8dp</dimen>
+    <dimen name="ad_title_font_size">16sp</dimen>
+    <dimen name="ad_spacer_height_small">4dp</dimen>
+    <dimen name="ad_description_font_size">12sp</dimen>
+    <dimen name="ad_spacer_height_medium">8dp</dimen>
+    <dimen name="ad_disclaimer_font_size">10sp</dimen>
+    <dimen name="ad_disclaimer_padding_top">4dp</dimen>
+    <dimen name="fragment_content_padding">8dp</dimen>
+
+    <!-- New dimensions for consistency and responsiveness -->
+    <dimen name="search_filter_margin_top_bottom">8dp</dimen>
+    <dimen name="search_filter_min_height">48dp</dimen>
+    <dimen name="bottom_nav_bar_min_height">72dp</dimen>
+    <dimen name="bottom_nav_bar_max_height">80dp</dimen>
+    <dimen name="bottom_nav_bar_tonal_elevation">0dp</dimen>
+    <dimen name="bottom_nav_icon_size">24dp</dimen>
+    <dimen name="bottom_nav_label_font_size">10sp</dimen>
+    <dimen name="ad_view_horizontal_padding">8dp</dimen>
+    <dimen name="ad_view_min_height">120dp</dimen>
+    <dimen name="ad_view_max_height">160dp</dimen>
+
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values\strings.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PromptMaster AI</string>
+    <string name="navigation_drawer_open">Abrir cajón de navegación</string>
+    <string name="navigation_drawer_close">Cerrar cajón de navegación</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Encabezado de navegación</string>
+    <string name="action_settings">Configuración</string>
+
+    <string name="menu_home">Inicio</string>
+    <string name="menu_gallery">Galería</string>
+    <string name="menu_slideshow">Presentación</string>
+    <string name="menu_favorites">Favoritos</string>
+    <string name="menu_settings">Configuración</string>
+    <string name="add_new_prompt">Añadir Nuevo Prompt</string>
+    <string name="edit_prompt">Editar Prompt</string>
+    <string name="title_label">Título</string>
+    <string name="description_label">Descripción</string>
+    <string name="category_label">Categoría</string>
+    <string name="tags_label">Etiquetas (separadas por comas)</string>
+    <string name="recommended_model_label">Modelo Recomendado</string>
+    <string name="customizable_fields_label">Campos Personalizables (JSON o similar)</string>
+    <string name="save_prompt_button">Guardar Prompt</string>
+    <string name="update_prompt_button">Actualizar Prompt</string>
+    <string name="delete_prompt_content_description">Eliminar prompt</string>
+    <string name="add_to_favorites_content_description">Añadir a favoritos</string>
+    <string name="remove_from_favorites_content_description">Eliminar de favoritos</string>
+    <string name="duplicate_prompt_content_description">Duplicar prompt</string>
+    <string name="copy_prompt_description_content_description">Copiar descripción del prompt</string>
+    <string name="dark_mode_setting">Modo Oscuro</string>
+    <string name="search_prompts_label">Buscar Prompts</string>
+    <string name="prompt_list_title">Lista de Prompts</string>
+    <string name="back_button_content_description">Botón atrás</string>
+    <string name="favorite_prompts_title">Prompts Favoritos</string>
+    <string name="all_categories_label">Todas las categorías</string>
+    <string name="clear_search_button_description">Borrar</string>
+    <string name="clear_text_button_description">Borrar</string>
+    <string name="clear_category_button_description">Borrar</string>
+    <string name="all_subcategories_label">Todas las subcategorías</string>
+    <string name="subcategory_label">Subcategoría</string>
+    <string name="reset_application_button">Reestablecer aplicación</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Confirmar reestablecimiento</string>
+    <string name="reset_app_dialog_message">¿Estás seguro de que quieres reestablecer la aplicación a su estado inicial? Se eliminarán todos los prompts guardados y la configuración.</string>
+    <string name="edit_prompt_dialog_title">Descartar cambios</string>
+    <string name="edit_prompt_dialog_message">Tienes cambios sin guardar. ¿Quieres descartarlos y salir?</string>
+    <string name="dialog_confirm">Confirmar</string>
+    <string name="dialog_cancel">Cancelar</string>
+
+    <string name="empty_fields_error">Título, Descripción y Categoría no pueden ser vacíos.</string>
+    <string name="copy_description_content_description">Copiar descripción</string>
+    <string name="clear_subcategory_button_description">Borrar filtro de subcategoría</string>
+    <string name="language_setting">Idioma</string>
+    <string name="export_prompts_button">Exportar prompts</string>
+    <string name="import_prompts_button">Importar prompts</string>
+    <string name="search_prompts_hint">Buscar prompts...</string>
+    <string name="search_favorite_prompts_hint">Buscar prompts favoritos...</string>
+    <string name="delete_prompt_dialog_title">Confirmar eliminación</string>
+    <string name="delete_prompt_dialog_message">¿Estás seguro de que quieres eliminar este prompt?</string>
+    <string name="import_prompts_dialog_title">Confirmar importación</string>
+    <string name="import_prompts_dialog_message">¿Estás seguro de que quieres importar prompts? Esto puede sobrescribir prompts existentes.</string>
+    <string name="fab_content_description">Enviar correo electrónico</string>
+    <string name="language_english">Inglés</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_french">Francés</string>
+    <string name="language_german">Alemán</string>
+    <string name="language_portuguese">Portugués</string>
+    <string name="language_italian">Italiano</string>
+    <string name="affiliate_disclaimer">Este enlace es de afiliado: podríamos recibir una pequeña comisión sin coste adicional para ti.</string>
+    <string name="favorite_icon_description">Icono de favorito</string>
+    <string name="copy_icon_description">Icono de copiar</string>
+    <string name="share_icon_description">Icono de compartir</string>
+    <string name="prompt_title_placeholder">Título del Prompt</string>
+    <string name="prompt_description_placeholder">Descripción del Prompt</string>
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values\themes.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Tema base con Material 3 -->
+    <style name="Theme.PromptMaster" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Colores principales -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <!-- Colores de superficie y fondo -->
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/black</item>
+        <item name="colorOnSurfaceVariant">@color/purple_200</item>
+
+        <!-- Otros ajustes -->
+        <item name="android:statusBarColor">@color/purple_700</item>
+
+        <!-- Apariencia de texto predeterminada -->
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Material3.HeadlineSmall</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Material3.BodyMedium</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Material3.TitleMedium</item>
+    </style>
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-de\strings.xml ---
+<resources>
+    <string name="app_name">PromptMaster KI</string>
+    <string name="navigation_drawer_open">Navigationsleiste öffnen</string>
+    <string name="navigation_drawer_close">Navigationsleiste schließen</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigations-Header</string>
+    <string name="action_settings">Einstellungen</string>
+
+    <string name="menu_home">Startseite</string>
+    <string name="menu_gallery">Galerie</string>
+    <string name="menu_slideshow">Diashow</string>
+    <string name="menu_favorites">Favoriten</string>
+    <string name="menu_settings">Einstellungen</string>
+    <string name="add_new_prompt">Neuen Prompt hinzufügen</string>
+    <string name="edit_prompt">Prompt bearbeiten</string>
+    <string name="title_label">Titel</string>
+    <string name="description_label">Beschreibung</string>
+    <string name="category_label">Kategorie</string>
+    <string name="tags_label">Tags (durch Kommas getrennt)</string>
+    <string name="recommended_model_label">Empfohlenes Modell</string>
+    <string name="customizable_fields_label">Anpassbare Felder (JSON oder ähnlich)</string>
+    <string name="save_prompt_button">Prompt speichern</string>
+    <string name="update_prompt_button">Prompt aktualisieren</string>
+    <string name="delete_prompt_content_description">Prompt löschen</string>
+    <string name="add_to_favorites_content_description">Zu Favoriten hinzufügen</string>
+    <string name="remove_from_favorites_content_description">Aus Favoriten entfernen</string>
+    <string name="duplicate_prompt_content_description">Prompt duplizieren</string>
+    <string name="copy_prompt_description_content_description">Prompt-Beschreibung kopieren</string>
+    <string name="dark_mode_setting">Dunkelmodus</string>
+    <string name="search_prompts_label">Prompts suchen</string>
+    <string name="prompt_list_title">Prompt-Liste</string>
+    <string name="back_button_content_description">Zurück-Taste</string>
+    <string name="favorite_prompts_title">Favoriten-Prompts</string>
+    <string name="all_categories_label">Alle Kategorien</string>
+    <string name="clear_search_button_description">Löschen</string>
+    <string name="clear_text_button_description">Löschen</string>
+    <string name="clear_category_button_description">Löschen</string>
+    <string name="all_subcategories_label">Alle Unterkategorien</string>
+    <string name="subcategory_label">Unterkategorie</string>
+    <string name="reset_application_button">Anwendung zurücksetzen</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Zurücksetzung bestätigen</string>
+    <string name="reset_app_dialog_message">Sind Sie sicher, dass Sie die Anwendung auf ihren Ausgangszustand zurücksetzen möchten? Alle gespeicherten Prompts und Einstellungen werden gelöscht.</string>
+    <string name="edit_prompt_dialog_title">Änderungen verwerfen</string>
+    <string name="edit_prompt_dialog_message">Sie haben ungespeicherte Änderungen. Möchten Sie diese verwerfen und beenden?</string>
+    <string name="dialog_confirm">Bestätigen</string>
+    <string name="dialog_cancel">Abbrechen</string>
+
+    <string name="empty_fields_error">Titel, Beschreibung und Kategorie dürfen nicht leer sein.</string>
+    <string name="copy_description_content_description">Beschreibung kopieren</string>
+    <string name="clear_subcategory_button_description">Unterkategorie-Filter löschen</string>
+    <string name="language_setting">Sprache</string>
+    <string name="export_prompts_button">Prompts exportieren</string>
+    <string name="import_prompts_button">Prompts importieren</string>
+    <string name="search_prompts_hint">Prompts suchen...</string>
+    <string name="search_favorite_prompts_hint">Favorisierte Prompts suchen...</string>
+
+    <string name="delete_prompt_dialog_title">Löschen bestätigen</string>
+<string name="delete_prompt_dialog_message">Möchten Sie diesen Prompt wirklich löschen?</string>
+    <string name="import_prompts_dialog_title">Import bestätigen</string>
+    <string name="import_prompts_dialog_message">Möchten Sie die Prompts wirklich importieren? Vorhandene Prompts können überschrieben werden.</string>
+<string name="fab_content_description">E-Mail senden</string>
+
+    <string name="language_english">Englisch</string>
+    <string name="language_spanish">Spanisch</string>
+    <string name="language_french">Französisch</string>
+    <string name="language_german">Deutsch</string>
+    <string name="language_portuguese">Portugiesisch</string>
+    <string name="language_italian">Italienisch</string>
+    <string name="affiliate_disclaimer">Dies ist ein Affiliate-Link: Wir erhalten möglicherweise eine kleine Provision ohne zusätzliche Kosten für Sie.</string>
+    <string name="favorite_icon_description">Favoritensymbol</string>
+    <string name="copy_icon_description">Kopiersymbol</string>
+    <string name="share_icon_description">Freigabesymbol</string>
+    <string name="prompt_title_placeholder">Prompt-Titel</string>
+    <string name="prompt_description_placeholder">Prompt-Beschreibung</string>
+
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-en\strings.xml ---
+<resources>
+    <string name="app_name">PromptMaster AI</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_favorites">Favorites</string>
+    <string name="menu_settings">Settings</string>
+    <string name="add_new_prompt">Add New Prompt</string>
+    <string name="edit_prompt">Edit Prompt</string>
+    <string name="title_label">Title</string>    <string name="description_label">Description</string>
+    <string name="category_label">Category</string>
+    <string name="tags_label">Tags (comma separated)</string>
+    <string name="recommended_model_label">Recommended Model</string>
+    <string name="customizable_fields_label">Customizable Fields (JSON or similar)</string>
+    <string name="save_prompt_button">Save Prompt</string>
+    <string name="update_prompt_button">Update Prompt</string>
+    <string name="delete_prompt_content_description">Delete prompt</string>
+    <string name="add_to_favorites_content_description">Add to favorites</string>
+    <string name="remove_from_favorites_content_description">Remove from favorites</string>
+    <string name="duplicate_prompt_content_description">Duplicate prompt</string>
+    <string name="copy_prompt_description_content_description">Copy prompt description</string>
+    <string name="dark_mode_setting">Dark Mode</string>
+    <string name="search_prompts_label">Search Prompts</string>
+    <string name="prompt_list_title">Prompt List</string>
+    <string name="back_button_content_description">Back button</string>
+    <string name="favorite_prompts_title">Favorite Prompts</string>
+    <string name="all_categories_label">All Categories</string>
+    <string name="clear_search_button_description">Delete</string>
+    <string name="clear_text_button_description">Delete</string>
+    <string name="clear_category_button_description">Delete</string>
+    <string name="all_subcategories_label">All subcategories</string>
+    <string name="subcategory_label">Subcategory</string>
+    <string name="reset_application_button">Reset application</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Confirm Reset</string>
+    <string name="reset_app_dialog_message">Are you sure you want to reset the application to its initial state? All saved prompts and settings will be deleted.</string>
+    <string name="edit_prompt_dialog_title">Discard Changes</string>
+    <string name="edit_prompt_dialog_message">You have unsaved changes. Do you want to discard them and exit?</string>
+    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_cancel">Cancel</string>
+
+    <string name="empty_fields_error">Title, Description, and Category cannot be empty.</string>
+    <string name="copy_description_content_description">Copy Description</string>
+    <string name="clear_subcategory_button_description">Clear subcategory filter</string>
+    <string name="language_setting">Language</string>
+    <string name="export_prompts_button">Export Prompts</string>
+    <string name="import_prompts_button">Import Prompts</string>
+    <string name="search_prompts_hint">Search prompts...</string>
+    <string name="search_favorite_prompts_hint">Search favorite prompts...</string>
+
+    <string name="delete_prompt_dialog_title">Confirm deletion</string>
+<string name="delete_prompt_dialog_message">Are you sure you want to delete this prompt?</string>
+    <string name="import_prompts_dialog_title">Confirm Import</string>
+    <string name="import_prompts_dialog_message">Are you sure you want to import prompts? This may overwrite existing prompts.</string>
+<string name="fab_content_description">Send email</string>
+    <string name="language_english">English</string>
+    <string name="language_spanish">Spanish</string>
+    <string name="language_french">French</string>
+    <string name="language_german">German</string>
+    <string name="language_portuguese">Portuguese</string>
+    <string name="language_italian">Italian</string>
+    <string name="affiliate_disclaimer">This is an affiliate link: we might receive a small commission at no additional cost to you.</string>
+    <string name="favorite_icon_description">Favorite icon</string>
+    <string name="copy_icon_description">Copy icon</string>
+    <string name="share_icon_description">Share icon</string>
+    <string name="prompt_title_placeholder">Prompt Title</string>
+    <string name="prompt_description_placeholder">Prompt Description</string>
+
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-fr\strings.xml ---
+<resources>
+    <string name="app_name">PromptMaster AI</string>
+    <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
+    <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">En-tête de navigation</string>
+    <string name="action_settings">Paramètres</string>
+
+    <string name="menu_home">Accueil</string>
+    <string name="menu_gallery">Galerie</string>
+    <string name="menu_slideshow">Diaporama</string>
+    <string name="menu_favorites">Favoris</string>
+    <string name="menu_settings">Paramètres</string>
+    <string name="add_new_prompt">Ajouter un nouveau prompt</string>
+    <string name="edit_prompt">Modifier le prompt</string>
+    <string name="title_label">Titre</string>
+    <string name="description_label">Description</string>
+    <string name="category_label">Catégorie</string>
+    <string name="tags_label">Tags (séparés par des virgules)</string>
+    <string name="recommended_model_label">Modèle recommandé</string>
+    <string name="customizable_fields_label">Champs personnalisables (JSON ou similaire)</string>
+    <string name="save_prompt_button">Enregistrer le prompt</string>
+    <string name="update_prompt_button">Mettre à jour le prompt</string>
+    <string name="delete_prompt_content_description">Supprimer le prompt</string>
+    <string name="add_to_favorites_content_description">Ajouter aux favoris</string>
+    <string name="remove_from_favorites_content_description">Retirer des favoris</string>
+    <string name="duplicate_prompt_content_description">Dupliquer le prompt</string>
+    <string name="copy_prompt_description_content_description">Copier la description du prompt</string>
+    <string name="dark_mode_setting">Mode sombre</string>
+    <string name="search_prompts_label">Rechercher des prompts</string>
+    <string name="prompt_list_title">Liste des prompts</string>
+    <string name="back_button_content_description">Bouton retour</string>
+    <string name="favorite_prompts_title">Suggestions préférées</string>
+    <string name="all_categories_label">Toutes les catégories</string>
+    <string name="clear_search_button_description">Supprimer</string>
+    <string name="clear_text_button_description">Supprimer</string>
+    <string name="clear_category_button_description">Supprimer</string>
+    <string name="all_subcategories_label">Toutes les sous-catégories</string>
+    <string name="subcategory_label">Sous-catégorie</string>
+    <string name="reset_application_button">Réinitialiser l\'application</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Confirmer la réinitialisation</string>
+    <string name="reset_app_dialog_message">Êtes-vous sûr de vouloir réinitialiser l\'application à son état initial ? Tous les prompts et paramètres enregistrés seront supprimés.</string>
+    <string name="edit_prompt_dialog_title">Annuler les modifications</string>
+    <string name="edit_prompt_dialog_message">Vous avez des modifications non enregistrées. Voulez-vous les annuler et quitter ?</string>
+    <string name="dialog_confirm">Confirmer</string>
+    <string name="dialog_cancel">Annuler</string>
+
+
+    <string name="empty_fields_error">Le titre, la description et la catégorie ne peuvent pas être vides.</string>
+    <string name="copy_description_content_description">Copier la description</string>
+    <string name="clear_subcategory_button_description">Effacer le filtre de sous-catégorie</string>
+    <string name="language_setting">Langue</string>
+    <string name="export_prompts_button">Exporter les prompts</string>
+    <string name="import_prompts_button">Importer les prompts</string>
+    <string name="search_prompts_hint">Rechercher des prompts...</string>
+    <string name="search_favorite_prompts_hint">Rechercher des prompts favoris...</string>
+
+    <string name="delete_prompt_dialog_title">Confirmer la suppression</string>
+    <string name="delete_prompt_dialog_message">Êtes-vous sûr de vouloir supprimer ce prompt?</string>
+    <string name="import_prompts_dialog_title">Confirmer l\'importation</string>
+    <string name="import_prompts_dialog_message">Êtes-vous sûr de vouloir importer des prompts? Cela peut écraser les prompts existants.</string>
+    <string name="fab_content_description">Envoyer un e-mail</string>
+
+    <string name="language_english">Anglais</string>
+    <string name="language_spanish">Espagnol</string>
+    <string name="language_french">Français</string>
+    <string name="language_german">Allemand</string>
+    <string name="language_portuguese">Portugais</string>
+    <string name="language_italian">Italien</string>
+    <string name="affiliate_disclaimer">Ceci est un lien d\'affiliation : nous pourrions recevoir une petite commission sans coût supplémentaire pour vous.</string>
+    <string name="favorite_icon_description">Icône de favori</string>
+    <string name="copy_icon_description">Icône de copie</string>
+    <string name="share_icon_description">Icône de partage</string>
+    <string name="prompt_title_placeholder">Titre du Prompt</string>
+    <string name="prompt_description_placeholder">Description du Prompt</string>
+
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-it\strings.xml ---
+<resources>
+    <string name="app_name">PromptMaster AI</string>
+    <string name="navigation_drawer_open">Apri il cassetto di navigazione</string>
+    <string name="navigation_drawer_close">Chiudi il cassetto di navigazione</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Intestazione di navigazione</string>
+    <string name="action_settings">Impostazioni</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Galleria</string>
+    <string name="menu_slideshow">Presentazione</string>
+    <string name="menu_favorites">Preferiti</string>
+    <string name="menu_settings">Impostazioni</string>
+    <string name="add_new_prompt">Aggiungi Nuovo Prompt</string>
+    <string name="edit_prompt">Modifica Prompt</string>
+    <string name="title_label">Titolo</string>
+    <string name="description_label">Descrizione</string>
+    <string name="category_label">Categoria</string>
+    <string name="tags_label">Tag (separati da virgola)</string>
+    <string name="recommended_model_label">Modello Consigliato</string>
+    <string name="customizable_fields_label">Campi Personalizzabili (JSON o simile)</string>
+    <string name="save_prompt_button">Salva Prompt</string>
+    <string name="update_prompt_button">Aggiorna Prompt</string>
+    <string name="delete_prompt_content_description">Elimina prompt</string>
+    <string name="add_to_favorites_content_description">Aggiungi ai preferiti</string>
+    <string name="remove_from_favorites_content_description">Rimuovi dai preferiti</string>
+    <string name="duplicate_prompt_content_description">Duplica prompt</string>
+    <string name="copy_prompt_description_content_description">Copia descrizione prompt</string>
+    <string name="dark_mode_setting">Modalità Scura</string>
+    <string name="search_prompts_label">Cerca Prompt</string>
+    <string name="prompt_list_title">Elenco Prompt</string>
+    <string name="back_button_content_description">Pulsante Indietro</string>
+    <string name="favorite_prompts_title">Prompt Preferiti</string>
+    <string name="all_categories_label">Tutte le Categorie</string>
+    <string name="clear_search_button_description">Elimina</string>
+    <string name="clear_text_button_description">Elimina</string>
+    <string name="clear_category_button_description">Elimina</string>
+    <string name="all_subcategories_label">Tutte le sottocategorie</string>
+    <string name="subcategory_label">Sottocategoria</string>
+    <string name="reset_application_button">Ripristina applicazione</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Conferma Ripristino</string>
+    <string name="reset_app_dialog_message">Sei sicuro di voler ripristinare l\'applicazione allo stato iniziale? Tutti i prompt e le impostazioni salvate verranno eliminati.</string>
+    <string name="edit_prompt_dialog_title">Scarta Modifiche</string>
+    <string name="edit_prompt_dialog_message">Hai modifiche non salvate. Vuoi scartarle e uscire?</string>
+    <string name="dialog_confirm">Conferma</string>
+    <string name="dialog_cancel">Annulla</string>
+
+    <string name="empty_fields_error">Titolo, Descrizione e Categoria non possono essere vuoti.</string>
+    <string name="copy_description_content_description">Copia Descrizione</string>
+    <string name="clear_subcategory_button_description">Cancella filtro sottocategoria</string>
+    <string name="language_setting">Lingua</string>
+    <string name="export_prompts_button">Esporta Prompt</string>
+    <string name="import_prompts_button">Importa Prompt</string>
+    <string name="search_prompts_hint">Cerca prompt...</string>
+    <string name="search_favorite_prompts_hint">Cerca prompt preferiti...</string>
+
+    <string name="delete_prompt_dialog_title">Conferma eliminazione</string>
+    <string name="delete_prompt_dialog_message">Sei sicuro di voler eliminare questo prompt?</string>
+    <string name="import_prompts_dialog_title">Conferma Importazione</string>
+    <string name="import_prompts_dialog_message">Sei sicuro di voler importare i prompt? Questo potrebbe sovrascrivere i prompt esistenti.</string>
+    <string name="fab_content_description">Invia email</string>
+
+    <string name="language_english">Inglese</string>
+    <string name="language_spanish">Spagnolo</string>
+    <string name="language_french">Francese</string>
+    <string name="language_german">Tedesco</string>
+    <string name="language_portuguese">Portoghese</string>
+    <string name="language_italian">Italiano</string>
+    <string name="affiliate_disclaimer">Questo è un link di affiliazione: potremmo ricevere una piccola commissione senza costi aggiuntivi per te.</string>
+    <string name="favorite_icon_description">Icona preferito</string>
+    <string name="copy_icon_description">Icona copia</string>
+    <string name="share_icon_description">Icona condividi</string>
+    <string name="prompt_title_placeholder">Titolo del Prompt</string>
+    <string name="prompt_description_placeholder">Descrizione del Prompt</string>
+
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-land\dimens.xml ---
+<resources>
+    <dimen name="fab_margin">48dp</dimen>
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-night\themes.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.PromptMaster" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <item name="colorSurface">@color/black</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorOnSurfaceVariant">@color/purple_200</item>
+
+        <item name="android:statusBarColor">@color/purple_700</item>
+
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Material3.HeadlineSmall</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Material3.BodyMedium</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Material3.TitleMedium</item>
+    </style>
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-pt\strings.xml ---
+<resources>
+    <string name="app_name">PromptMaster AI</string>
+    <string name="navigation_drawer_open">Abrir gaveta de navegação</string>
+    <string name="navigation_drawer_close">Fechar gaveta de navegação</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Cabeçalho de navegação</string>
+    <string name="action_settings">Configurações</string>
+
+    <string name="menu_home">Início</string>
+    <string name="menu_gallery">Galeria</string>
+    <string name="menu_slideshow">Apresentação de slides</string>
+    <string name="menu_favorites">Favoritos</string>
+    <string name="menu_settings">Configurações</string>
+    <string name="add_new_prompt">Adicionar Novo Prompt</string>
+    <string name="edit_prompt">Editar Prompt</string>
+    <string name="title_label">Título</string>
+    <string name="description_label">Descrição</string>
+    <string name="category_label">Categoria</string>
+    <string name="tags_label">Tags (separadas por vírgulas)</string>
+    <string name="recommended_model_label">Modelo Recomendado</string>
+    <string name="customizable_fields_label">Campos Personalizáveis (JSON ou similar)</string>
+    <string name="save_prompt_button">Salvar Prompt</string>
+    <string name="update_prompt_button">Atualizar Prompt</string>
+    <string name="delete_prompt_content_description">Excluir prompt</string>
+    <string name="add_to_favorites_content_description">Adicionar aos favoritos</string>
+    <string name="remove_from_favorites_content_description">Remover dos favoritos</string>
+    <string name="duplicate_prompt_content_description">Duplicar prompt</string>
+    <string name="copy_prompt_description_content_description">Copiar descrição do prompt</string>
+    <string name="dark_mode_setting">Modo Escuro</string>
+    <string name="search_prompts_label">Pesquisar Prompts</string>
+    <string name="prompt_list_title">Lista de Prompts</string>
+    <string name="back_button_content_description">Botão voltar</string>
+    <string name="favorite_prompts_title">Sugestões favoritas</string>
+    <string name="all_categories_label">Todas as categorias</string>
+    <string name="clear_search_button_description">Apagar</string>
+    <string name="clear_text_button_description">Apagar</string>
+    <string name="clear_category_button_description">Apagar</string>
+    <string name="all_subcategories_label">Todas as subcategorias</string>
+    <string name="subcategory_label">Subcategoria</string>
+    <string name="reset_application_button">Repor a aplicação</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Confirmar redefinição</string>
+    <string name="reset_app_dialog_message">Tem certeza de que deseja redefinir o aplicativo para o estado inicial? Todos os prompts e configurações salvos serão excluídos.</string>
+    <string name="edit_prompt_dialog_title">Descartar alterações</string>
+    <string name="edit_prompt_dialog_message">Você tem alterações não salvas. Deseja descartá-las e sair?</string>
+    <string name="dialog_confirm">Confirmar</string>
+    <string name="dialog_cancel">Cancelar</string>
+
+    <string name="empty_fields_error">Título, Descrição e Categoria não podem estar vazios.</string>
+    <string name="copy_description_content_description">Copiar descrição</string>
+    <string name="clear_subcategory_button_description">Limpar filtro de subcategoria</string>
+    <string name="language_setting">Idioma</string>
+    <string name="export_prompts_button">Exportar prompts</string>
+    <string name="import_prompts_button">Importar prompts</string>
+    <string name="search_prompts_hint">Buscar prompts...</string>
+    <string name="search_favorite_prompts_hint">Buscar prompts favoritos...</string>
+
+    <string name="delete_prompt_dialog_title">Confirmar exclusão</string>
+<string name="delete_prompt_dialog_message">Tem certeza de que deseja excluir este prompt?</string>
+    <string name="import_prompts_dialog_title">Confirmar importação</string>
+    <string name="import_prompts_dialog_message">Tem certeza de que deseja importar prompts? Isso pode sobrescrever prompts existentes.</string>
+<string name="fab_content_description">Enviar e-mail</string>
+
+    <string name="language_english">Inglês</string>
+    <string name="language_spanish">Espanhol</string>
+    <string name="language_french">Francês</string>
+    <string name="language_german">Alemão</string>
+    <string name="language_portuguese">Português</string>
+    <string name="language_italian">Italiano</string>
+    <string name="affiliate_disclaimer">Este é um link de afiliado: podemos receber uma pequena comissão sem custo adicional para você.</string>
+    <string name="favorite_icon_description">Ícone de favorito</string>
+    <string name="copy_icon_description">Ícone de copiar</string>
+    <string name="share_icon_description">Ícone de compartilhar</string>
+    <string name="prompt_title_placeholder">Título do Prompt</string>
+    <string name="prompt_description_placeholder">Descrição do Prompt</string>
+
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-w1240dp\dimens.xml ---
+<resources>
+    <dimen name="fab_margin">200dp</dimen>
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-w600dp\dimens.xml ---
+<resources>
+    <dimen name="fab_margin">48dp</dimen>
+</resources>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\xml\backup_rules.xml ---
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample backup rules file; uncomment and customize as necessary.
+   See https://developer.android.com/guide/topics/data/autobackup
+   for details.
+   Note: This file is ignored for devices older that API 31
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <!--
+   <include domain="sharedpref" path="."/>
+   <exclude domain="sharedpref" path="device.xml"/>
+-->
+</full-backup-content>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\xml\data_extraction_rules.xml ---
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   for details.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- TODO: Use <include> and <exclude> to control what is backed up.
+        <include .../>
+        <exclude .../>
+        -->
+    </cloud-backup>
+    <!--
+    <device-transfer>
+        <include .../>
+        <exclude .../>
+    </device-transfer>
+    -->
+</data-extraction-rules>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\xml\file_paths.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path name="downloads" path="Download/" />
+    <cache-path name="cache" path="/" />
+</paths>
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-en ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-en\strings.xml ---
+<resources>
+    <string name="app_name">PromptMaster AI</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_favorites">Favorites</string>
+    <string name="menu_settings">Settings</string>
+    <string name="add_new_prompt">Add New Prompt</string>
+    <string name="edit_prompt">Edit Prompt</string>
+    <string name="title_label">Title</string>    <string name="description_label">Description</string>
+    <string name="category_label">Category</string>
+    <string name="tags_label">Tags (comma separated)</string>
+    <string name="recommended_model_label">Recommended Model</string>
+    <string name="customizable_fields_label">Customizable Fields (JSON or similar)</string>
+    <string name="save_prompt_button">Save Prompt</string>
+    <string name="update_prompt_button">Update Prompt</string>
+    <string name="delete_prompt_content_description">Delete prompt</string>
+    <string name="add_to_favorites_content_description">Add to favorites</string>
+    <string name="remove_from_favorites_content_description">Remove from favorites</string>
+    <string name="duplicate_prompt_content_description">Duplicate prompt</string>
+    <string name="copy_prompt_description_content_description">Copy prompt description</string>
+    <string name="dark_mode_setting">Dark Mode</string>
+    <string name="search_prompts_label">Search Prompts</string>
+    <string name="prompt_list_title">Prompt List</string>
+    <string name="back_button_content_description">Back button</string>
+    <string name="favorite_prompts_title">Favorite Prompts</string>
+    <string name="all_categories_label">All Categories</string>
+    <string name="clear_search_button_description">Delete</string>
+    <string name="clear_text_button_description">Delete</string>
+    <string name="clear_category_button_description">Delete</string>
+    <string name="all_subcategories_label">All subcategories</string>
+    <string name="subcategory_label">Subcategory</string>
+    <string name="reset_application_button">Reset application</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Confirm Reset</string>
+    <string name="reset_app_dialog_message">Are you sure you want to reset the application to its initial state? All saved prompts and settings will be deleted.</string>
+    <string name="edit_prompt_dialog_title">Discard Changes</string>
+    <string name="edit_prompt_dialog_message">You have unsaved changes. Do you want to discard them and exit?</string>
+    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_cancel">Cancel</string>
+
+    <string name="empty_fields_error">Title, Description, and Category cannot be empty.</string>
+    <string name="copy_description_content_description">Copy Description</string>
+    <string name="clear_subcategory_button_description">Clear subcategory filter</string>
+    <string name="language_setting">Language</string>
+    <string name="export_prompts_button">Export Prompts</string>
+    <string name="import_prompts_button">Import Prompts</string>
+    <string name="search_prompts_hint">Search prompts...</string>
+    <string name="search_favorite_prompts_hint">Search favorite prompts...</string>
+
+    <string name="delete_prompt_dialog_title">Confirm deletion</string>
+<string name="delete_prompt_dialog_message">Are you sure you want to delete this prompt?</string>
+    <string name="import_prompts_dialog_title">Confirm Import</string>
+    <string name="import_prompts_dialog_message">Are you sure you want to import prompts? This may overwrite existing prompts.</string>
+<string name="fab_content_description">Send email</string>
+    <string name="language_english">English</string>
+    <string name="language_spanish">Spanish</string>
+    <string name="language_french">French</string>
+    <string name="language_german">German</string>
+    <string name="language_portuguese">Portuguese</string>
+    <string name="language_italian">Italian</string>
+    <string name="affiliate_disclaimer">This is an affiliate link: we might receive a small commission at no additional cost to you.</string>
+    <string name="favorite_icon_description">Favorite icon</string>
+    <string name="copy_icon_description">Copy icon</string>
+    <string name="share_icon_description">Share icon</string>
+    <string name="prompt_title_placeholder">Prompt Title</string>
+    <string name="prompt_description_placeholder">Prompt Description</string>
+
+</resources>
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-it ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-it\strings.xml ---
+<resources>
+    <string name="app_name">PromptMaster AI</string>
+    <string name="navigation_drawer_open">Apri il cassetto di navigazione</string>
+    <string name="navigation_drawer_close">Chiudi il cassetto di navigazione</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Intestazione di navigazione</string>
+    <string name="action_settings">Impostazioni</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Galleria</string>
+    <string name="menu_slideshow">Presentazione</string>
+    <string name="menu_favorites">Preferiti</string>
+    <string name="menu_settings">Impostazioni</string>
+    <string name="add_new_prompt">Aggiungi Nuovo Prompt</string>
+    <string name="edit_prompt">Modifica Prompt</string>
+    <string name="title_label">Titolo</string>
+    <string name="description_label">Descrizione</string>
+    <string name="category_label">Categoria</string>
+    <string name="tags_label">Tag (separati da virgola)</string>
+    <string name="recommended_model_label">Modello Consigliato</string>
+    <string name="customizable_fields_label">Campi Personalizzabili (JSON o simile)</string>
+    <string name="save_prompt_button">Salva Prompt</string>
+    <string name="update_prompt_button">Aggiorna Prompt</string>
+    <string name="delete_prompt_content_description">Elimina prompt</string>
+    <string name="add_to_favorites_content_description">Aggiungi ai preferiti</string>
+    <string name="remove_from_favorites_content_description">Rimuovi dai preferiti</string>
+    <string name="duplicate_prompt_content_description">Duplica prompt</string>
+    <string name="copy_prompt_description_content_description">Copia descrizione prompt</string>
+    <string name="dark_mode_setting">Modalità Scura</string>
+    <string name="search_prompts_label">Cerca Prompt</string>
+    <string name="prompt_list_title">Elenco Prompt</string>
+    <string name="back_button_content_description">Pulsante Indietro</string>
+    <string name="favorite_prompts_title">Prompt Preferiti</string>
+    <string name="all_categories_label">Tutte le Categorie</string>
+    <string name="clear_search_button_description">Elimina</string>
+    <string name="clear_text_button_description">Elimina</string>
+    <string name="clear_category_button_description">Elimina</string>
+    <string name="all_subcategories_label">Tutte le sottocategorie</string>
+    <string name="subcategory_label">Sottocategoria</string>
+    <string name="reset_application_button">Ripristina applicazione</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Conferma Ripristino</string>
+    <string name="reset_app_dialog_message">Sei sicuro di voler ripristinare l\'applicazione allo stato iniziale? Tutti i prompt e le impostazioni salvate verranno eliminati.</string>
+    <string name="edit_prompt_dialog_title">Scarta Modifiche</string>
+    <string name="edit_prompt_dialog_message">Hai modifiche non salvate. Vuoi scartarle e uscire?</string>
+    <string name="dialog_confirm">Conferma</string>
+    <string name="dialog_cancel">Annulla</string>
+
+    <string name="empty_fields_error">Titolo, Descrizione e Categoria non possono essere vuoti.</string>
+    <string name="copy_description_content_description">Copia Descrizione</string>
+    <string name="clear_subcategory_button_description">Cancella filtro sottocategoria</string>
+    <string name="language_setting">Lingua</string>
+    <string name="export_prompts_button">Esporta Prompt</string>
+    <string name="import_prompts_button">Importa Prompt</string>
+    <string name="search_prompts_hint">Cerca prompt...</string>
+    <string name="search_favorite_prompts_hint">Cerca prompt preferiti...</string>
+
+    <string name="delete_prompt_dialog_title">Conferma eliminazione</string>
+    <string name="delete_prompt_dialog_message">Sei sicuro di voler eliminare questo prompt?</string>
+    <string name="import_prompts_dialog_title">Conferma Importazione</string>
+    <string name="import_prompts_dialog_message">Sei sicuro di voler importare i prompt? Questo potrebbe sovrascrivere i prompt esistenti.</string>
+    <string name="fab_content_description">Invia email</string>
+
+    <string name="language_english">Inglese</string>
+    <string name="language_spanish">Spagnolo</string>
+    <string name="language_french">Francese</string>
+    <string name="language_german">Tedesco</string>
+    <string name="language_portuguese">Portoghese</string>
+    <string name="language_italian">Italiano</string>
+    <string name="affiliate_disclaimer">Questo è un link di affiliazione: potremmo ricevere una piccola commissione senza costi aggiuntivi per te.</string>
+    <string name="favorite_icon_description">Icona preferito</string>
+    <string name="copy_icon_description">Icona copia</string>
+    <string name="share_icon_description">Icona condividi</string>
+    <string name="prompt_title_placeholder">Titolo del Prompt</string>
+    <string name="prompt_description_placeholder">Descrizione del Prompt</string>
+
+</resources>

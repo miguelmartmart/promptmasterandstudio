@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PromptMaster AI</string>
     <string name="navigation_drawer_open">Abrir cajón de navegación</string>
@@ -54,6 +55,8 @@
     <string name="language_setting">Idioma</string>
     <string name="export_prompts_button">Exportar prompts</string>
     <string name="import_prompts_button">Importar prompts</string>
+    <string name="search_prompts_hint">Buscar prompts...</string>
+    <string name="search_favorite_prompts_hint">Buscar prompts favoritos...</string>
     <string name="delete_prompt_dialog_title">Confirmar eliminación</string>
     <string name="delete_prompt_dialog_message">¿Estás seguro de que quieres eliminar este prompt?</string>
     <string name="import_prompts_dialog_title">Confirmar importación</string>
@@ -69,4 +72,6 @@
     <string name="favorite_icon_description">Icono de favorito</string>
     <string name="copy_icon_description">Icono de copiar</string>
     <string name="share_icon_description">Icono de compartir</string>
+    <string name="prompt_title_placeholder">Título del Prompt</string>
+    <string name="prompt_description_placeholder">Descripción del Prompt</string>
 </resources>

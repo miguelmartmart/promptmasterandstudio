@@ -54,6 +54,8 @@
     <string name="language_setting">Idioma</string>
     <string name="export_prompts_button">Exportar prompts</string>
     <string name="import_prompts_button">Importar prompts</string>
+    <string name="search_prompts_hint">Buscar prompts...</string>
+    <string name="search_favorite_prompts_hint">Buscar prompts favoritos...</string>
 
     <string name="delete_prompt_dialog_title">Confirmar exclusão</string>
 <string name="delete_prompt_dialog_message">Tem certeza de que deseja excluir este prompt?</string>
@@ -71,5 +73,7 @@
     <string name="favorite_icon_description">Ícone de favorito</string>
     <string name="copy_icon_description">Ícone de copiar</string>
     <string name="share_icon_description">Ícone de compartilhar</string>
+    <string name="prompt_title_placeholder">Título do Prompt</string>
+    <string name="prompt_description_placeholder">Descrição do Prompt</string>
 
 </resources>

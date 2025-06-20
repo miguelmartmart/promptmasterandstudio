@@ -65,6 +65,7 @@ import kotlinx.coroutines.delay // Import delay
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration // Import LocalConfiguration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.dimensionResource // Import dimensionResource
 
 @AndroidEntryPoint // Add AndroidEntryPoint annotation
 class MainActivity : ComponentActivity() { // Define MainActivity as a class
@@ -156,6 +157,7 @@ fun PromptMasterApp(
 
                         // Trigger refresh when the Home screen is composed or re-composed due to navigation
                         LaunchedEffect(Unit) { // Use Unit as key for LaunchedEffect to run once
+                            delay(300) // evitar lock en cold boot
                             promptViewModel.refresh()
                         }
 
@@ -216,8 +218,8 @@ fun PromptMasterApp(
                 ad = ad,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp) // Apply horizontal padding
-                    .heightIn(min = 120.dp, max = 160.dp) // Set adaptive height range
+                    .padding(horizontal = dimensionResource(R.dimen.ad_view_horizontal_padding)) // Apply horizontal padding from dimens
+                    .heightIn(min = dimensionResource(R.dimen.ad_view_min_height), max = dimensionResource(R.dimen.ad_view_max_height)) // Set adaptive height range from dimens
             )
         }
     }
@@ -261,7 +263,7 @@ fun BottomNavigationBar(navController: NavHostController) { // Removed metrics p
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 64.dp, max = 72.dp), // Increased height range for more vertical space
+            .heightIn(min = 72.dp, max = 80.dp), // Increased height range for more vertical space
         tonalElevation = 0.dp
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -276,7 +278,6 @@ fun BottomNavigationBar(navController: NavHostController) { // Removed metrics p
                             verticalArrangement = Arrangement.Center,
                             modifier = Modifier
                                 .fillMaxHeight()
-                                .padding(vertical = 4.dp) // Adjusted vertical padding
                         ) {
                             Icon(
                                 imageVector = screen.icon,

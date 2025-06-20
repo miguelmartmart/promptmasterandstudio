@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment">
+    tools:context=".ui.favorites.FavoritesFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -33,13 +33,11 @@
                     android:id="@+id/search_filter_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/search_prompts_hint"
+                    android:hint="@string/search_favorite_prompts_hint"
                     android:minHeight="@dimen/search_filter_min_height"
                     android:singleLine="true"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/purple_200"
-                    android:textCursorDrawable="@null"
-                    android:textAppearance="?attr/textAppearanceBody1"/>
+                    android:textColorHint="@color/purple_200"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.recyclerview.widget.RecyclerView

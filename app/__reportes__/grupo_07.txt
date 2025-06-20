@@ -1,0 +1,152 @@
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\androidTest\java\com ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\androidTest\java\com\promptmaster\ExampleInstrumentedTest.java ---
+package com.promptmaster;
+
+import android.content.Context;
+
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.junit.Assert.*;
+
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ */
+@RunWith(AndroidJUnit4.class)
+public class ExampleInstrumentedTest {
+    @Test
+    public void useAppContext() {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        assertEquals("com.promptmaster", appContext.getPackageName());
+    }
+}
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\ads ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\ads\Ad.kt ---
+package com.promptmaster.data.ads
+
+data class Ad(
+    val productId: String, // New field for product ID
+    val imageUrl: String,
+    val title: String,
+    val description: String,
+    val links: Map<String, String> // Changed to a map for geo-localized links
+)
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\ads\AdRepository.kt ---
+package com.promptmaster.data.ads
+
+import android.content.Context
+import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import java.util.Locale // Import Locale
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class AdRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val okHttpClient: OkHttpClient, // Keep OkHttpClient for potential future scraping or other network needs
+    private val gson: Gson
+) {
+    private val cachedAds = mutableListOf<Ad>()
+    private var manualAdsConfig: Map<String, ManualAdData> = emptyMap()
+
+    init {
+        loadManualAdsConfig()
+    }
+
+    private fun loadManualAdsConfig() {
+        try {
+            val jsonString = context.assets.open("manual_ads_config.json").bufferedReader().use { it.readText() }
+            // Updated TypeToken to match the new JSON structure with productId as key
+            val type = object : TypeToken<Map<String, ManualAdData>>() {}.type
+            manualAdsConfig = gson.fromJson(jsonString, type)
+            Log.d("AdRepository", "Manual ads config loaded: ${manualAdsConfig.size} entries.")
+        } catch (e: Exception) {
+            Log.e("AdRepository", "Error loading manual_ads_config.json", e)
+            manualAdsConfig = emptyMap()
+        }
+    }
+
+    suspend fun getAds(): List<Ad> = withContext(Dispatchers.IO) {
+        Log.d("AdRepository", "getAds() called. Cached ads size: ${cachedAds.size}")
+        if (cachedAds.isNotEmpty()) {
+            Log.d("AdRepository", "Returning cached ads.")
+            return@withContext cachedAds
+        }
+
+        val fetchedAds = mutableListOf<Ad>()
+        val userCountryCode = getUserCountryCode()
+        Log.d("AdRepository", "Detected user country code: $userCountryCode")
+
+        // Iterate through manual ads config to create Ad objects
+        for ((productId, manualData) in manualAdsConfig) {
+            val selectedLink = manualData.links[userCountryCode] ?: manualData.links["default"]
+            if (selectedLink != null) {
+                val ad = Ad(
+                    productId = productId,
+                    imageUrl = manualData.imageUrl ?: "https://via.placeholder.com/150/CCCCCC/000000?text=No+Image",
+                    title = manualData.title ?: "Product Title Not Found",
+                    description = manualData.description ?: "No description available.",
+                    links = manualData.links // Pass the entire links map
+                )
+                fetchedAds.add(ad)
+                Log.d("AdRepository", "Successfully created ad for $productId (Country: $userCountryCode, Link: $selectedLink)")
+            } else {
+                Log.w("AdRepository", "No suitable link found for product $productId in country $userCountryCode. Skipping ad.")
+            }
+        }
+
+        cachedAds.clear()
+        cachedAds.addAll(fetchedAds)
+        Log.d("AdRepository", "Finished fetching ads. Total fetched: ${fetchedAds.size}")
+        return@withContext fetchedAds
+    }
+
+    // Helper function to get the user's country code
+    private fun getUserCountryCode(): String {
+        return Locale.getDefault().country.uppercase(Locale.ROOT)
+    }
+}
+
+// Data class to represent the structure of manual ad data in JSON
+data class ManualAdData(
+    val imageUrl: String?,
+    val title: String?,
+    val description: String?,
+    val links: Map<String, String> // New field for geo-localized links
+)
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable-mdpi ==
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\test\java ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\test\java\com\promptmaster\ExampleUnitTest.java ---
+package com.promptmaster;
+
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+/**
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ */
+public class ExampleUnitTest {
+    @Test
+    public void addition_isCorrect() {
+        assertEquals(4, 2 + 2);
+    }
+}

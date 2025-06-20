@@ -33,8 +33,6 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight() // Permitir que el Card se ajuste a su contenido
-            .padding(dimensionResource(R.dimen.ad_card_padding))
             .clickable {
                 selectedAffiliateLink?.let {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
@@ -49,8 +47,7 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
@@ -68,14 +65,14 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
                         text = ad.title,
                         fontSize = dimensionResource(R.dimen.ad_title_font_size).value.sp,
                         fontWeight = FontWeight.Bold,
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.height(dimensionResource(R.dimen.ad_spacer_height_small)))
                     Text(
                         text = ad.description,
                         fontSize = dimensionResource(R.dimen.ad_description_font_size).value.sp,
-                        maxLines = 3,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
@@ -88,7 +85,6 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
                     .padding(top = dimensionResource(R.dimen.ad_disclaimer_padding_top))
             )
         }

@@ -1,0 +1,240 @@
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\gallery ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\gallery\GalleryFragment.java ---
+package com.promptmaster.ui.gallery;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.promptmaster.databinding.FragmentGalleryBinding;
+
+public class GalleryFragment extends Fragment {
+
+    private FragmentGalleryBinding binding;
+
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        GalleryViewModel galleryViewModel =
+                new ViewModelProvider(this).get(GalleryViewModel.class);
+
+        binding = FragmentGalleryBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+
+        final TextView textView = binding.textGallery;
+        galleryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        return root;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\gallery\GalleryViewModel.java ---
+package com.promptmaster.ui.gallery;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
+public class GalleryViewModel extends ViewModel {
+
+    private final MutableLiveData<String> mText;
+
+    public GalleryViewModel() {
+        mText = new MutableLiveData<>();
+        mText.setValue("This is gallery fragment");
+    }
+
+    public LiveData<String> getText() {
+        return mText;
+    }
+}
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\components\ads ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\components\ads\AdView.kt ---
+package com.promptmaster.ui.components.ads
+
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp // Import sp for font sizes
+import coil.compose.AsyncImage
+import com.promptmaster.data.ads.Ad
+import java.util.Locale
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.dimensionResource
+import com.promptmaster.R
+// Removed ScreenMetrics import
+
+@Composable
+fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
+    val context = LocalContext.current
+    val userCountryCode = Locale.getDefault().country.uppercase(Locale.ROOT)
+    val selectedAffiliateLink = ad.links[userCountryCode] ?: ad.links["default"]
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(R.dimen.ad_card_padding))
+            .clickable {
+                selectedAffiliateLink?.let {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                    context.startActivity(intent)
+                }
+            }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(R.dimen.ad_column_padding))
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = ad.imageUrl,
+                    contentDescription = ad.title,
+                    modifier = Modifier
+                        .size(dimensionResource(R.dimen.ad_image_size))
+                        .padding(end = dimensionResource(R.dimen.ad_image_padding_end)),
+                    contentScale = ContentScale.Crop
+                )
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = ad.title,
+                        fontSize = dimensionResource(R.dimen.ad_title_font_size).value.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(R.dimen.ad_spacer_height_small)))
+                    Text(
+                        text = ad.description,
+                        fontSize = dimensionResource(R.dimen.ad_description_font_size).value.sp,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.ad_spacer_height_medium)))
+            Text(
+                text = stringResource(R.string.affiliate_disclaimer),
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = dimensionResource(R.dimen.ad_disclaimer_font_size).value.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = dimensionResource(R.dimen.ad_disclaimer_padding_top))
+            )
+        }
+    }
+}
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-fr ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-fr\strings.xml ---
+<resources>
+    <string name="app_name">PromptMaster AI</string>
+    <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
+    <string name="navigation_drawer_close">Fermer le tiroir de navigation</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">En-tête de navigation</string>
+    <string name="action_settings">Paramètres</string>
+
+    <string name="menu_home">Accueil</string>
+    <string name="menu_gallery">Galerie</string>
+    <string name="menu_slideshow">Diaporama</string>
+    <string name="menu_favorites">Favoris</string>
+    <string name="menu_settings">Paramètres</string>
+    <string name="add_new_prompt">Ajouter un nouveau prompt</string>
+    <string name="edit_prompt">Modifier le prompt</string>
+    <string name="title_label">Titre</string>
+    <string name="description_label">Description</string>
+    <string name="category_label">Catégorie</string>
+    <string name="tags_label">Tags (séparés par des virgules)</string>
+    <string name="recommended_model_label">Modèle recommandé</string>
+    <string name="customizable_fields_label">Champs personnalisables (JSON ou similaire)</string>
+    <string name="save_prompt_button">Enregistrer le prompt</string>
+    <string name="update_prompt_button">Mettre à jour le prompt</string>
+    <string name="delete_prompt_content_description">Supprimer le prompt</string>
+    <string name="add_to_favorites_content_description">Ajouter aux favoris</string>
+    <string name="remove_from_favorites_content_description">Retirer des favoris</string>
+    <string name="duplicate_prompt_content_description">Dupliquer le prompt</string>
+    <string name="copy_prompt_description_content_description">Copier la description du prompt</string>
+    <string name="dark_mode_setting">Mode sombre</string>
+    <string name="search_prompts_label">Rechercher des prompts</string>
+    <string name="prompt_list_title">Liste des prompts</string>
+    <string name="back_button_content_description">Bouton retour</string>
+    <string name="favorite_prompts_title">Suggestions préférées</string>
+    <string name="all_categories_label">Toutes les catégories</string>
+    <string name="clear_search_button_description">Supprimer</string>
+    <string name="clear_text_button_description">Supprimer</string>
+    <string name="clear_category_button_description">Supprimer</string>
+    <string name="all_subcategories_label">Toutes les sous-catégories</string>
+    <string name="subcategory_label">Sous-catégorie</string>
+    <string name="reset_application_button">Réinitialiser l\'application</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Confirmer la réinitialisation</string>
+    <string name="reset_app_dialog_message">Êtes-vous sûr de vouloir réinitialiser l\'application à son état initial ? Tous les prompts et paramètres enregistrés seront supprimés.</string>
+    <string name="edit_prompt_dialog_title">Annuler les modifications</string>
+    <string name="edit_prompt_dialog_message">Vous avez des modifications non enregistrées. Voulez-vous les annuler et quitter ?</string>
+    <string name="dialog_confirm">Confirmer</string>
+    <string name="dialog_cancel">Annuler</string>
+
+
+    <string name="empty_fields_error">Le titre, la description et la catégorie ne peuvent pas être vides.</string>
+    <string name="copy_description_content_description">Copier la description</string>
+    <string name="clear_subcategory_button_description">Effacer le filtre de sous-catégorie</string>
+    <string name="language_setting">Langue</string>
+    <string name="export_prompts_button">Exporter les prompts</string>
+    <string name="import_prompts_button">Importer les prompts</string>
+    <string name="search_prompts_hint">Rechercher des prompts...</string>
+    <string name="search_favorite_prompts_hint">Rechercher des prompts favoris...</string>
+
+    <string name="delete_prompt_dialog_title">Confirmer la suppression</string>
+    <string name="delete_prompt_dialog_message">Êtes-vous sûr de vouloir supprimer ce prompt?</string>
+    <string name="import_prompts_dialog_title">Confirmer l\'importation</string>
+    <string name="import_prompts_dialog_message">Êtes-vous sûr de vouloir importer des prompts? Cela peut écraser les prompts existants.</string>
+    <string name="fab_content_description">Envoyer un e-mail</string>
+
+    <string name="language_english">Anglais</string>
+    <string name="language_spanish">Espagnol</string>
+    <string name="language_french">Français</string>
+    <string name="language_german">Allemand</string>
+    <string name="language_portuguese">Portugais</string>
+    <string name="language_italian">Italien</string>
+    <string name="affiliate_disclaimer">Ceci est un lien d\'affiliation : nous pourrions recevoir une petite commission sans coût supplémentaire pour vous.</string>
+    <string name="favorite_icon_description">Icône de favori</string>
+    <string name="copy_icon_description">Icône de copie</string>
+    <string name="share_icon_description">Icône de partage</string>
+    <string name="prompt_title_placeholder">Titre du Prompt</string>
+    <string name="prompt_description_placeholder">Description du Prompt</string>
+
+</resources>
