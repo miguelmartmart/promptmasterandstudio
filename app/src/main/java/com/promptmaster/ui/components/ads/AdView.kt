@@ -85,7 +85,9 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = dimensionResource(R.dimen.ad_disclaimer_padding_top))
+                    .padding(top = dimensionResource(R.dimen.ad_disclaimer_padding_top)),
+                overflow = TextOverflow.Ellipsis, // Add text overflow ellipsis
+                maxLines = 1 // Limit to one line
             )
         }
     }

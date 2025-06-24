@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/card_margin"
+    android:layout_marginVertical="4dp"
     app:cardCornerRadius="@dimen/card_corner_radius"
     app:cardElevation="@dimen/card_elevation"
     tools:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -13,10 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="@dimen/card_padding"
-        android:paddingStart="@dimen/card_padding"
-        android:paddingEnd="@dimen/card_padding"
-        android:paddingBottom="@dimen/prompt_item_content_padding_bottom">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/prompt_title"

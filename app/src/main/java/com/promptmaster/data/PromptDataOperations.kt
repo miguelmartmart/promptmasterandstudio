@@ -40,4 +40,10 @@ class PromptDataOperations @Inject constructor(
         val newPromptId = repository.insert(newPrompt) // Insert the new prompt
         repository.updateLastUsed(newPromptId, System.currentTimeMillis()) // newPromptId is already Int
     }
+
+    suspend fun deleteAllPrompts() {
+        android.util.Log.d("PromptMasterDebug", "PromptDataOperations: deleteAllPrompts")
+        repository.deleteAllPrompts()
+        promptBackupManager.createBackup() // Create backup after deleting all prompts
+    }
 }

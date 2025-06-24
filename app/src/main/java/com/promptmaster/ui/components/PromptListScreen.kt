@@ -1,6 +1,7 @@
 package com.promptmaster.ui.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -200,7 +201,8 @@ fun PromptListScreen(
 
         LazyColumn(
             state = listState,
-            modifier = Modifier.padding(top = 16.dp)
+            contentPadding = PaddingValues(horizontal = horizontalPadding, vertical = 8.dp), // Apply horizontal padding here
+            modifier = Modifier.padding(top = 16.dp) // Keep top padding for separation from filters
         ) {
             items(
                 items = prompts,
@@ -236,8 +238,8 @@ fun PromptListScreen(
                     onCopyDescriptionClick = { description -> // Modify lambda to receive description
                         android.util.Log.d("PromptMasterDebug", "PromptListScreen: onCopyDescriptionClick for ID: ${prompt.id}")
                         onCopyDescriptionClick(prompt.id, description) // Call the lambda with prompt ID and description
-                    },
-                    horizontalPadding = horizontalPadding // Pass horizontalPadding
+                    }
+                    // Removed horizontalPadding from PromptItem call
                 )
             }
 

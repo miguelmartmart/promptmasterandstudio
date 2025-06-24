@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Basque (eu) translations - PLEASE PROVIDE ACTUAL TRANSLATIONS -->
+    <string name="app_name">PromptMaster AI</string>
+    <string name="navigation_drawer_open">Nabigazio tiradera ireki</string>
+    <string name="navigation_drawer_close">Nabigazio tiradera itxi</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Nabigazio goiburua</string>
+    <string name="action_settings">Ezarpenak</string>
+
+    <string name="menu_home">Hasiera</string>
+    <string name="menu_gallery">Galeria</string>
+    <string name="menu_slideshow">Aurkezpena</string>
+    <string name="menu_favorites">Gogokoak</string>
+    <string name="menu_settings">Ezarpenak</string>
+    <string name="add_new_prompt">Prompt Berria Gehitu</string>
+    <string name="edit_prompt">Prompt Editatu</string>
+    <string name="title_label">Izenburua</string>
+    <string name="description_label">Deskribapena</string>
+    <string name="category_label">Kategoria</string>
+    <string name="tags_label">Etiketak (komaz banatuta)</string>
+    <string name="recommended_model_label">Gomendatutako eredua</string>
+    <string name="customizable_fields_label">Pertsonalizagarriak diren eremuak (JSON edo antzekoa)</string>
+    <string name="save_prompt_button">Prompt Gorde</string>
+    <string name="update_prompt_button">Prompt Eguneratu</string>
+    <string name="delete_prompt_content_description">Prompt ezabatu</string>
+    <string name="add_to_favorites_content_description">Gogokoetara gehitu</string>
+    <string name="remove_from_favorites_content_description">Gogokoetatik kendu</string>
+    <string name="duplicate_prompt_content_description">Prompt bikoiztu</string>
+    <string name="copy_prompt_description_content_description">Prompt deskribapena kopiatu</string>
+    <string name="dark_mode_setting">Modu Iluna</string>
+    <string name="search_prompts_label">Promptak Bilatu</string>
+    <string name="prompt_list_title">Prompt zerrenda</string>
+    <string name="back_button_content_description">Atzera botoia</string>
+    <string name="favorite_prompts_title">Gogoko Promptak</string>
+    <string name="all_categories_label">Kategoria guztiak</string>
+    <string name="clear_search_button_description">Garbitu</string>
+    <string name="clear_text_button_description">Garbitu</string>
+    <string name="clear_category_button_description">Garbitu</string>
+    <string name="all_subcategories_label">Azpikategoria guztiak</string>
+    <string name="subcategory_label">Azpikategoria</string>
+    <string name="reset_application_button">Aplikazioa berrezarri</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Berrezarpena baieztatu</string>
+    <string name="reset_app_dialog_message">Ziur zaude aplikazioa hasierako egoerara berrezarri nahi duzula? Gordetako prompt guztiak eta ezarpenak ezabatuko dira.</string>
+    <string name="edit_prompt_dialog_title">Aldaketak baztertu</string>
+    <string name="edit_prompt_dialog_message">Gorde gabeko aldaketak dituzu. Baztertu eta irten nahi duzu?</string>
+    <string name="dialog_confirm">Baieztatu</string>
+    <string name="dialog_cancel">Utzi</string>
+
+    <string name="empty_fields_error">Izenburua, Deskribapena eta Kategoria ezin dira hutsik egon.</string>
+    <string name="copy_description_content_description">Deskribapena kopiatu</string>
+    <string name="clear_subcategory_button_description">Azpikategoria iragazkia garbitu</string>
+    <string name="language_setting">Hizkuntza</string>
+    <string name="export_prompts_button">Promptak esportatu</string>
+    <string name="import_prompts_button">Promptak inportatu</string>
+    <string name="search_prompts_hint">Promptak bilatu...</string>
+    <string name="search_favorite_prompts_hint">Gogoko promptak bilatu...</string>
+    <string name="delete_prompt_dialog_title">Ezabaketa baieztatu</string>
+    <string name="delete_prompt_dialog_message">Ziur zaude prompt hau ezabatu nahi duzula?</string>
+    <string name="import_prompts_dialog_title">Inportazioa baieztatu</string>
+    <string name="import_prompts_dialog_message">Ziur zaude promptak inportatu nahi dituzula? Honek lehendik dauden promptak gainidatzi ditzake.</string>
+    <string name="delete_all_prompts_button">Prompt guztiak ezabatu</string>
+    <string name="delete_all_prompts_dialog_title">Promptak ezabatzea baieztatu</string>
+    <string name="delete_all_prompts_dialog_message">Ziur zaude datu-baseko prompt GUZTIAK ezabatu nahi dituzula? Ekintza hau ezin da desegin.</string>
+    <string name="all_prompts_deleted_toast">Prompt guztiak ezabatu dira!</string>
+    <string name="fab_content_description">Posta elektronikoa bidali</string>
+    <string name="language_english">Ingelesa</string>
+    <string name="language_spanish">Gaztelania</string>
+    <string name="language_french">Frantsesa</string>
+    <string name="language_german">Alemana</string>
+    <string name="language_portuguese">Portugesa</string>
+    <string name="language_italian">Italiera</string>
+    <string name="language_catalan">Katalana</string>
+    <string name="language_basque">Euskara</string>
+    <string name="language_galician">Galiziera</string>
+    <string name="language_spanish_spain">Gaztelania (Espainia)</string>
+
+    <string name="settings_group_general">Orokorrak</string>
+    <string name="settings_group_advanced">Aurreratuak</string>
+    <string name="affiliate_disclaimer">Esteka hau afiliatua da: komisio txiki bat jaso genezake zuretzako kostu gehigarririk gabe.</string>
+    <string name="favorite_icon_description">Gogoko ikonoa</string>
+    <string name="copy_icon_description">Kopiatu ikonoa</string>
+    <string name="share_icon_description">Partekatu ikonoa</string>
+    <string name="prompt_title_placeholder">Promptaren izenburua</string>
+    <string name="prompt_description_placeholder">Promptaren deskribapena</string>
+    <string name="share_prompt_button">Promptak partekatu</string>
+    <string name="share_app_button">Aplikazioa partekatu</string>
+    <string name="share_app_title">Ikusi PromptMaster AI!</string>
+    <string name="share_app_message">Ezagutu PromptMaster AI, zure IA promptak kudeatzeko eta antolatzeko azken aplikazioa! Deskargatu orain eta eraman zure sormena hurrengo mailara.</string>
+    <string name="share_all_prompts_button">Prompt guztiak partekatu</string>
+    <string name="share_all_prompts_title">Nire PromptMaster AI Promptak</string>
+</resources>

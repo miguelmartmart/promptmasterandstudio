@@ -61,6 +61,10 @@
     <string name="delete_prompt_dialog_message">¿Estás seguro de que quieres eliminar este prompt?</string>
     <string name="import_prompts_dialog_title">Confirmar importación</string>
     <string name="import_prompts_dialog_message">¿Estás seguro de que quieres importar prompts? Esto puede sobrescribir prompts existentes.</string>
+    <string name="delete_all_prompts_button">Borrar todos los prompts</string>
+    <string name="delete_all_prompts_dialog_title">Confirmar eliminación de prompts</string>
+    <string name="delete_all_prompts_dialog_message">¿Estás seguro de que quieres eliminar TODOS los prompts de la base de datos? Esta acción no se puede deshacer.</string>
+    <string name="all_prompts_deleted_toast">¡Todos los prompts eliminados!</string>
     <string name="fab_content_description">Enviar correo electrónico</string>
     <string name="language_english">Inglés</string>
     <string name="language_spanish">Español</string>
@@ -68,10 +72,22 @@
     <string name="language_german">Alemán</string>
     <string name="language_portuguese">Portugués</string>
     <string name="language_italian">Italiano</string>
+    <string name="language_catalan">Catalán</string>
+    <string name="language_basque">Euskera</string>
+    <string name="language_galician">Gallego</string>
+    <string name="language_spanish_spain">Español (España)</string>
+    <string name="settings_group_general">Generales</string>
+    <string name="settings_group_advanced">Avanzados</string>
     <string name="affiliate_disclaimer">Este enlace es de afiliado: podríamos recibir una pequeña comisión sin coste adicional para ti.</string>
     <string name="favorite_icon_description">Icono de favorito</string>
     <string name="copy_icon_description">Icono de copiar</string>
     <string name="share_icon_description">Icono de compartir</string>
     <string name="prompt_title_placeholder">Título del Prompt</string>
     <string name="prompt_description_placeholder">Descripción del Prompt</string>
+    <string name="share_prompt_button">Compartir prompts</string>
+    <string name="share_app_button">Compartir aplicación</string>
+    <string name="share_app_title">¡Echa un vistazo a PromptMaster AI!</string>
+    <string name="share_app_message">¡Descubre PromptMaster AI, la aplicación definitiva para gestionar y organizar tus prompts de IA! Descárgala ahora y lleva tu creatividad al siguiente nivel.</string>
+    <string name="share_all_prompts_button">Compartir todos los prompts</string>
+    <string name="share_all_prompts_title">Mis Prompts de PromptMaster AI</string>
 </resources>

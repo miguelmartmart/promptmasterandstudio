@@ -59,6 +59,11 @@
 
     <string name="delete_prompt_dialog_title">Confirmar exclusão</string>
 <string name="delete_prompt_dialog_message">Tem certeza de que deseja excluir este prompt?</string>
+    <string name="delete_all_prompts_button">Apagar todos os prompts</string>
+    <string name="delete_all_prompts_dialog_title">Confirmar eliminação dos prompts</string>
+    <string name="delete_all_prompts_dialog_message">Tem certeza de que deseja apagar TODOS os prompts do banco de dados? Esta ação não pode ser desfeita.</string>
+    <string name="all_prompts_deleted_toast">Todos os prompts foram apagados!</string>
+
     <string name="import_prompts_dialog_title">Confirmar importação</string>
     <string name="import_prompts_dialog_message">Tem certeza de que deseja importar prompts? Isso pode sobrescrever prompts existentes.</string>
 <string name="fab_content_description">Enviar e-mail</string>
@@ -69,11 +74,24 @@
     <string name="language_german">Alemão</string>
     <string name="language_portuguese">Português</string>
     <string name="language_italian">Italiano</string>
+    <string name="language_catalan">Catalão</string>
+    <string name="language_basque">Basco</string>
+    <string name="language_galician">Galego</string>
+    <string name="language_spanish_spain">Espanhol (Espanha)</string>
+
     <string name="affiliate_disclaimer">Este é um link de afiliado: podemos receber uma pequena comissão sem custo adicional para você.</string>
     <string name="favorite_icon_description">Ícone de favorito</string>
     <string name="copy_icon_description">Ícone de copiar</string>
     <string name="share_icon_description">Ícone de compartilhar</string>
     <string name="prompt_title_placeholder">Título do Prompt</string>
     <string name="prompt_description_placeholder">Descrição do Prompt</string>
+    <string name="settings_group_general">Geral</string>
+    <string name="settings_group_advanced">Avançado</string>
+    <string name="share_prompt_button">Partilhar sugestões</string>
+    <string name="share_app_button">Compartilhar app</string>
+    <string name="share_app_title">Confira o PromptMaster AI!</string>
+    <string name="share_app_message">Descubra o PromptMaster AI, o aplicativo definitivo para gerenciar e organizar seus prompts de IA! Baixe agora e leve sua criatividade para o próximo nível.</string>
+    <string name="share_all_prompts_button">Compartilhar todos os prompts</string>
+    <string name="share_all_prompts_title">Meus prompts do PromptMaster AI</string>
 
 </resources>

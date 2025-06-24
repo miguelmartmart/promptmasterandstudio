@@ -385,3 +385,100 @@ val Typography = Typography(
 )
 == Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable-xxhdpi ==
 == Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\mipmap-xxhdpi ==
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-es-rES ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-es-rES\strings.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spanish (Spain) (es-rES) translations - PLEASE PROVIDE ACTUAL TRANSLATIONS -->
+    <string name="app_name">PromptMaster AI</string>
+    <string name="navigation_drawer_open">Abrir cajón de navegación</string>
+    <string name="navigation_drawer_close">Cerrar cajón de navegación</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Encabezado de navegación</string>
+    <string name="action_settings">Configuración</string>
+
+    <string name="menu_home">Inicio</string>
+    <string name="menu_gallery">Galería</string>
+    <string name="menu_slideshow">Presentación</string>
+    <string name="menu_favorites">Favoritos</string>
+    <string name="menu_settings">Configuración</string>
+    <string name="add_new_prompt">Añadir Nuevo Prompt</string>
+    <string name="edit_prompt">Editar Prompt</string>
+    <string name="title_label">Título</string>
+    <string name="description_label">Descripción</string>
+    <string name="category_label">Categoría</string>
+    <string name="tags_label">Etiquetas (separadas por comas)</string>
+    <string name="recommended_model_label">Modelo Recomendado</string>
+    <string name="customizable_fields_label">Campos Personalizables (JSON o similar)</string>
+    <string name="save_prompt_button">Guardar Prompt</string>
+    <string name="update_prompt_button">Actualizar Prompt</string>
+    <string name="delete_prompt_content_description">Eliminar prompt</string>
+    <string name="add_to_favorites_content_description">Añadir a favoritos</string>
+    <string name="remove_from_favorites_content_description">Eliminar de favoritos</string>
+    <string name="duplicate_prompt_content_description">Duplicar prompt</string>
+    <string name="copy_prompt_description_content_description">Copiar descripción del prompt</string>
+    <string name="dark_mode_setting">Modo Oscuro</string>
+    <string name="search_prompts_label">Buscar Prompts</string>
+    <string name="prompt_list_title">Lista de Prompts</string>
+    <string name="back_button_content_description">Botón atrás</string>
+    <string name="favorite_prompts_title">Prompts Favoritos</string>
+    <string name="all_categories_label">Todas las categorías</string>
+    <string name="clear_search_button_description">Borrar</string>
+    <string name="clear_text_button_description">Borrar</string>
+    <string name="clear_category_button_description">Borrar</string>
+    <string name="all_subcategories_label">Todas las subcategorías</string>
+    <string name="subcategory_label">Subcategoría</string>
+    <string name="reset_application_button">Restablecer aplicación</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Confirmar restablecimiento</string>
+    <string name="reset_app_dialog_message">¿Estás seguro de que quieres restablecer la aplicación a su estado inicial? Se eliminarán todos los prompts guardados y la configuración.</string>
+    <string name="edit_prompt_dialog_title">Descartar cambios</string>
+    <string name="edit_prompt_dialog_message">Tienes cambios sin guardar. ¿Quieres descartarlos y salir?</string>
+    <string name="dialog_confirm">Confirmar</string>
+    <string name="dialog_cancel">Cancelar</string>
+
+    <string name="empty_fields_error">Título, Descripción y Categoría no pueden ser vacíos.</string>
+    <string name="copy_description_content_description">Copiar descripción</string>
+    <string name="clear_subcategory_button_description">Borrar filtro de subcategoría</string>
+    <string name="language_setting">Idioma</string>
+    <string name="export_prompts_button">Exportar prompts</string>
+    <string name="import_prompts_button">Importar prompts</string>
+    <string name="search_prompts_hint">Buscar prompts...</string>
+    <string name="search_favorite_prompts_hint">Buscar prompts favoritos...</string>
+    <string name="delete_prompt_dialog_title">Confirmar eliminación</string>
+    <string name="delete_prompt_dialog_message">¿Estás seguro de que quieres eliminar este prompt?</string>
+    <string name="import_prompts_dialog_title">Confirmar importación</string>
+    <string name="import_prompts_dialog_message">¿Estás seguro de que quieres importar prompts? Esto puede sobrescribir prompts existentes.</string>
+    <string name="delete_all_prompts_button">Borrar todos los prompts</string>
+    <string name="delete_all_prompts_dialog_title">Confirmar eliminación de prompts</string>
+    <string name="delete_all_prompts_dialog_message">¿Estás seguro de que quieres eliminar TODOS los prompts de la base de datos? Esta acción no se puede deshacer.</string>
+    <string name="all_prompts_deleted_toast">¡Todos los prompts eliminados!</string>
+    <string name="fab_content_description">Enviar correo electrónico</string>
+    <string name="language_english">Inglés</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_french">Francés</string>
+    <string name="language_german">Alemán</string>
+    <string name="language_portuguese">Portugués</string>
+    <string name="language_italian">Italiano</string>
+    <string name="language_catalan">Catalán</string>
+    <string name="language_basque">Euskera</string>
+    <string name="language_galician">Gallego</string>
+    <string name="language_spanish_spain">Español (España)</string>
+    <string name="settings_group_general">Generales</string>
+    <string name="settings_group_advanced">Avanzados</string>
+    <string name="affiliate_disclaimer">Este enlace es de afiliado: podríamos recibir una pequeña comisión sin coste adicional para ti.</string>
+    <string name="favorite_icon_description">Icono de favorito</string>
+    <string name="copy_icon_description">Icono de copiar</string>
+    <string name="share_icon_description">Icono de compartir</string>
+    <string name="prompt_title_placeholder">Título del Prompt</string>
+    <string name="prompt_description_placeholder">Descripción del Prompt</string>
+    <string name="share_prompt_button">Compartir prompts</string>
+    <string name="share_app_button">Compartir aplicación</string>
+    <string name="share_app_title">¡Echa un vistazo a PromptMaster AI!</string>
+    <string name="share_app_message">¡Descubre PromptMaster AI, la aplicación definitiva para gestionar y organizar tus prompts de IA! Descárgala ahora y lleva tu creatividad al siguiente nivel.</string>
+    <string name="share_all_prompts_button">Compartir todos los prompts</string>
+    <string name="share_all_prompts_title">Mis Prompts de PromptMaster AI</string>
+</resources>

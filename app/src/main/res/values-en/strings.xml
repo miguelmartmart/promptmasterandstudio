@@ -58,6 +58,11 @@
 
     <string name="delete_prompt_dialog_title">Confirm deletion</string>
 <string name="delete_prompt_dialog_message">Are you sure you want to delete this prompt?</string>
+    <string name="delete_all_prompts_button">Delete all prompts</string>
+    <string name="delete_all_prompts_dialog_title">Confirm prompt deletion</string>
+    <string name="delete_all_prompts_dialog_message">Are you sure you want to delete ALL prompts from the database? This action cannot be undone.</string>
+    <string name="all_prompts_deleted_toast">All prompts deleted!</string>
+
     <string name="import_prompts_dialog_title">Confirm Import</string>
     <string name="import_prompts_dialog_message">Are you sure you want to import prompts? This may overwrite existing prompts.</string>
 <string name="fab_content_description">Send email</string>
@@ -67,11 +72,23 @@
     <string name="language_german">German</string>
     <string name="language_portuguese">Portuguese</string>
     <string name="language_italian">Italian</string>
+    <string name="language_catalan">Catalan</string>
+    <string name="language_basque">Basque</string>
+    <string name="language_galician">Galician</string>
+    <string name="language_spanish_spain">Spanish (Spain)</string>
     <string name="affiliate_disclaimer">This is an affiliate link: we might receive a small commission at no additional cost to you.</string>
     <string name="favorite_icon_description">Favorite icon</string>
     <string name="copy_icon_description">Copy icon</string>
     <string name="share_icon_description">Share icon</string>
     <string name="prompt_title_placeholder">Prompt Title</string>
     <string name="prompt_description_placeholder">Prompt Description</string>
+    <string name="settings_group_general">General</string>
+    <string name="settings_group_advanced">Advanced</string>
+    <string name="share_prompt_button">Share prompts</string>
+    <string name="share_app_button">Share app</string>
+    <string name="share_app_title">Check out PromptMaster AI!</string>
+    <string name="share_app_message">Discover PromptMaster AI, the ultimate app to manage and organize your AI prompts! Download it now and take your creativity to the next level.</string>
+    <string name="share_all_prompts_button">Share all prompts</string>
+    <string name="share_all_prompts_title">My Prompts from PromptMaster AI</string>
 
 </resources>

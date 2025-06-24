@@ -36,15 +36,15 @@ fun PromptItem(
     onDeleteClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onDuplicateClick: () -> Unit,
-    onCopyDescriptionClick: (String) -> Unit, // Add new parameter for copying description
-    horizontalPadding: Dp // Add horizontalPadding parameter
+    onCopyDescriptionClick: (String) -> Unit // Add new parameter for copying description
+    // Removed horizontalPadding parameter
 ) {
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) } // State for delete confirmation dialog
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp, horizontal = horizontalPadding), // Apply adaptive horizontal padding
+            .padding(vertical = 4.dp), // Removed horizontal padding, now handled by LazyColumn contentPadding
         onClick = onPromptClick
     ) {
         Column(modifier = Modifier.padding(16.dp)) { // Keep internal padding for now, might need adjustment

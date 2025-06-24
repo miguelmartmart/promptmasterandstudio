@@ -25,6 +25,7 @@ class PromptViewModel @Inject constructor(
     private val promptBackupManager: PromptBackupManager, // Add PromptBackupManager
     private val promptUtils: PromptUtils, // Inject PromptUtils
     private val promptDataOperations: PromptDataOperations // Inject PromptDataOperations
+
 ) : AndroidViewModel(application), PromptOperationsViewModel { // Extend AndroidViewModel to get application context and implement interface
 
     // State for search query and filters
@@ -172,8 +173,25 @@ class PromptViewModel @Inject constructor(
         return promptUtils.exportPrompts()
     }
 
+    suspend fun deleteAllPrompts() {
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: deleteAllPrompts")
+        promptDataOperations.deleteAllPrompts()
+        refresh() // Refresh prompts after deletion
+    }
+
     fun refresh() {
         android.util.Log.d("PromptMasterDebug", "PromptViewModel: refresh() called")
         promptDataFetcher.refreshPrompts(forceReload = true, showFavoritesOnly = false) // Explicitly pass showFavoritesOnly for Home
     }
+
+    fun shareAllPrompts(activityContext: Context, title: String, text: String) {
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: shareAllPrompts called for title: $title from activity context.")
+        promptUtils.shareText(activityContext, title, text) // Pass activity context
+    }
+
+    suspend fun getAllPromptsForSharing(): List<Prompt> {
+        return repository.getAllPromptsList()
+    }
+
+
 }

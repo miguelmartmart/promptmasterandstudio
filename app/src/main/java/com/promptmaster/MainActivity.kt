@@ -29,21 +29,17 @@ import com.promptmaster.ui.home.HomeScreen
 import com.promptmaster.ui.editprompt.EditPromptScreen
 import com.promptmaster.ui.settings.SettingsScreen
 import com.promptmaster.ui.theme.PromptMasterTheme
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.LaunchedEffect
-import java.util.Locale
 import androidx.core.view.WindowCompat
 import com.promptmaster.utils.rememberBooleanPreference // Import the helper function
-import androidx.preference.PreferenceManager // Import PreferenceManager
 import com.promptmaster.data.PromptBackupManager
 import com.promptmaster.ui.components.PromptListScreen // Import PromptListScreen
 import com.promptmaster.ui.components.ZoomableContent // Import ZoomableContent
-import com.promptmaster.utils.setLocale // Import the setLocale extension function
 import kotlinx.coroutines.launch // Import launch
 import androidx.compose.runtime.rememberCoroutineScope // Import rememberCoroutineScope
 import dagger.hilt.android.AndroidEntryPoint // Import AndroidEntryPoint
@@ -72,14 +68,6 @@ class MainActivity : ComponentActivity() { // Define MainActivity as a class
 
     @Inject lateinit var repository: PromptRepository
     @Inject lateinit var promptBackupManager: PromptBackupManager
-
-    override fun attachBaseContext(newBase: Context?) {
-        val preferences = PreferenceManager.getDefaultSharedPreferences(newBase!!)
-        val language = preferences.getString("appLanguage", Locale.getDefault().language) ?: "en"
-        val context = newBase.setLocale(language)
-        applyOverrideConfiguration(context.resources.configuration)
-        super.attachBaseContext(context)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,7 +109,7 @@ fun PromptMasterApp(
     val adViewModel: AdViewModel = hiltViewModel() // Get AdViewModel instance
     val currentAd by adViewModel.currentAd.collectAsState() // Collect current ad state
     val screenWidth = LocalConfiguration.current.screenWidthDp // Get screen width for adaptive padding
-    val horizontalPadding = 16.dp // Set a fixed padding based on user preference for Favorites tab
+    val horizontalPadding = dimensionResource(R.dimen.horizontal_screen_padding) // Use dimension resource for horizontal padding
 
     // LaunchedEffect to alternate ads every 10 seconds
     LaunchedEffect(Unit) {
@@ -141,7 +129,10 @@ fun PromptMasterApp(
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
                 if (currentRoute != Screen.EditPrompt.route) {
-                    FloatingActionButton(onClick = { navController.navigate(Screen.EditPrompt.createRoute()) }) {
+                    FloatingActionButton(
+                        onClick = { navController.navigate(Screen.EditPrompt.createRoute()) },
+                        modifier = Modifier.padding(bottom = dimensionResource(R.dimen.fab_bottom_padding)) // Apply bottom padding
+                    ) {
                         Icon(Icons.Filled.Add, stringResource(R.string.add_new_prompt))
                     }
                 }
@@ -263,8 +254,11 @@ fun BottomNavigationBar(navController: NavHostController) { // Removed metrics p
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 72.dp, max = 80.dp), // Increased height range for more vertical space
-        tonalElevation = 0.dp
+            .heightIn(
+                min = dimensionResource(R.dimen.bottom_nav_bar_height_min),
+                max = dimensionResource(R.dimen.bottom_nav_bar_height_max)
+            ),
+        tonalElevation = dimensionResource(R.dimen.bottom_nav_bar_tonal_elevation)
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
@@ -280,13 +274,15 @@ fun BottomNavigationBar(navController: NavHostController) { // Removed metrics p
                                 .fillMaxHeight()
                         ) {
                             Icon(
-                                imageVector = screen.icon,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
+                                 imageVector = screen.icon,
+                                 contentDescription = null,
+                                 modifier = Modifier
+                                     .size(dimensionResource(R.dimen.bottom_nav_icon_size))
+                                     .padding(top = dimensionResource(R.dimen.bottom_nav_icon_padding_top)) // Add padding to the top of the icon
                             )
                             Text(
                                 text = stringResource(screen.resourceId),
-                                fontSize = 10.sp,
+                                fontSize = dimensionResource(R.dimen.bottom_nav_label_font_size).value.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis // Ensure text doesn't overflow if too long
                             )

@@ -23,7 +23,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = horizontalPadding) // Use the passed horizontalPadding
+            // Removed horizontal padding here, as PromptListScreen handles it internally
     ) {
         // Use the new PromptListScreen Composable
         PromptListScreen(

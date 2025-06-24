@@ -83,7 +83,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = horizontalPadding) // Use the passed horizontalPadding
+            // Removed horizontal padding here, as PromptListScreen handles it internally
     ) {
         // Use the new PromptListScreen Composable
         PromptListScreen(
@@ -252,6 +252,11 @@ public class PromptAdapter extends RecyclerView.Adapter<PromptAdapter.PromptView
 
     <string name="delete_prompt_dialog_title">Löschen bestätigen</string>
 <string name="delete_prompt_dialog_message">Möchten Sie diesen Prompt wirklich löschen?</string>
+    <string name="delete_all_prompts_button">Alle Prompts löschen</string>
+    <string name="delete_all_prompts_dialog_title">Löschen der Prompts bestätigen</string>
+    <string name="delete_all_prompts_dialog_message">Möchten Sie wirklich ALLE Prompts aus der Datenbank löschen? Diese Aktion kann nicht rückgängig gemacht werden.</string>
+    <string name="all_prompts_deleted_toast">Alle Prompts wurden gelöscht!</string>
+
     <string name="import_prompts_dialog_title">Import bestätigen</string>
     <string name="import_prompts_dialog_message">Möchten Sie die Prompts wirklich importieren? Vorhandene Prompts können überschrieben werden.</string>
 <string name="fab_content_description">E-Mail senden</string>
@@ -262,11 +267,23 @@ public class PromptAdapter extends RecyclerView.Adapter<PromptAdapter.PromptView
     <string name="language_german">Deutsch</string>
     <string name="language_portuguese">Portugiesisch</string>
     <string name="language_italian">Italienisch</string>
+    <string name="language_catalan">Katalanisch</string>
+    <string name="language_basque">Baskisch</string>
+    <string name="language_galician">Galizisch</string>
+    <string name="language_spanish_spain">Spanisch (Spanien)</string>
     <string name="affiliate_disclaimer">Dies ist ein Affiliate-Link: Wir erhalten möglicherweise eine kleine Provision ohne zusätzliche Kosten für Sie.</string>
     <string name="favorite_icon_description">Favoritensymbol</string>
     <string name="copy_icon_description">Kopiersymbol</string>
     <string name="share_icon_description">Freigabesymbol</string>
     <string name="prompt_title_placeholder">Prompt-Titel</string>
     <string name="prompt_description_placeholder">Prompt-Beschreibung</string>
+    <string name="settings_group_general">Allgemein</string>
+    <string name="settings_group_advanced">Erweitert</string>
+    <string name="share_prompt_button">Aufforderungen zum Teilen</string>
+    <string name="share_app_button">App teilen</string>
+    <string name="share_app_title">Schau dir PromptMaster AI an!</string>
+    <string name="share_app_message">Entdecke PromptMaster AI – die ultimative App zur Verwaltung und Organisation deiner KI-Prompts! Lade sie jetzt herunter und bring deine Kreativität auf das nächste Level.</string>
+    <string name="share_all_prompts_button">Alle Prompts teilen</string>
+    <string name="share_all_prompts_title">Meine Prompts von PromptMaster AI</string>
 
 </resources>

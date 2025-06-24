@@ -14,17 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.promptmaster.R // Import R
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.TextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.ListItem
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext // Import LocalContext
 import androidx.compose.foundation.isSystemInDarkTheme
 import java.util.Locale
-import android.app.Activity
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import kotlinx.coroutines.launch // Import launch
@@ -39,6 +34,11 @@ import android.net.Uri // Import Uri
 import java.io.OutputStreamWriter
 import androidx.compose.foundation.rememberScrollState // Import rememberScrollState
 import androidx.compose.foundation.verticalScroll // Import verticalScroll
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,12 +49,8 @@ fun SettingsScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope() // Create a coroutine scope
     val sharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context) // Use default shared preferences
-    // Fix for Deprecated Locale
-    val currentLanguage = if (context.resources.configuration.locales.isEmpty) {
-        Locale.getDefault().language
-    } else {
-        context.resources.configuration.locales[0].language
-    }
+    // Get current language from preferences, fallback to system or English
+    val currentLanguage = sharedPreferences.getString("idioma_establecido", Locale.getDefault().language) ?: "en"
 
     var showResetConfirmationDialog by remember { mutableStateOf(false) } // State for dialog visibility
     var showImportConfirmationDialog by remember { mutableStateOf(false) } // State for import confirmation dialog
@@ -69,6 +65,7 @@ fun SettingsScreen(
             }
         }
     }
+    var showDeleteAllPromptsConfirmationDialog by remember { mutableStateOf(false) } // State for delete all prompts dialog visibility
 
     // Launcher for exporting prompts (Create Document)
     val createDocumentLauncher = rememberLauncherForActivityResult(
@@ -102,6 +99,7 @@ fun SettingsScreen(
         }
     ) { paddingValues ->
         val scrollState = rememberScrollState() // Create a scroll state
+
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -109,6 +107,14 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .verticalScroll(scrollState) // Apply vertical scroll modifier
         ) {
+            // General Settings Group
+            Text(
+                text = stringResource(R.string.settings_group_general), // "Generales"
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            HorizontalDivider(color = Color.LightGray, thickness = 1.dp, modifier = Modifier.padding(bottom = 16.dp))
+
             // Dark Mode Setting
             val initialDarkMode = sharedPreferences.getBoolean("darkModeEnabled", isSystemInDarkTheme())
             var isDarkModeEnabled by remember {
@@ -116,7 +122,7 @@ fun SettingsScreen(
             }
 
             ListItem(
-                headlineContent = { Text(stringResource(R.string.dark_mode_setting)) }, // TODO: Add string resource
+                headlineContent = { Text(stringResource(R.string.dark_mode_setting)) },
                 trailingContent = {
                     Switch(
                         checked = isDarkModeEnabled,
@@ -131,14 +137,44 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Language Selection
-            val languages = listOf("en", "es", "fr", "de", "pt", "it") // Add "it" for Italian
+            // Share Prompt Option (New) - Moved to General
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        val allPrompts = viewModel.getAllPromptsForSharing()
+                        val shareText = allPrompts.joinToString(separator = "\n\n---\n\n") { prompt ->
+                            "Título: ${prompt.title}\nDescripción: ${prompt.description}\nCategoría: ${prompt.category ?: "N/A"}\nSubcategoría: ${prompt.subcategory ?: "N/A"}\nModelo Recomendado: ${prompt.recommendedModel ?: "N/A"}\nEtiquetas: ${prompt.tags ?: "N/A"}"
+                        }
+                        val shareTitle = context.getString(R.string.share_all_prompts_title)
+                        viewModel.shareAllPrompts(context, shareTitle, shareText)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.share_all_prompts_button))
+            }
+
+            Spacer(modifier = Modifier.height(32.dp)) // Increased space before next group
+
+
+            // Advanced Settings Group
+            Text(
+                text = stringResource(R.string.settings_group_advanced), // "Avanzados"
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            HorizontalDivider(color = Color.LightGray, thickness = 1.dp, modifier = Modifier.padding(bottom = 16.dp))
+
+            // Language Selection (Commented out to hide from UI, but functionality remains)
+            /*
+            val languages = listOf("en", "es", "fr", "de", "it", "pt", "ca", "eu", "gl", "es-rES") // Added new supported languages
             var expanded by remember { mutableStateOf(false) }
-            var selectedLanguage by remember { mutableStateOf(sharedPreferences.getString("appLanguage", currentLanguage) ?: currentLanguage) }
+            var selectedLanguage by remember { mutableStateOf(currentLanguage) }
 
             ExposedDropdownMenuBox(
                 expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.fillMaxWidth() // Make dropdown fill width
             ) {
                 TextField(
                     value = getLanguageDisplayName(selectedLanguage), // Display full language name
@@ -146,11 +182,14 @@ fun SettingsScreen(
                     readOnly = true,
                     label = { Text(stringResource(R.string.language_setting)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor()
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth() // Make TextField fill width
                 )
                 ExposedDropdownMenu(
                     expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.fillMaxWidth() // Make dropdown menu fill width
                 ) {
                     languages.forEach { language ->
                         DropdownMenuItem(
@@ -158,26 +197,18 @@ fun SettingsScreen(
                             onClick = {
                                 selectedLanguage = language
                                 expanded = false
-                                sharedPreferences.edit().putString("appLanguage", language).apply()
-                                // Recreate the activity to apply the language change
-                                (context as? Activity)?.recreate()
-                            }
+                                sharedPreferences.edit().putString("idioma_establecido", language).apply()
+                                // aplicarIdioma(context, language) // Apply the new language - This function is commented out in the file
+                                // No need to restart activity, AppCompatDelegate.setApplicationLocales() handles it.
+                            },
+                            modifier = Modifier.fillMaxWidth() // Make dropdown item fill width
                         )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Reset Application Option
-            Button(
-                onClick = { showResetConfirmationDialog = true }, // Show dialog on click
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.reset_application_button)) // Use string resource
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
+            */
 
             // Export Prompts Option
             Button(
@@ -200,9 +231,30 @@ fun SettingsScreen(
                 Text(stringResource(R.string.import_prompts_button))
             }
 
-            // TODO: Add theme selection, text size, backup/restore options
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Delete All Prompts Option
+            Button(
+                onClick = { showDeleteAllPromptsConfirmationDialog = true }, // Show confirmation dialog on click
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red) // Make button red
+            ) {
+                Text(stringResource(R.string.delete_all_prompts_button))
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Reset Application Option (in red)
+            Button(
+                onClick = { showResetConfirmationDialog = true }, // Show dialog on click
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red) // Make button red
+            ) {
+                Text(stringResource(R.string.reset_application_button))
+            }
         }
     }
+
 
     // Reset Confirmation Dialog
     ConfirmationDialog(
@@ -217,12 +269,21 @@ fun SettingsScreen(
                 // Reset SharedPreferences
                 sharedPreferences.edit().apply {
                     remove("search_history") // Clear search history
-                    remove("appLanguage") // Reset language to default
+                    remove("idioma_establecido") // Reset language to default
                     remove("darkModeEnabled") // Reset dark mode to default
                     apply()
                 }
-                // Recreate activity to apply language and theme changes
-                (context as? Activity)?.recreate()
+                // Reapply system language or default English (language logic commented out)
+                /*
+                val idiomaSistema = Locale.getDefault().language
+                val idiomasDisponibles = listOf("es", "en", "fr", "de", "it", "pt") // Added pt
+                val idiomaFinal = if (idiomasDisponibles.contains(idiomaSistema)) {
+                    idiomaSistema
+                } else {
+                    "en"
+                }
+                aplicarIdioma(context, idiomaFinal)
+                */
             }
             showResetConfirmationDialog = false // Hide dialog after confirming
         },
@@ -241,7 +302,26 @@ fun SettingsScreen(
                 openDocumentLauncher.launch(arrayOf("application/json")) // Launch file picker for JSON files
                 showImportConfirmationDialog = false // Hide dialog after confirming
             },
-            onCancel = { showImportConfirmationDialog = false } // Hide dialog on cancel
+        onCancel = { showImportConfirmationDialog = false } // Hide dialog on cancel
+    )
+    }
+
+    // Delete All Prompts Confirmation Dialog
+    if (showDeleteAllPromptsConfirmationDialog) {
+        ConfirmationDialog(
+            showDialog = showDeleteAllPromptsConfirmationDialog,
+            title = stringResource(id = R.string.delete_all_prompts_dialog_title), // TODO: Add string resource
+            text = stringResource(id = R.string.delete_all_prompts_dialog_message), // TODO: Add string resource
+            confirmButtonText = stringResource(id = R.string.dialog_confirm),
+            cancelButtonText = stringResource(id = R.string.dialog_cancel),
+            onConfirm = {
+                coroutineScope.launch {
+                    viewModel.deleteAllPrompts() // Call the delete all prompts function
+                    Toast.makeText(context, "All prompts deleted!", Toast.LENGTH_SHORT).show() // TODO: Add string resource
+                }
+                showDeleteAllPromptsConfirmationDialog = false // Hide dialog after confirming
+            },
+            onCancel = { showDeleteAllPromptsConfirmationDialog = false } // Hide dialog on cancel
         )
     }
 
@@ -262,6 +342,10 @@ private fun getLanguageDisplayName(languageCode: String): String {
         "de" -> stringResource(R.string.language_german)
         "pt" -> stringResource(R.string.language_portuguese)
         "it" -> stringResource(R.string.language_italian)
+        "ca" -> stringResource(R.string.language_catalan)
+        "eu" -> stringResource(R.string.language_basque)
+        "gl" -> stringResource(R.string.language_galician)
+        "es-rES" -> stringResource(R.string.language_spanish_spain)
         else -> languageCode // Fallback to code if name not found
     }
 }

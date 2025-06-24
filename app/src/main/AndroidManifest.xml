@@ -39,7 +39,8 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.PromptMaster">
+            android:theme="@style/Theme.PromptMaster"
+            android:configChanges="locale|layoutDirection|screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|fontScale">
             <!-- This activity will now use Jetpack Compose -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

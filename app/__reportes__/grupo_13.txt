@@ -97,7 +97,6 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(dimensionResource(R.dimen.ad_card_padding))
             .clickable {
                 selectedAffiliateLink?.let {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
@@ -150,7 +149,9 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = dimensionResource(R.dimen.ad_disclaimer_padding_top))
+                    .padding(top = dimensionResource(R.dimen.ad_disclaimer_padding_top)),
+                overflow = TextOverflow.Ellipsis, // Add text overflow ellipsis
+                maxLines = 1 // Limit to one line
             )
         }
     }
@@ -220,6 +221,11 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
 
     <string name="delete_prompt_dialog_title">Confirmer la suppression</string>
     <string name="delete_prompt_dialog_message">Êtes-vous sûr de vouloir supprimer ce prompt?</string>
+    <string name="delete_all_prompts_button">Supprimer tous les prompts</string>
+    <string name="delete_all_prompts_dialog_title">Confirmer la suppression des prompts</string>
+    <string name="delete_all_prompts_dialog_message">Êtes-vous sûr de vouloir supprimer TOUS les prompts de la base de données ? Cette action est irréversible.</string>
+    <string name="all_prompts_deleted_toast">Tous les prompts ont été supprimés !</string>
+
     <string name="import_prompts_dialog_title">Confirmer l\'importation</string>
     <string name="import_prompts_dialog_message">Êtes-vous sûr de vouloir importer des prompts? Cela peut écraser les prompts existants.</string>
     <string name="fab_content_description">Envoyer un e-mail</string>
@@ -230,11 +236,23 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
     <string name="language_german">Allemand</string>
     <string name="language_portuguese">Portugais</string>
     <string name="language_italian">Italien</string>
+    <string name="language_catalan">Catalan</string>
+    <string name="language_basque">Basque</string>
+    <string name="language_galician">Galicien</string>
+    <string name="language_spanish_spain">Espagnol (Espagne)</string>
     <string name="affiliate_disclaimer">Ceci est un lien d\'affiliation : nous pourrions recevoir une petite commission sans coût supplémentaire pour vous.</string>
     <string name="favorite_icon_description">Icône de favori</string>
     <string name="copy_icon_description">Icône de copie</string>
     <string name="share_icon_description">Icône de partage</string>
     <string name="prompt_title_placeholder">Titre du Prompt</string>
     <string name="prompt_description_placeholder">Description du Prompt</string>
+    <string name="settings_group_general">Général</string>
+    <string name="settings_group_advanced">Avancé</string>
+    <string name="share_prompt_button">Partager les messages-guides</string>
+    <string name="share_app_button">Partager l\'application</string>
+    <string name="share_app_title">Découvrez PromptMaster AI !</string>
+    <string name="share_app_message">Découvrez PromptMaster AI, l\'application ultime pour gérer et organiser vos prompts d\'IA ! Téléchargez-la dès maintenant et libérez votre créativité.</string>
+    <string name="share_all_prompts_button">Partager tous les prompts</string>
+    <string name="share_all_prompts_title">Mes prompts de PromptMaster AI</string>
 
 </resources>

@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import android.content.Intent // Import Intent
+import com.promptmaster.R
 
 class PromptUtils(
     private val context: Context,
@@ -111,5 +113,16 @@ class PromptUtils(
             _statusChannel.send("Error preparing prompts for export: ${e.message}")
             null
         }
+    }
+
+    // Function to share generic text
+    fun shareText(context: Context, title: String, text: String) {
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_SUBJECT, title) // Set the subject/title of the share
+            putExtra(Intent.EXTRA_TEXT, text)
+            type = "text/plain"
+        }
+        context.startActivity(Intent.createChooser(shareIntent, title))
     }
 }

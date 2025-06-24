@@ -1,24 +1,32 @@
 package com.promptmaster.utils
 
 import android.content.Context
-import android.content.ContextWrapper
+import android.content.res.Configuration
 import android.os.Build
+import android.util.DisplayMetrics
 import java.util.Locale
+import android.util.Log
 
-fun Context.setLocale(language: String): ContextWrapper {
-    val locale = Locale(language)
+/*
+// This function applies the selected language globally to the application by updating the resources configuration.
+fun aplicarIdioma(context: Context, codigoIdioma: String) {
+    Log.d("ContextUtils", "Attempting to apply language: $codigoIdioma to context: $context")
+    val locale = Locale(codigoIdioma)
     Locale.setDefault(locale)
 
+    val resources = context.resources
     val configuration = resources.configuration
-    configuration.setLocale(locale)
+    val displayMetrics = resources.displayMetrics
 
-    val context = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        createConfigurationContext(configuration)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        configuration.setLocale(locale)
     } else {
         @Suppress("DEPRECATION")
-        resources.updateConfiguration(configuration, resources.displayMetrics)
-        this
+        configuration.locale = locale
     }
 
-    return ContextWrapper(context)
+    @Suppress("DEPRECATION")
+    resources.updateConfiguration(configuration, displayMetrics)
+    Log.d("ContextUtils", "Language applied to context resources. Current locale: ${resources.configuration.locale.language}")
 }
+*/

@@ -1,0 +1,272 @@
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\home ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\home\HomeFragment.java ---
+package com.promptmaster.ui.home;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.util.Log; // Explicitly import Log
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.promptmaster.databinding.FragmentHomeBinding;
+import com.promptmaster.ui.PromptViewModel; // Explicitly import PromptViewModel
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+import java.util.List; // Explicitly import List
+
+@AndroidEntryPoint
+public class HomeFragment extends Fragment {
+
+    private FragmentHomeBinding binding;
+    private PromptAdapter promptAdapter;
+    private PromptViewModel promptViewModel; // Declare PromptViewModel
+
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        Log.d("PromptMasterDebug", "HomeFragment: onCreateView called.");
+        promptViewModel = new ViewModelProvider(this).get(PromptViewModel.class); // Get PromptViewModel
+        Log.d("PromptMasterDebug", "HomeFragment: PromptViewModel obtained.");
+
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+
+        RecyclerView recyclerView = binding.recyclerViewPrompts;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        promptAdapter = new PromptAdapter();
+        recyclerView.setAdapter(promptAdapter);
+
+        // Observe prompts from PromptViewModel
+        promptViewModel.getPromptsLiveData().observe(getViewLifecycleOwner(), prompts -> {
+            Log.d("PromptMasterDebug", "HomeFragment: Observing prompts. Received " + (prompts != null ? prompts.size() : 0) + " prompts.");
+            promptAdapter.setPrompts(prompts);
+        });
+        return root;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\home\HomeScreen.kt ---
+package com.promptmaster.ui.home
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalConfiguration // Import LocalConfiguration
+import androidx.compose.ui.unit.Dp
+import androidx.hilt.navigation.compose.hiltViewModel // Import hiltViewModel
+import com.promptmaster.ui.PromptViewModel // Import PromptViewModel
+import com.promptmaster.ui.components.PromptListScreen // Import the new Composable
+// Removed ScreenMetrics import
+
+@Composable
+fun HomeScreen(
+    onPromptClick: (Int) -> Unit,
+    horizontalPadding: Dp // Accept horizontalPadding as a parameter
+) {
+    val viewModel: PromptViewModel = hiltViewModel()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = horizontalPadding) // Use the passed horizontalPadding
+    ) {
+        // Use the new PromptListScreen Composable
+        PromptListScreen(
+            viewModel = viewModel,
+            onPromptClick = onPromptClick,
+            onCopyDescriptionClick = { promptId, description ->
+                viewModel.onPromptDescriptionCopied(promptId, description)
+            },
+            horizontalPadding = horizontalPadding // Pass horizontalPadding
+        )
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\home\HomeViewModel.java ---
+package com.promptmaster.ui.home;
+
+import android.util.Log; // Import Log
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
+import com.promptmaster.data.Prompt;
+import com.promptmaster.data.PromptRepository;
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import java.util.List;
+import javax.inject.Inject;
+
+@HiltViewModel
+public class HomeViewModel extends ViewModel {
+
+    private final LiveData<List<Prompt>> allPrompts;
+
+    @Inject
+    public HomeViewModel(PromptRepository promptRepository) {
+        Log.d("PromptMasterDebug", "HomeViewModel: Constructor called.");
+        allPrompts = promptRepository.getAllPromptsLiveData();
+
+        // Add an observer to log when allPrompts LiveData changes
+        allPrompts.observeForever(prompts -> {
+            Log.d("PromptMasterDebug", "HomeViewModel: allPrompts LiveData updated with " + (prompts != null ? prompts.size() : 0) + " prompts.");
+        });
+    }
+
+    public LiveData<List<Prompt>> getAllPrompts() {
+        Log.d("PromptMasterDebug", "HomeViewModel: getAllPrompts() called.");
+        return allPrompts;
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\home\PromptAdapter.java ---
+package com.promptmaster.ui.home;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.promptmaster.R;
+import com.promptmaster.data.Prompt;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class PromptAdapter extends RecyclerView.Adapter<PromptAdapter.PromptViewHolder> {
+
+    private List<Prompt> prompts = new ArrayList<>();
+
+    public void setPrompts(List<Prompt> newPrompts) {
+        this.prompts = newPrompts;
+        notifyDataSetChanged();
+    }
+
+    @NonNull
+    @Override
+    public PromptViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.prompt_item, parent, false);
+        return new PromptViewHolder(itemView);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull PromptViewHolder holder, int position) {
+        Prompt currentPrompt = prompts.get(position);
+        holder.titleTextView.setText(currentPrompt.getTitle());
+        holder.descriptionTextView.setText(currentPrompt.getDescription());
+    }
+
+    @Override
+    public int getItemCount() {
+        return prompts.size();
+    }
+
+    static class PromptViewHolder extends RecyclerView.ViewHolder {
+        private final TextView titleTextView;
+        private final TextView descriptionTextView;
+
+        public PromptViewHolder(@NonNull View itemView) {
+            super(itemView);
+            titleTextView = itemView.findViewById(R.id.prompt_title);
+            descriptionTextView = itemView.findViewById(R.id.prompt_description);
+        }
+    }
+}
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-de ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-de\strings.xml ---
+<resources>
+    <string name="app_name">PromptMaster KI</string>
+    <string name="navigation_drawer_open">Navigationsleiste öffnen</string>
+    <string name="navigation_drawer_close">Navigationsleiste schließen</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigations-Header</string>
+    <string name="action_settings">Einstellungen</string>
+
+    <string name="menu_home">Startseite</string>
+    <string name="menu_gallery">Galerie</string>
+    <string name="menu_slideshow">Diashow</string>
+    <string name="menu_favorites">Favoriten</string>
+    <string name="menu_settings">Einstellungen</string>
+    <string name="add_new_prompt">Neuen Prompt hinzufügen</string>
+    <string name="edit_prompt">Prompt bearbeiten</string>
+    <string name="title_label">Titel</string>
+    <string name="description_label">Beschreibung</string>
+    <string name="category_label">Kategorie</string>
+    <string name="tags_label">Tags (durch Kommas getrennt)</string>
+    <string name="recommended_model_label">Empfohlenes Modell</string>
+    <string name="customizable_fields_label">Anpassbare Felder (JSON oder ähnlich)</string>
+    <string name="save_prompt_button">Prompt speichern</string>
+    <string name="update_prompt_button">Prompt aktualisieren</string>
+    <string name="delete_prompt_content_description">Prompt löschen</string>
+    <string name="add_to_favorites_content_description">Zu Favoriten hinzufügen</string>
+    <string name="remove_from_favorites_content_description">Aus Favoriten entfernen</string>
+    <string name="duplicate_prompt_content_description">Prompt duplizieren</string>
+    <string name="copy_prompt_description_content_description">Prompt-Beschreibung kopieren</string>
+    <string name="dark_mode_setting">Dunkelmodus</string>
+    <string name="search_prompts_label">Prompts suchen</string>
+    <string name="prompt_list_title">Prompt-Liste</string>
+    <string name="back_button_content_description">Zurück-Taste</string>
+    <string name="favorite_prompts_title">Favoriten-Prompts</string>
+    <string name="all_categories_label">Alle Kategorien</string>
+    <string name="clear_search_button_description">Löschen</string>
+    <string name="clear_text_button_description">Löschen</string>
+    <string name="clear_category_button_description">Löschen</string>
+    <string name="all_subcategories_label">Alle Unterkategorien</string>
+    <string name="subcategory_label">Unterkategorie</string>
+    <string name="reset_application_button">Anwendung zurücksetzen</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="reset_app_dialog_title">Zurücksetzung bestätigen</string>
+    <string name="reset_app_dialog_message">Sind Sie sicher, dass Sie die Anwendung auf ihren Ausgangszustand zurücksetzen möchten? Alle gespeicherten Prompts und Einstellungen werden gelöscht.</string>
+    <string name="edit_prompt_dialog_title">Änderungen verwerfen</string>
+    <string name="edit_prompt_dialog_message">Sie haben ungespeicherte Änderungen. Möchten Sie diese verwerfen und beenden?</string>
+    <string name="dialog_confirm">Bestätigen</string>
+    <string name="dialog_cancel">Abbrechen</string>
+
+    <string name="empty_fields_error">Titel, Beschreibung und Kategorie dürfen nicht leer sein.</string>
+    <string name="copy_description_content_description">Beschreibung kopieren</string>
+    <string name="clear_subcategory_button_description">Unterkategorie-Filter löschen</string>
+    <string name="language_setting">Sprache</string>
+    <string name="export_prompts_button">Prompts exportieren</string>
+    <string name="import_prompts_button">Prompts importieren</string>
+    <string name="search_prompts_hint">Prompts suchen...</string>
+    <string name="search_favorite_prompts_hint">Favorisierte Prompts suchen...</string>
+
+    <string name="delete_prompt_dialog_title">Löschen bestätigen</string>
+<string name="delete_prompt_dialog_message">Möchten Sie diesen Prompt wirklich löschen?</string>
+    <string name="import_prompts_dialog_title">Import bestätigen</string>
+    <string name="import_prompts_dialog_message">Möchten Sie die Prompts wirklich importieren? Vorhandene Prompts können überschrieben werden.</string>
+<string name="fab_content_description">E-Mail senden</string>
+
+    <string name="language_english">Englisch</string>
+    <string name="language_spanish">Spanisch</string>
+    <string name="language_french">Französisch</string>
+    <string name="language_german">Deutsch</string>
+    <string name="language_portuguese">Portugiesisch</string>
+    <string name="language_italian">Italienisch</string>
+    <string name="affiliate_disclaimer">Dies ist ein Affiliate-Link: Wir erhalten möglicherweise eine kleine Provision ohne zusätzliche Kosten für Sie.</string>
+    <string name="favorite_icon_description">Favoritensymbol</string>
+    <string name="copy_icon_description">Kopiersymbol</string>
+    <string name="share_icon_description">Freigabesymbol</string>
+    <string name="prompt_title_placeholder">Prompt-Titel</string>
+    <string name="prompt_description_placeholder">Prompt-Beschreibung</string>
+
+</resources>

@@ -558,6 +558,12 @@ class PromptDataOperations @Inject constructor(
         val newPromptId = repository.insert(newPrompt) // Insert the new prompt
         repository.updateLastUsed(newPromptId, System.currentTimeMillis()) // newPromptId is already Int
     }
+
+    suspend fun deleteAllPrompts() {
+        android.util.Log.d("PromptMasterDebug", "PromptDataOperations: deleteAllPrompts")
+        repository.deleteAllPrompts()
+        promptBackupManager.createBackup() // Create backup after deleting all prompts
+    }
 }
 
 --- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\PromptFilters.kt ---
@@ -787,6 +793,11 @@ class PromptRepository @Inject constructor(
         return Gson().toJson(prompts)
     }
 
+    // This function is for getting all prompts as a List<Prompt> for sharing or other purposes
+    suspend fun getAllPromptsList(): List<Prompt> {
+        return promptDao.getAllPromptsList()
+    }
+
     suspend fun writeJsonToFile(context: Context, jsonString: String, filename: String): Boolean {
         return try {
             val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -798,6 +809,7 @@ class PromptRepository @Inject constructor(
             false
         }
     }
+
 }
 
 --- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\data\PromptRoomDatabase.kt ---
@@ -1117,7 +1129,6 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(dimensionResource(R.dimen.ad_card_padding))
             .clickable {
                 selectedAffiliateLink?.let {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
@@ -1170,7 +1181,9 @@ fun AdView(ad: Ad, modifier: Modifier = Modifier) { // Removed metrics parameter
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = dimensionResource(R.dimen.ad_disclaimer_padding_top))
+                    .padding(top = dimensionResource(R.dimen.ad_disclaimer_padding_top)),
+                overflow = TextOverflow.Ellipsis, // Add text overflow ellipsis
+                maxLines = 1 // Limit to one line
             )
         }
     }
@@ -1256,15 +1269,15 @@ fun PromptItem(
     onDeleteClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onDuplicateClick: () -> Unit,
-    onCopyDescriptionClick: (String) -> Unit, // Add new parameter for copying description
-    horizontalPadding: Dp // Add horizontalPadding parameter
+    onCopyDescriptionClick: (String) -> Unit // Add new parameter for copying description
+    // Removed horizontalPadding parameter
 ) {
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) } // State for delete confirmation dialog
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp, horizontal = horizontalPadding), // Apply adaptive horizontal padding
+            .padding(vertical = 4.dp), // Removed horizontal padding, now handled by LazyColumn contentPadding
         onClick = onPromptClick
     ) {
         Column(modifier = Modifier.padding(16.dp)) { // Keep internal padding for now, might need adjustment
@@ -1355,6 +1368,7 @@ fun PromptItem(
 package com.promptmaster.ui.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -1554,7 +1568,8 @@ fun PromptListScreen(
 
         LazyColumn(
             state = listState,
-            modifier = Modifier.padding(top = 16.dp)
+            contentPadding = PaddingValues(horizontal = horizontalPadding, vertical = 8.dp), // Apply horizontal padding here
+            modifier = Modifier.padding(top = 16.dp) // Keep top padding for separation from filters
         ) {
             items(
                 items = prompts,
@@ -1590,8 +1605,8 @@ fun PromptListScreen(
                     onCopyDescriptionClick = { description -> // Modify lambda to receive description
                         android.util.Log.d("PromptMasterDebug", "PromptListScreen: onCopyDescriptionClick for ID: ${prompt.id}")
                         onCopyDescriptionClick(prompt.id, description) // Call the lambda with prompt ID and description
-                    },
-                    horizontalPadding = horizontalPadding // Pass horizontalPadding
+                    }
+                    // Removed horizontalPadding from PromptItem call
                 )
             }
 
@@ -2286,7 +2301,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = horizontalPadding) // Use the passed horizontalPadding
+            // Removed horizontal padding here, as PromptListScreen handles it internally
     ) {
         // Use the new PromptListScreen Composable
         PromptListScreen(
@@ -2409,17 +2424,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.promptmaster.R // Import R
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.TextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.ListItem
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext // Import LocalContext
 import androidx.compose.foundation.isSystemInDarkTheme
 import java.util.Locale
-import android.app.Activity
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import kotlinx.coroutines.launch // Import launch
@@ -2434,6 +2444,11 @@ import android.net.Uri // Import Uri
 import java.io.OutputStreamWriter
 import androidx.compose.foundation.rememberScrollState // Import rememberScrollState
 import androidx.compose.foundation.verticalScroll // Import verticalScroll
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -2444,12 +2459,8 @@ fun SettingsScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope() // Create a coroutine scope
     val sharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context) // Use default shared preferences
-    // Fix for Deprecated Locale
-    val currentLanguage = if (context.resources.configuration.locales.isEmpty) {
-        Locale.getDefault().language
-    } else {
-        context.resources.configuration.locales[0].language
-    }
+    // Get current language from preferences, fallback to system or English
+    val currentLanguage = sharedPreferences.getString("idioma_establecido", Locale.getDefault().language) ?: "en"
 
     var showResetConfirmationDialog by remember { mutableStateOf(false) } // State for dialog visibility
     var showImportConfirmationDialog by remember { mutableStateOf(false) } // State for import confirmation dialog
@@ -2464,6 +2475,7 @@ fun SettingsScreen(
             }
         }
     }
+    var showDeleteAllPromptsConfirmationDialog by remember { mutableStateOf(false) } // State for delete all prompts dialog visibility
 
     // Launcher for exporting prompts (Create Document)
     val createDocumentLauncher = rememberLauncherForActivityResult(
@@ -2497,6 +2509,7 @@ fun SettingsScreen(
         }
     ) { paddingValues ->
         val scrollState = rememberScrollState() // Create a scroll state
+
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -2504,6 +2517,14 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .verticalScroll(scrollState) // Apply vertical scroll modifier
         ) {
+            // General Settings Group
+            Text(
+                text = stringResource(R.string.settings_group_general), // "Generales"
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            HorizontalDivider(color = Color.LightGray, thickness = 1.dp, modifier = Modifier.padding(bottom = 16.dp))
+
             // Dark Mode Setting
             val initialDarkMode = sharedPreferences.getBoolean("darkModeEnabled", isSystemInDarkTheme())
             var isDarkModeEnabled by remember {
@@ -2511,7 +2532,7 @@ fun SettingsScreen(
             }
 
             ListItem(
-                headlineContent = { Text(stringResource(R.string.dark_mode_setting)) }, // TODO: Add string resource
+                headlineContent = { Text(stringResource(R.string.dark_mode_setting)) },
                 trailingContent = {
                     Switch(
                         checked = isDarkModeEnabled,
@@ -2526,14 +2547,44 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Language Selection
-            val languages = listOf("en", "es", "fr", "de", "pt", "it") // Add "it" for Italian
+            // Share Prompt Option (New) - Moved to General
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        val allPrompts = viewModel.getAllPromptsForSharing()
+                        val shareText = allPrompts.joinToString(separator = "\n\n---\n\n") { prompt ->
+                            "Título: ${prompt.title}\nDescripción: ${prompt.description}\nCategoría: ${prompt.category ?: "N/A"}\nSubcategoría: ${prompt.subcategory ?: "N/A"}\nModelo Recomendado: ${prompt.recommendedModel ?: "N/A"}\nEtiquetas: ${prompt.tags ?: "N/A"}"
+                        }
+                        val shareTitle = context.getString(R.string.share_all_prompts_title)
+                        viewModel.shareAllPrompts(context, shareTitle, shareText)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.share_all_prompts_button))
+            }
+
+            Spacer(modifier = Modifier.height(32.dp)) // Increased space before next group
+
+
+            // Advanced Settings Group
+            Text(
+                text = stringResource(R.string.settings_group_advanced), // "Avanzados"
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            HorizontalDivider(color = Color.LightGray, thickness = 1.dp, modifier = Modifier.padding(bottom = 16.dp))
+
+            // Language Selection (Commented out to hide from UI, but functionality remains)
+            /*
+            val languages = listOf("en", "es", "fr", "de", "it", "pt", "ca", "eu", "gl", "es-rES") // Added new supported languages
             var expanded by remember { mutableStateOf(false) }
-            var selectedLanguage by remember { mutableStateOf(sharedPreferences.getString("appLanguage", currentLanguage) ?: currentLanguage) }
+            var selectedLanguage by remember { mutableStateOf(currentLanguage) }
 
             ExposedDropdownMenuBox(
                 expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.fillMaxWidth() // Make dropdown fill width
             ) {
                 TextField(
                     value = getLanguageDisplayName(selectedLanguage), // Display full language name
@@ -2541,11 +2592,14 @@ fun SettingsScreen(
                     readOnly = true,
                     label = { Text(stringResource(R.string.language_setting)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor()
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth() // Make TextField fill width
                 )
                 ExposedDropdownMenu(
                     expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.fillMaxWidth() // Make dropdown menu fill width
                 ) {
                     languages.forEach { language ->
                         DropdownMenuItem(
@@ -2553,26 +2607,18 @@ fun SettingsScreen(
                             onClick = {
                                 selectedLanguage = language
                                 expanded = false
-                                sharedPreferences.edit().putString("appLanguage", language).apply()
-                                // Recreate the activity to apply the language change
-                                (context as? Activity)?.recreate()
-                            }
+                                sharedPreferences.edit().putString("idioma_establecido", language).apply()
+                                // aplicarIdioma(context, language) // Apply the new language - This function is commented out in the file
+                                // No need to restart activity, AppCompatDelegate.setApplicationLocales() handles it.
+                            },
+                            modifier = Modifier.fillMaxWidth() // Make dropdown item fill width
                         )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Reset Application Option
-            Button(
-                onClick = { showResetConfirmationDialog = true }, // Show dialog on click
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.reset_application_button)) // Use string resource
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
+            */
 
             // Export Prompts Option
             Button(
@@ -2595,9 +2641,30 @@ fun SettingsScreen(
                 Text(stringResource(R.string.import_prompts_button))
             }
 
-            // TODO: Add theme selection, text size, backup/restore options
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Delete All Prompts Option
+            Button(
+                onClick = { showDeleteAllPromptsConfirmationDialog = true }, // Show confirmation dialog on click
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red) // Make button red
+            ) {
+                Text(stringResource(R.string.delete_all_prompts_button))
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Reset Application Option (in red)
+            Button(
+                onClick = { showResetConfirmationDialog = true }, // Show dialog on click
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red) // Make button red
+            ) {
+                Text(stringResource(R.string.reset_application_button))
+            }
         }
     }
+
 
     // Reset Confirmation Dialog
     ConfirmationDialog(
@@ -2612,12 +2679,21 @@ fun SettingsScreen(
                 // Reset SharedPreferences
                 sharedPreferences.edit().apply {
                     remove("search_history") // Clear search history
-                    remove("appLanguage") // Reset language to default
+                    remove("idioma_establecido") // Reset language to default
                     remove("darkModeEnabled") // Reset dark mode to default
                     apply()
                 }
-                // Recreate activity to apply language and theme changes
-                (context as? Activity)?.recreate()
+                // Reapply system language or default English (language logic commented out)
+                /*
+                val idiomaSistema = Locale.getDefault().language
+                val idiomasDisponibles = listOf("es", "en", "fr", "de", "it", "pt") // Added pt
+                val idiomaFinal = if (idiomasDisponibles.contains(idiomaSistema)) {
+                    idiomaSistema
+                } else {
+                    "en"
+                }
+                aplicarIdioma(context, idiomaFinal)
+                */
             }
             showResetConfirmationDialog = false // Hide dialog after confirming
         },
@@ -2636,7 +2712,26 @@ fun SettingsScreen(
                 openDocumentLauncher.launch(arrayOf("application/json")) // Launch file picker for JSON files
                 showImportConfirmationDialog = false // Hide dialog after confirming
             },
-            onCancel = { showImportConfirmationDialog = false } // Hide dialog on cancel
+        onCancel = { showImportConfirmationDialog = false } // Hide dialog on cancel
+    )
+    }
+
+    // Delete All Prompts Confirmation Dialog
+    if (showDeleteAllPromptsConfirmationDialog) {
+        ConfirmationDialog(
+            showDialog = showDeleteAllPromptsConfirmationDialog,
+            title = stringResource(id = R.string.delete_all_prompts_dialog_title), // TODO: Add string resource
+            text = stringResource(id = R.string.delete_all_prompts_dialog_message), // TODO: Add string resource
+            confirmButtonText = stringResource(id = R.string.dialog_confirm),
+            cancelButtonText = stringResource(id = R.string.dialog_cancel),
+            onConfirm = {
+                coroutineScope.launch {
+                    viewModel.deleteAllPrompts() // Call the delete all prompts function
+                    Toast.makeText(context, "All prompts deleted!", Toast.LENGTH_SHORT).show() // TODO: Add string resource
+                }
+                showDeleteAllPromptsConfirmationDialog = false // Hide dialog after confirming
+            },
+            onCancel = { showDeleteAllPromptsConfirmationDialog = false } // Hide dialog on cancel
         )
     }
 
@@ -2657,6 +2752,10 @@ private fun getLanguageDisplayName(languageCode: String): String {
         "de" -> stringResource(R.string.language_german)
         "pt" -> stringResource(R.string.language_portuguese)
         "it" -> stringResource(R.string.language_italian)
+        "ca" -> stringResource(R.string.language_catalan)
+        "eu" -> stringResource(R.string.language_basque)
+        "gl" -> stringResource(R.string.language_galician)
+        "es-rES" -> stringResource(R.string.language_spanish_spain)
         else -> languageCode // Fallback to code if name not found
     }
 }
@@ -3097,6 +3196,7 @@ class PromptViewModel @Inject constructor(
     private val promptBackupManager: PromptBackupManager, // Add PromptBackupManager
     private val promptUtils: PromptUtils, // Inject PromptUtils
     private val promptDataOperations: PromptDataOperations // Inject PromptDataOperations
+
 ) : AndroidViewModel(application), PromptOperationsViewModel { // Extend AndroidViewModel to get application context and implement interface
 
     // State for search query and filters
@@ -3244,37 +3344,62 @@ class PromptViewModel @Inject constructor(
         return promptUtils.exportPrompts()
     }
 
+    suspend fun deleteAllPrompts() {
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: deleteAllPrompts")
+        promptDataOperations.deleteAllPrompts()
+        refresh() // Refresh prompts after deletion
+    }
+
     fun refresh() {
         android.util.Log.d("PromptMasterDebug", "PromptViewModel: refresh() called")
         promptDataFetcher.refreshPrompts(forceReload = true, showFavoritesOnly = false) // Explicitly pass showFavoritesOnly for Home
     }
+
+    fun shareAllPrompts(activityContext: Context, title: String, text: String) {
+        android.util.Log.d("PromptMasterDebug", "PromptViewModel: shareAllPrompts called for title: $title from activity context.")
+        promptUtils.shareText(activityContext, title, text) // Pass activity context
+    }
+
+    suspend fun getAllPromptsForSharing(): List<Prompt> {
+        return repository.getAllPromptsList()
+    }
+
+
 }
 
 --- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\utils\ContextUtils.kt ---
 package com.promptmaster.utils
 
 import android.content.Context
-import android.content.ContextWrapper
+import android.content.res.Configuration
 import android.os.Build
+import android.util.DisplayMetrics
 import java.util.Locale
+import android.util.Log
 
-fun Context.setLocale(language: String): ContextWrapper {
-    val locale = Locale(language)
+/*
+// This function applies the selected language globally to the application by updating the resources configuration.
+fun aplicarIdioma(context: Context, codigoIdioma: String) {
+    Log.d("ContextUtils", "Attempting to apply language: $codigoIdioma to context: $context")
+    val locale = Locale(codigoIdioma)
     Locale.setDefault(locale)
 
+    val resources = context.resources
     val configuration = resources.configuration
-    configuration.setLocale(locale)
+    val displayMetrics = resources.displayMetrics
 
-    val context = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        createConfigurationContext(configuration)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        configuration.setLocale(locale)
     } else {
         @Suppress("DEPRECATION")
-        resources.updateConfiguration(configuration, resources.displayMetrics)
-        this
+        configuration.locale = locale
     }
 
-    return ContextWrapper(context)
+    @Suppress("DEPRECATION")
+    resources.updateConfiguration(configuration, displayMetrics)
+    Log.d("ContextUtils", "Language applied to context resources. Current locale: ${resources.configuration.locale.language}")
 }
+*/
 
 --- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\utils\PromptUtils.kt ---
 package com.promptmaster.utils
@@ -3292,6 +3417,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import android.content.Intent // Import Intent
+import com.promptmaster.R
 
 class PromptUtils(
     private val context: Context,
@@ -3391,6 +3518,17 @@ class PromptUtils(
             null
         }
     }
+
+    // Function to share generic text
+    fun shareText(context: Context, title: String, text: String) {
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_SUBJECT, title) // Set the subject/title of the share
+            putExtra(Intent.EXTRA_TEXT, text)
+            type = "text/plain"
+        }
+        context.startActivity(Intent.createChooser(shareIntent, title))
+    }
 }
 
 --- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\utils\SharedPreferencesUtils.kt ---
@@ -3464,21 +3602,17 @@ import com.promptmaster.ui.home.HomeScreen
 import com.promptmaster.ui.editprompt.EditPromptScreen
 import com.promptmaster.ui.settings.SettingsScreen
 import com.promptmaster.ui.theme.PromptMasterTheme
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.LaunchedEffect
-import java.util.Locale
 import androidx.core.view.WindowCompat
 import com.promptmaster.utils.rememberBooleanPreference // Import the helper function
-import androidx.preference.PreferenceManager // Import PreferenceManager
 import com.promptmaster.data.PromptBackupManager
 import com.promptmaster.ui.components.PromptListScreen // Import PromptListScreen
 import com.promptmaster.ui.components.ZoomableContent // Import ZoomableContent
-import com.promptmaster.utils.setLocale // Import the setLocale extension function
 import kotlinx.coroutines.launch // Import launch
 import androidx.compose.runtime.rememberCoroutineScope // Import rememberCoroutineScope
 import dagger.hilt.android.AndroidEntryPoint // Import AndroidEntryPoint
@@ -3500,20 +3634,13 @@ import kotlinx.coroutines.delay // Import delay
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration // Import LocalConfiguration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.dimensionResource // Import dimensionResource
 
 @AndroidEntryPoint // Add AndroidEntryPoint annotation
 class MainActivity : ComponentActivity() { // Define MainActivity as a class
 
     @Inject lateinit var repository: PromptRepository
     @Inject lateinit var promptBackupManager: PromptBackupManager
-
-    override fun attachBaseContext(newBase: Context?) {
-        val preferences = PreferenceManager.getDefaultSharedPreferences(newBase!!)
-        val language = preferences.getString("appLanguage", Locale.getDefault().language) ?: "en"
-        val context = newBase.setLocale(language)
-        applyOverrideConfiguration(context.resources.configuration)
-        super.attachBaseContext(context)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -3555,7 +3682,7 @@ fun PromptMasterApp(
     val adViewModel: AdViewModel = hiltViewModel() // Get AdViewModel instance
     val currentAd by adViewModel.currentAd.collectAsState() // Collect current ad state
     val screenWidth = LocalConfiguration.current.screenWidthDp // Get screen width for adaptive padding
-    val horizontalPadding = 16.dp // Set a fixed padding based on user preference for Favorites tab
+    val horizontalPadding = dimensionResource(R.dimen.horizontal_screen_padding) // Use dimension resource for horizontal padding
 
     // LaunchedEffect to alternate ads every 10 seconds
     LaunchedEffect(Unit) {
@@ -3575,7 +3702,10 @@ fun PromptMasterApp(
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
                 if (currentRoute != Screen.EditPrompt.route) {
-                    FloatingActionButton(onClick = { navController.navigate(Screen.EditPrompt.createRoute()) }) {
+                    FloatingActionButton(
+                        onClick = { navController.navigate(Screen.EditPrompt.createRoute()) },
+                        modifier = Modifier.padding(bottom = dimensionResource(R.dimen.fab_bottom_padding)) // Apply bottom padding
+                    ) {
                         Icon(Icons.Filled.Add, stringResource(R.string.add_new_prompt))
                     }
                 }
@@ -3652,8 +3782,8 @@ fun PromptMasterApp(
                 ad = ad,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp) // Apply horizontal padding
-                    .heightIn(min = 120.dp, max = 160.dp) // Set adaptive height range
+                    .padding(horizontal = dimensionResource(R.dimen.ad_view_horizontal_padding)) // Apply horizontal padding from dimens
+                    .heightIn(min = dimensionResource(R.dimen.ad_view_min_height), max = dimensionResource(R.dimen.ad_view_max_height)) // Set adaptive height range from dimens
             )
         }
     }
@@ -3697,8 +3827,11 @@ fun BottomNavigationBar(navController: NavHostController) { // Removed metrics p
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 72.dp, max = 80.dp), // Increased height range for more vertical space
-        tonalElevation = 0.dp
+            .heightIn(
+                min = dimensionResource(R.dimen.bottom_nav_bar_height_min),
+                max = dimensionResource(R.dimen.bottom_nav_bar_height_max)
+            ),
+        tonalElevation = dimensionResource(R.dimen.bottom_nav_bar_tonal_elevation)
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
@@ -3714,13 +3847,15 @@ fun BottomNavigationBar(navController: NavHostController) { // Removed metrics p
                                 .fillMaxHeight()
                         ) {
                             Icon(
-                                imageVector = screen.icon,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
+                                 imageVector = screen.icon,
+                                 contentDescription = null,
+                                 modifier = Modifier
+                                     .size(dimensionResource(R.dimen.bottom_nav_icon_size))
+                                     .padding(top = dimensionResource(R.dimen.bottom_nav_icon_padding_top)) // Add padding to the top of the icon
                             )
                             Text(
                                 text = stringResource(screen.resourceId),
-                                fontSize = 10.sp,
+                                fontSize = dimensionResource(R.dimen.bottom_nav_label_font_size).value.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis // Ensure text doesn't overflow if too long
                             )
@@ -3822,12 +3957,13 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.promptmaster.data.PromptPrepopulateWorker
 import dagger.hilt.android.HiltAndroidApp
-import android.content.ContextWrapper
 import java.util.Locale
 import androidx.preference.PreferenceManager
-import com.promptmaster.utils.setLocale // Import the setLocale extension function
 import com.google.android.gms.ads.MobileAds // Import MobileAds
 import javax.inject.Inject
+// import androidx.appcompat.app.AppCompatDelegate // Commented out for language change
+// import androidx.core.os.LocaleListCompat // Commented out for language change
+// import android.util.Log // Commented out for language change
 
 @HiltAndroidApp
 class PromptMasterApplication : Application(), Configuration.Provider {
@@ -3843,17 +3979,40 @@ class PromptMasterApplication : Application(), Configuration.Provider {
                 .build()
         }
 
-    override fun attachBaseContext(base: Context?) {
-        val preferences = PreferenceManager.getDefaultSharedPreferences(base!!)
-        val language = preferences.getString("appLanguage", Locale.getDefault().language) ?: "en"
-        val context = base.setLocale(language)
-        super.attachBaseContext(context)
-    }
-
     override fun onCreate() {
         super.onCreate()
+
         // Initialize the Mobile Ads SDK.
         MobileAds.initialize(this) {}
+
+        // Language change logic commented out as per user request.
+        /*
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val idiomaGuardado = prefs.getString("idioma_establecido", null)
+
+        if (idiomaGuardado == null) {
+            val idiomaSistema = Locale.getDefault().language
+            val idiomasDisponibles = listOf("es", "en", "fr", "de", "it", "pt") // los que tú soportes
+
+            val idiomaFinal = if (idiomasDisponibles.contains(idiomaSistema)) {
+                idiomaSistema
+            } else {
+                "en"
+            }
+
+            // Guardamos y aplicamos por primera vez
+            prefs.edit().putString("idioma_establecido", idiomaFinal).apply()
+            val localeList = LocaleListCompat.forLanguageTags(idiomaFinal)
+            AppCompatDelegate.setApplicationLocales(localeList)
+            Log.d("PromptMasterApplication", "Initial language set to: $idiomaFinal")
+        } else {
+            // Aplicar el idioma guardado
+            val localeList = LocaleListCompat.forLanguageTags(idiomaGuardado)
+            AppCompatDelegate.setApplicationLocales(localeList)
+            Log.d("PromptMasterApplication", "Saved language applied: $idiomaGuardado")
+        }
+        */
+
         android.util.Log.d("PromptMasterApplication", "Application onCreate called. Enqueuing PromptPrepopulateWorker.")
         val prepopulateRequest = OneTimeWorkRequest.Builder(PromptPrepopulateWorker::class.java)
             .build()
@@ -3864,6 +4023,7 @@ class PromptMasterApplication : Application(), Configuration.Provider {
             prepopulateRequest
         )
     }
+
 }
 
 --- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\PromptMasterHiltWorkerFactory.kt ---

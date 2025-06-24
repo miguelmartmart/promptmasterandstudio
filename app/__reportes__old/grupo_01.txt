@@ -1,0 +1,1010 @@
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\assets ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\assets\ads.json ---
+[
+  {
+    "imageUrl": "https://via.placeholder.com/150/FF5733/FFFFFF?text=Product+A",
+    "title": "Amazing Product A",
+    "description": "This is a fantastic product that you will love. Buy it now!",
+    "affiliateLink": "https://www.amazon.com/dp/B08L3J2Z3Y"
+  }
+]
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\assets\affiliate_links.txt ---
+https://amzn.to/4jWRLR7
+https://amzn.to/444ZQ0g
+https://amzn.to/460fXii
+https://amzn.to/44jCiWM
+https://amzn.to/4kSbRO4
+https://amzn.to/445qp5B
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\assets\initial_prompts.json ---
+[
+  {
+    "title": "Verificador de Fiabilidad y Fuentes Oficiales",
+    "description": "Evalúa la veracidad de este contenido verificando hechos clave, sesgos, y proporciona enlaces a fuentes oficiales.",
+    "category": "Prompts Básicos",
+    "tags": ["fiabilidad", "verificación", "fuentes oficiales", "fact-checking"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "idioma": "es",
+      "tipo_fuente_requerida": "[\"gobierno\", \"OMS\", \"universidades\"]",
+      "formato_salida": "JSON con campos: {veracidad, evidencia, enlaces, fiabilidad_general}"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Rol personalizado para IA: estructurar personalidad",
+    "description": "Define un personaje o asistente virtual estableciendo su rol, tono, conocimientos, formato de respuesta y restricciones. Esto permite tener respuestas coherentes con el personaje definido.",
+    "category": "Prompts Básicos",
+    "tags": ["rol", "agente", "personaje", "tono", "formato"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "rol": "asesor fiscal experto en autónomos de España",
+      "tono": "formal y claro",
+      "formato_respuesta": "lista + resumen final",
+      "restricciones": "sin opiniones personales, solo datos oficiales",
+      "contexto": "consultas tributarias para 2025"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Ayuda para tomar decisiones complejas paso a paso",
+    "description": "Analiza una decisión complicada desglosándola en criterios, alternativas, beneficios, riesgos y una conclusión justificada. Ideal para decidir entre varias opciones relevantes.",
+    "category": "Prompts Básicos",
+    "tags": ["decisiones", "análisis", "estrategia"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "decisión": "cambiar de proveedor tecnológico",
+      "criterios": "[\"coste\", \"fiabilidad\", \"soporte\"]",
+      "formato_salida": "tabla comparativa + conclusión"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Reformula un texto según estilo",
+    "description": "Convierte el siguiente texto a un tono, nivel de formalidad y estilo específico. Mantén el significado pero adapta la forma según el contexto deseado.",
+    "category": "Prompts Básicos",
+    "tags": ["estilo", "reformulación", "redacción"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "tono_deseado": "profesional",
+      "nivel_formalidad": "alto",
+      "adaptar_a": "presentación corporativa"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Estructurar contenido educativo",
+    "description": "Crea una lección o explicación sobre un tema para un público con cierto nivel. Incluye resumen, desarrollo, ejemplos y actividades sugeridas.",
+    "category": "Prompts Básicos",
+    "tags": ["educación", "enseñanza", "clases", "estructura"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "tema": "álgebra básica",
+      "nivel": "secundaria",
+      "formato_salida": "lección estructurada con preguntas al final"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Extraer ideas clave",
+    "description": "Identifica ideas clave, argumentos principales y detalles secundarios. Devuelve una estructura jerárquica de la información.",
+    "category": "Prompts Básicos",
+    "tags": ["resumen", "ideas clave", "comprensión"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "idioma": "es",
+      "nivel_detalle": "alto",
+      "formato_salida": "bullet points con sangría"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Actuar como moderador de debates",
+    "description": "Responde como un moderador que organiza turnos, mantiene el respeto y sintetiza los argumentos sin inclinarse por ningún lado.",
+    "category": "Prompts Básicos",
+    "tags": ["debate", "neutralidad", "moderación"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "tema_del_debate": "inteligencia artificial en educación",
+      "cantidad_participantes": "2",
+      "formato": "pregunta inicial + turnos + conclusión objetiva"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false,
+    "subcategory": ""
+  },
+  {
+    "title": "Generar contrato laboral personalizado",
+    "description": "Crea un contrato laboral completo con los datos proporcionados. Incluye cláusulas legales estándar, condiciones laborales, y campos editables para personalizar según el rol y la legislación local.",
+    "category": "Automatización",
+    "subcategory": "Documentos",
+    "tags": ["contrato", "laboral", "legal", "documento"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "nombre_empleado": "Juan Pérez",
+      "puesto": "Desarrollador Backend",
+      "salario": "32.000 € brutos anuales",
+      "duración": "indefinido",
+      "jornada": "completa",
+      "ubicación": "Madrid, España"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Redactar correo formal automáticamente",
+    "description": "Genera un correo profesional según el objetivo, destinatario y contexto. El texto debe ser claro, directo y con un cierre adecuado.",
+    "category": "Comunicación",
+    "subcategory": "Correo",
+    "tags": ["correo", "email", "oficina", "profesional"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "destinatario": "cliente",
+      "objetivo": "informar sobre retraso en entrega",
+      "tono": "respetuoso y resolutivo",
+      "idioma": "es",
+      "firma": "Laura Gómez\nGestión de cuentas"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Contrato de prestación de servicios personalizado",
+    "description": "Genera un contrato entre proveedor y cliente que detalle alcance, condiciones, duración, cláusulas legales, y métodos de pago.",
+    "category": "Automatización",
+    "subcategory": "Documentos",
+    "tags": ["servicios", "contrato", "proveedor", "legal"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "nombre_cliente": "TechNova S.L.",
+      "nombre_proveedor": "Freelancer AI Consulting",
+      "servicio": "Desarrollo de módulo IA personalizado",
+      "duración": "3 meses",
+      "precio": "6.000 € + IVA",
+      "jurisdicción": "España"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Resumen automático de contrato",
+    "description": "Resume un contrato largo destacando cláusulas clave, obligaciones, penalizaciones, y duración. Útil para revisión rápida.",
+    "category": "Análisis",
+    "subcategory": "Documentos",
+    "tags": ["resumen", "contrato", "legal", "síntesis"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "tipo_contrato": "servicio de mantenimiento web",
+      "idioma": "es",
+      "formato": "puntos clave + tabla con partes y fechas importantes"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Correo de seguimiento para clientes",
+    "description": "Redacta un correo amable y profesional para hacer seguimiento a un cliente tras una reunión, incluyendo resumen, próximos pasos y agradecimiento.",
+    "category": "Comunicación",
+    "subcategory": "Seguimiento",
+    "tags": ["seguimiento", "email", "cliente", "negocios"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "cliente": "María Rodríguez",
+      "fecha_reunión": "10 de mayo de 2025",
+      "temas_tratados": "campaña de lanzamiento y presupuesto",
+      "próximo_paso": "enviar propuesta antes del viernes"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Contrato de confidencialidad (NDA) personalizado",
+    "description": "Genera un contrato de confidencialidad entre dos partes, detallando las definiciones de información confidencial, duración, limitaciones y consecuencias legales.",
+    "category": "Automatización",
+    "subcategory": "Documentos",
+    "tags": ["NDA", "confidencialidad", "contrato", "empresa"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "parte_receptora": "Desarrollador Freelance",
+      "parte_divulgadora": "TechGlobal Solutions",
+      "alcance": "documentación técnica y estratégica",
+      "duración": "2 años",
+      "jurisdicción": "España"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Responder queja de cliente de forma profesional y empática",
+    "description": "Redacta una respuesta profesional y empática a una queja de cliente, asumiendo responsabilidad y ofreciendo una solución concreta.",
+    "category": "Atención al Cliente",
+    "subcategory": "Queja",
+    "tags": ["respuesta", "queja", "cliente", "correo"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "nombre_cliente": "Laura Gómez",
+      "motivo_queja": "entrega retrasada de pedido",
+      "acción_tomada": "envío urgente sin costes",
+      "firma": "Soporte TechNova"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Propuesta comercial adaptada a cliente",
+    "description": "Genera una propuesta comercial estructurada con introducción, objetivos, servicios ofrecidos, cronograma, presupuesto y cierre profesional.",
+    "category": "Documentación",
+    "subcategory": "Comercial",
+    "tags": ["propuesta", "oferta", "cliente", "negocio"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "nombre_cliente": "Grupo Solvia",
+      "servicio": "automatización de procesos con IA",
+      "duración_proyecto": "2 meses",
+      "presupuesto": "9.500 € + IVA"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Redactar acta de reunión estructurada",
+    "description": "Crea un acta de reunión clara y formal incluyendo fecha, asistentes, temas tratados, acuerdos y próximos pasos.",
+    "category": "Documentación",
+    "subcategory": "Interna",
+    "tags": ["acta", "reunión", "interno", "resumen"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "fecha": "5 de junio de 2025",
+      "asistentes": "Equipo de Marketing + Dirección",
+      "temas": "plan de contenidos Q3",
+      "decisiones": "incrementar presupuesto de redes"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Correo de bienvenida a nuevo empleado",
+    "description": "Redacta un correo amigable y formal para dar la bienvenida a un nuevo miembro del equipo. Incluye datos útiles y próximos pasos.",
+    "category": "Comunicación",
+    "subcategory": "Interna",
+    "tags": ["bienvenida", "empleado", "onboarding", "correo"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "nombre_empleado": "Miguel Ortega",
+      "equipo": "Departamento de Producto",
+      "fecha_inicio": "12 de junio de 2025",
+      "contacto_soporte": "rrhh@empresa.com"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Generar aviso legal personalizado",
+    "description": "Crea un aviso legal adaptado a las leyes de protección de datos, propiedad intelectual y uso del sitio o app según el país.",
+    "category": "Documentación",
+    "subcategory": "Legal",
+    "tags": ["aviso legal", "protección de datos", "web", "app", "RGPD"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "nombre_empresa": "PromptMaster Inc.",
+      "tipo_servicio": "plataforma de generación de prompts IA",
+      "país_jurisdicción": "España",
+      "email_contacto": "legal@promptmaster.com"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Redactar cláusula adicional para contrato",
+    "description": "Crea una cláusula adicional específica para un contrato existente, detallando condiciones y efectos jurídicos claros.",
+    "category": "Documentación",
+    "subcategory": "Legal",
+    "tags": ["cláusula", "anexo", "modificación", "contrato"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "tipo_contrato": "contrato de prestación de servicios",
+      "motivo": "extensión de plazos y condiciones de entrega",
+      "parte_interesada": "proveedor externo",
+      "fecha_efectiva": "15 de junio de 2025"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Generar anexo técnico explicativo",
+    "description": "Redacta un anexo que detalle especificaciones técnicas, condiciones de ejecución o requerimientos vinculados a un proyecto o contrato.",
+    "category": "Documentación",
+    "subcategory": "Técnica",
+    "tags": ["anexo", "documentación técnica", "contrato", "proyecto"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "proyecto": "automatización de facturación con IA",
+      "elementos_especificados": "modelos utilizados, métricas de precisión, APIs de terceros",
+      "vinculado_a": "cláusula 5.3 del contrato",
+      "formato_salida": "apartados con títulos + tabla de requisitos"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Generar memorando interno a empleados",
+    "description": "Redacta un memorando breve y profesional para comunicar información interna relevante a empleados o departamentos.",
+    "category": "Comunicación",
+    "subcategory": "Interna",
+    "tags": ["memorando", "interno", "información", "empresa"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "asunto": "Nueva política de trabajo remoto",
+      "destinatarios": "todo el personal de operaciones",
+      "fecha": "10 de junio de 2025",
+      "resumen_contenido": "normas, horarios flexibles, control de asistencia y uso de herramientas online"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Crear acuerdo de colaboración entre entidades",
+    "description": "Genera un acuerdo formal entre dos partes donde se establecen los objetivos, duración, responsabilidades y beneficios mutuos.",
+    "category": "Negociaciones",
+    "subcategory": "Acuerdos",
+    "tags": ["colaboración", "contrato", "empresa", "partes"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "empresa1": "StartUp Vision",
+      "empresa2": "BigTech Labs",
+      "objetivo": "desarrollar solución conjunta de análisis predictivo",
+      "duración": "12 meses",
+      "compromisos": "entregables trimestrales y propiedad compartida del código"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Negociar precio con proveedor",
+    "description": "Redacta un correo cortés y estratégico para negociar condiciones económicas con un proveedor o socio comercial.",
+    "category": "Comercial",
+    "subcategory": "Compras",
+    "tags": ["negociación", "correo", "proveedor", "precio"],
+    "recommendedModel": "gpt-3.5-turbo",
+    "customizableFields": {
+      "nombre_proveedor": "TechParts Ltd.",
+      "producto_servicio": "componentes electrónicos para IoT",
+      "precio_actual": "4.500 €/mes",
+      "motivo_negociación": "reducción por volumen de pedidos y fidelidad"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+    "title": "Renegociar condiciones de contrato actual",
+    "description": "Genera un correo profesional para plantear la revisión o ajuste de cláusulas de un contrato vigente por cambios en las circunstancias.",
+    "category": "Negociaciones",
+    "subcategory": "Renegociaciones",
+    "tags": ["renegociación", "contrato", "condiciones", "correo"],
+    "recommendedModel": "gpt-4",
+    "customizableFields": {
+      "nombre_cliente_o_proveedor": "MundoAI Solutions",
+      "motivo": "modificación del alcance del proyecto por nuevas regulaciones",
+      "cláusulas_a_revisar": "cronograma de entregas y coste adicional",
+      "tono_deseado": "profesional, conciliador y claro"
+    },
+    "imagePath": null,
+    "videoPath": null,
+    "isFavorite": false
+  },
+  {
+  "title": "Auditoría de cumplimiento RGPD",
+  "description": "Evalúa si una empresa o app cumple con el Reglamento General de Protección de Datos. Analiza textos legales, prácticas y recoge riesgos.",
+  "category": "Legal",
+  "subcategory": "Protección de Datos",
+  "tags": ["RGPD", "auditoría", "datos personales", "legal"],
+  "recommendedModel": "gpt-4",
+  "customizableFields": {
+    "tipo_entidad": "startup tecnológica",
+    "elementos_a_analizar": "[\"política de privacidad\", \"consentimiento explícito\", \"registro de actividades\"]",
+    "formato_salida": "informe estructurado con alertas y recomendaciones"
+  },
+  "imagePath": null,
+  "videoPath": null,
+  "isFavorite": false
+},
+{
+  "title": "Crear guía paso a paso para un proceso",
+  "description": "Desarrolla un tutorial detallado sobre un procedimiento profesional, ideal para formación o onboarding.",
+  "category": "Documentación",
+  "subcategory": "Operaciones",
+  "tags": ["procedimientos", "guía", "formación", "tutorial"],
+  "recommendedModel": "gpt-3.5-turbo",
+  "customizableFields": {
+    "proceso": "publicar un nuevo producto en ecommerce",
+    "nivel_dificultad": "medio",
+    "formato_salida": "pasos numerados + consejos + errores comunes"
+  },
+  "imagePath": null,
+  "videoPath": null,
+  "isFavorite": false
+}
+
+
+]
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\assets\manual_ads_config.json ---
+{
+  "trendingpc_gaming": {
+    "imageUrl": "https://m.media-amazon.com/images/I/61j-PrU49JL._AC_SY450_.jpg",
+    "title": "TrendingPC PC Gaming Intel Core Ultra 9 • RTX 5090 32gb • 64gb DDR5 • SSD m.2 2tb • Refrigeración Líquida",
+    "description": "TrendingPC PC Gaming Intel Core Ultra 9 285K 24 x 5,70ghz • NVIDIA RTX 5090 32gb • 64gb RAM DDR5 6400mhz • WiFi 6 y BT 5.2 • SSD m.2 2tb • Refrigeración Líquida 360mm • Windows 11 Pro • PC Gamer",
+    "links": {
+      "ES": "https://amzn.to/4jWRLR7",
+      "US": "https://www.amazon.com/dp/B0CXXXXXXX?tag=yourtagus-20",
+      "DE": "https://www.amazon.de/dp/B0CXXXXXXX?tag=yourtagde-21",
+      "FR": "https://www.amazon.fr/dp/B0CXXXXXXX?tag=yourtagfr-21",
+      "PT": "https://www.amazon.com.br/dp/B0CXXXXXXX?tag=yourtagbr-20",
+      "IT": "https://www.amazon.it/dp/B0CXXXXXXX?tag=yourtagit-21",
+      "UK": "https://www.amazon.co.uk/dp/B0CXXXXXXX?tag=yourtaguk-21",
+      "default": "https://amzn.to/4jWRLR7"
+    }
+  },
+  "samsung_galaxy_s25_ultra": {
+    "imageUrl": "https://m.media-amazon.com/images/I/61BatAP94aL.__AC_SX300_SY300_QL70_ML2_.jpg",
+    "title": "Samsung Galaxy S25 Ultra 512GB",
+    "description": "Samsung Galaxy S25 Ultra 512GB Teléfono Móvil con IA, Galaxy AI, 12GB RAM, Cámara 200MP, Dual SIM, IP68, Garantía del Fabricante 3 Años + 1 Año Extra, Titanio Gris (Versión Española)",
+    "links": {
+      "ES": "https://amzn.to/444ZQ0g",
+      "US": "https://www.amazon.com/dp/B0CYYYYYYY?tag=yourtagus-20",
+      "DE": "https://www.amazon.de/dp/B0CYYYYYYY?tag=yourtagde-21",
+      "FR": "https://www.amazon.fr/dp/B0CYYYYYYY?tag=yourtagfr-21",
+      "PT": "https://www.amazon.com.br/dp/B0CYYYYYYY?tag=yourtagbr-20",
+      "IT": "https://www.amazon.it/dp/B0CYYYYYYY?tag=yourtagit-21",
+      "UK": "https://www.amazon.co.uk/dp/B0CYYYYYYY?tag=yourtaguk-21",
+      "default": "https://amzn.to/444ZQ0g"
+    }
+  },
+  "sandisk_pendrive_64gb": {
+    "imageUrl": "https://m.media-amazon.com/images/I/61T85CGI4ZL.__AC_SX300_SY300_QL70_ML2_.jpg",
+    "title": "SanDisk Pendrive 64 GB",
+    "description": "SanDisk Pendrive 64 GB Ultra Memoria flash USB 3.0 hasta 130 MB/s, (SecureAccess Software, Protección de contraseñas) Negro",
+    "links": {
+      "ES": "https://amzn.to/460fXii",
+      "US": "https://www.amazon.com/dp/B0CZZZZZZZ?tag=yourtagus-20",
+      "DE": "https://www.amazon.de/dp/B0CZZZZZZZ?tag=yourtagde-21",
+      "FR": "https://www.amazon.fr/dp/B0CZZZZZZZ?tag=yourtagfr-21",
+      "PT": "https://www.amazon.com.br/dp/B0CZZZZZZZ?tag=yourtagbr-20",
+      "IT": "https://www.amazon.it/dp/B0CZZZZZZZ?tag=yourtagit-21",
+      "UK": "https://www.amazon.co.uk/dp/B0CZZZZZZZ?tag=yourtaguk-21",
+      "default": "https://amzn.to/460fXii"
+    }
+  },
+  "tp_link_re330_wifi_repeater": {
+    "imageUrl": "https://m.media-amazon.com/images/I/41-UwuabaUL._AC_SY450_.jpg",
+    "title": "TP-Link RE330 WiFi Repeater, AC1200 Amplifier, Extender up to 120 m2, Powerful Repeater with Ethernet Port, EasyMesh, Compatible with All Internet Boxes",
+    "description": "TP-Link RE330 WiFi Repeater, AC1200 Amplifier, Extender up to 120 m2, Powerful Repeater with Ethernet Port, EasyMesh, Compatible with All Internet Boxes",
+    "links": {
+      "ES": "https://amzn.to/44jCiWM",
+      "US": "https://www.amazon.com/dp/B0CAAAAAAA?tag=yourtagus-20",
+      "DE": "https://www.amazon.de/dp/B0CAAAAAAA?tag=yourtagde-21",
+      "FR": "https://www.amazon.fr/dp/B0CAAAAAAA?tag=yourtagfr-21",
+      "PT": "https://www.amazon.com.br/dp/B0CAAAAAAA?tag=yourtagbr-20",
+      "IT": "https://www.amazon.it/dp/B0CAAAAAAA?tag=yourtagit-21",
+      "UK": "https://www.amazon.co.uk/dp/B0CAAAAAAA?tag=yourtaguk-21",
+      "default": "https://amzn.to/44jCiWM"
+    }
+  },
+  "hp_deskjet_printer": {
+    "imageUrl": "https://m.media-amazon.com/images/I/41-UwuabaUL._AC_SY450_.jpg",
+    "title": "HP DeskJet, Impresora multifunción de inyección de tinta",
+    "description": "HP DeskJet 2820e 588K9B, Impresora multifunción de inyección de tinta A4 a color, Conexión Wi-Fi, Impresión a doble cara manual, Hasta 7,5 ppm, 3 meses de impresión Instant Ink con HP+, Blanca",
+    "links": {
+      "ES": "https://amzn.to/4kSbRO4",
+      "US": "https://www.amazon.com/dp/B0CBBBBBBB?tag=yourtagus-20",
+      "DE": "https://www.amazon.de/dp/B0CBBBBBBB?tag=yourtagde-21",
+      "FR": "https://www.amazon.fr/dp/B0CBBBBBBB?tag=yourtagfr-21",
+      "PT": "https://www.amazon.com.br/dp/B0CBBBBBBB?tag=yourtagbr-20",
+      "IT": "https://www.amazon.it/dp/B0CBBBBBBB?tag=yourtagit-21",
+      "UK": "https://www.amazon.co.uk/dp/B0CBBBBBBB?tag=yourtaguk-21",
+      "default": "https://amzn.to/4kSbRO4"
+    }
+  },
+  "external_hard_drive_2tb": {
+    "imageUrl": "https://m.media-amazon.com/images/I/51IsjmbfmZL._AC_SY450_.jpg",
+    "title": "Disco Duro Externo de 2TB",
+    "description": "Disco Duro Externo de 2TB, Ultra Delgado y Portátil de 2.5\" con Conexión USB, Almacenamiento Compatible con PC, Ordenador Portátil y Computadora (Negro)",
+    "links": {
+      "ES": "https://amzn.to/445qp5B",
+      "US": "https://www.amazon.com/dp/B0CCCCCCC?tag=yourtagus-20",
+      "DE": "https://www.amazon.de/dp/B0CCCCCCC?tag=yourtagde-21",
+      "FR": "https://www.amazon.fr/dp/B0CCCCCCC?tag=yourtagfr-21",
+      "PT": "https://www.amazon.com.br/dp/B0CCCCCCC?tag=yourtagbr-20",
+      "IT": "https://www.amazon.it/dp/B0CCCCCCC?tag=yourtagit-21",
+      "UK": "https://www.amazon.co.uk/dp/B0CCCCCCC?tag=yourtaguk-21",
+      "default": "https://amzn.to/445qp5B"
+    }
+  }
+}
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\ads ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\ads\AdViewModel.kt ---
+package com.promptmaster.ui.ads
+
+import android.util.Log // Import Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.promptmaster.data.ads.Ad
+import com.promptmaster.data.ads.AdRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class AdViewModel @Inject constructor(
+    private val adRepository: AdRepository
+) : ViewModel() {
+
+    private val _currentAd = MutableStateFlow<Ad?>(null)
+    val currentAd: StateFlow<Ad?> = _currentAd
+
+    private var allAds: List<Ad> = emptyList()
+    private var currentAdIndex = 0
+
+    init {
+        Log.d("AdViewModel", "AdViewModel initialized. Calling loadAds().")
+        loadAds()
+    }
+
+    private fun loadAds() {
+        viewModelScope.launch {
+            Log.d("AdViewModel", "loadAds() called. Fetching ads from repository.")
+            allAds = adRepository.getAds()
+            Log.d("AdViewModel", "Ads fetched from repository. Total ads: ${allAds.size}")
+            if (allAds.isNotEmpty()) {
+                _currentAd.value = allAds[currentAdIndex]
+                Log.d("AdViewModel", "Initial ad set: Title='${_currentAd.value?.title}'")
+            } else {
+                Log.w("AdViewModel", "No ads fetched from repository. _currentAd remains null.")
+            }
+        }
+    }
+
+    fun showNextAd() {
+        Log.d("AdViewModel", "showNextAd() called. Current index: $currentAdIndex, Total ads: ${allAds.size}")
+        if (allAds.isNotEmpty()) {
+            currentAdIndex = (currentAdIndex + 1) % allAds.size
+            _currentAd.value = allAds[currentAdIndex]
+            Log.d("AdViewModel", "Next ad set: Title='${_currentAd.value?.title}', New index: $currentAdIndex")
+        } else {
+            Log.w("AdViewModel", "Cannot show next ad, allAds list is empty.")
+        }
+    }
+}
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\editprompt ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\ui\editprompt\EditPromptScreen.kt ---
+package com.promptmaster.ui.editprompt
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+
+import com.promptmaster.R
+import com.promptmaster.data.Prompt
+
+import com.promptmaster.ui.PromptOperationsViewModel // New import
+import androidx.activity.compose.BackHandler // Import BackHandler
+import com.promptmaster.ui.components.ConfirmationDialog // Import ConfirmationDialog
+import kotlinx.coroutines.flow.first // Import first for Flow
+import kotlinx.coroutines.launch // Import launch
+import androidx.compose.runtime.saveable.rememberSaveable // Import rememberSaveable
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditPromptScreen(
+    promptId: Int,
+    promptViewModel: PromptOperationsViewModel, // Accept generic interface
+    onBack: () -> Unit
+) {
+    // Log the received promptId
+    android.util.Log.d("EditPromptScreen", "Received promptId: $promptId")
+
+    val prompt by promptViewModel.getPrompt(promptId)
+        .collectAsState(initial = null) // Use getPrompt
+
+    // Log the collected prompt object
+    LaunchedEffect(prompt) {
+        android.util.Log.d("EditPromptScreen", "Collected prompt: $prompt")
+    }
+
+    var title by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var category by rememberSaveable { mutableStateOf("") }
+    var subcategory by rememberSaveable { mutableStateOf("") }
+    var showSubcategorySuggestions by remember { mutableStateOf(false) } // Moved declaration
+    var tags by rememberSaveable { mutableStateOf("") }
+
+    // Reset subcategory when category changes, if current subcategory is not valid for new category
+    LaunchedEffect(category) {
+        if (category.isEmpty()) {
+            subcategory = "" // Always clear subcategory if category is cleared
+        } else if (subcategory.isNotEmpty()) {
+            // Fetch subcategories for the new category to check validity
+            val subcategoriesForNewCategory = promptViewModel.getAllSubcategories(category).first() // Reverted to original, now with import
+            if (!subcategoriesForNewCategory.contains(subcategory)) {
+                subcategory = "" // Reset if current subcategory is not valid for new category
+            }
+        }
+    }
+    var recommendedModel by rememberSaveable { mutableStateOf("") }
+    var customizableFields by rememberSaveable { mutableStateOf("") }
+    var imagePath by rememberSaveable { mutableStateOf("") }
+    var videoPath by rememberSaveable { mutableStateOf("") }
+    var isFavorite by rememberSaveable { mutableStateOf(false) }
+
+    var showDiscardConfirmationDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(prompt) {
+        prompt?.let {
+            title = it.title
+            description = it.description ?: "" // Handle null description
+            category = it.category
+            subcategory = it.subcategory ?: ""
+            tags = it.tags.joinToString(",")
+            customizableFields = it.customizableFields?.toString() ?: ""
+            recommendedModel = it.recommendedModel ?: ""
+            imagePath = it.imagePath ?: ""
+            videoPath = it.videoPath ?: ""
+            isFavorite = it.isFavorite
+        }
+        // Ensure suggestions are shown for initially loaded subcategory if not empty
+        showSubcategorySuggestions = subcategory.isNotEmpty()
+    }
+
+    val hasUnsavedChanges = remember(
+        prompt,
+        title,
+        description,
+        category,
+        subcategory,
+        tags,
+        recommendedModel,
+        customizableFields,
+        imagePath,
+        videoPath,
+        isFavorite
+    ) {
+        prompt?.let {
+            it.title != title ||
+                    it.description != description ||
+                    it.category != category ||
+                    it.subcategory != subcategory ||
+                    it.tags.joinToString(",") != tags ||
+                    it.recommendedModel != recommendedModel ||
+                    it.customizableFields?.toString() != customizableFields ||
+                    it.imagePath != imagePath ||
+                    it.videoPath != videoPath ||
+                    it.isFavorite != isFavorite
+        }
+            ?: (title.isNotEmpty() || description.isNotEmpty() || category.isNotEmpty() || subcategory.isNotEmpty() || tags.isNotEmpty() || recommendedModel.isNotEmpty() || customizableFields.isNotEmpty() || imagePath.isNotEmpty() || videoPath.isNotEmpty() || isFavorite) // Consider changes for new prompts
+    }
+
+    BackHandler(enabled = hasUnsavedChanges) {
+        showDiscardConfirmationDialog = true
+    }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.edit_prompt)) },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        if (hasUnsavedChanges) {
+                            showDiscardConfirmationDialog = true
+                        } else {
+                            onBack()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_button_content_description)
+                        )
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it }, // Simplified onValueChange
+                label = { Text(stringResource(R.string.title_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (title.isNotEmpty()) {
+                        IconButton(onClick = { title = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description)
+                            )
+                        }
+                    }
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it }, // Simplified onValueChange
+                label = { Text(stringResource(R.string.description_label)) },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            // Category Input with Suggestions
+            val allCategories by promptViewModel.getAllCategories().collectAsState(initial = emptyList())
+            var showCategorySuggestions by remember { mutableStateOf(false) }
+
+            OutlinedTextField(
+                value = category,
+                onValueChange = { newValue ->
+                    category = newValue
+                    showCategorySuggestions = newValue.isNotEmpty() // Show suggestions if typing
+                },
+                label = { Text(stringResource(R.string.category_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (category.isNotEmpty()) {
+                        IconButton(onClick = { category = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description)
+                            )
+                        }
+                    }
+                }
+            )
+            if (showCategorySuggestions) {
+                val filteredCategories = allCategories.filter {
+                    it.contains(category, ignoreCase = true)
+                }
+                if (filteredCategories.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp)
+                    ) {
+                        filteredCategories.forEach { suggestion ->
+                            TextButton(
+                                onClick = {
+                                    category = suggestion
+                                    showCategorySuggestions = false // Hide suggestions after selection
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(suggestion)
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Subcategory Input with Suggestions (only visible if a category is selected)
+            if (category.isNotEmpty()) {
+                val allSubcategories by promptViewModel.getAllSubcategories(category).collectAsState(initial = emptyList())
+
+                OutlinedTextField(
+                    value = subcategory,
+                    onValueChange = { newValue ->
+                        subcategory = newValue
+                        showSubcategorySuggestions = newValue.isNotEmpty() // Show suggestions if typing
+                    },
+                    label = { Text(stringResource(R.string.subcategory_label)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = {
+                        if (subcategory.isNotEmpty()) {
+                            IconButton(onClick = { subcategory = "" }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Clear,
+                                    contentDescription = stringResource(R.string.clear_text_button_description)
+                                )
+                            }
+                        }
+                    }
+                )
+                if (showSubcategorySuggestions) {
+                    val filteredSubcategories = allSubcategories.filter {
+                        it?.contains(subcategory, ignoreCase = true) == true
+                    }
+                    if (filteredSubcategories.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp)
+                        ) {
+                            filteredSubcategories.forEach { suggestion ->
+                                TextButton(
+                                    onClick = {
+                                        subcategory = suggestion as String
+                                        showSubcategorySuggestions = false // Hide suggestions after selection
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(suggestion)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = tags,
+                onValueChange = { tags = it }, // Simplified onValueChange
+                label = { Text(stringResource(R.string.tags_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (tags.isNotEmpty()) {
+                        IconButton(onClick = { tags = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description)
+                            )
+                        }
+                    }
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = recommendedModel,
+                onValueChange = { recommendedModel = it }, // Simplified onValueChange
+                label = { Text(stringResource(R.string.recommended_model_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (recommendedModel.isNotEmpty()) {
+                        IconButton(onClick = { recommendedModel = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description)
+                            )
+                        }
+                    }
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = customizableFields,
+                onValueChange = { customizableFields = it }, // Simplified onValueChange
+                label = { Text(stringResource(R.string.customizable_fields_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    if (customizableFields.isNotEmpty()) {
+                        IconButton(onClick = { customizableFields = "" }) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = stringResource(R.string.clear_text_button_description)
+                            )
+                        }
+                    }
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            // TODO: Add fields for image and video paths
+            // TODO: Add checkbox for isFavorite
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            val emptyFieldsMessage = stringResource(R.string.empty_fields_error)
+            Button(
+                onClick = {
+                    if (title.isBlank() || description.isBlank() || category.isBlank()) {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = emptyFieldsMessage,
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                        return@Button
+                    }
+
+                    val promptToSave = Prompt(
+                        id = promptId,
+                        title = title,
+                        description = description,
+                        category = category,
+                        subcategory = subcategory.ifEmpty { null },
+                        tags = tags.split(",").map { it.trim() }.filter { it.isNotEmpty() },
+                        recommendedModel = recommendedModel.ifEmpty { null },
+                        customizableFields = emptyMap(), // Pass emptyMap()
+                        imagePath = imagePath.ifEmpty { null },
+                        videoPath = videoPath.ifEmpty { null },
+                        isFavorite = isFavorite
+                    )
+                    coroutineScope.launch {
+                        if (promptId == 0) {
+                            promptViewModel.insert(promptToSave)
+                        } else {
+                            promptViewModel.update(promptToSave)
+                        }
+                        onBack()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = hasUnsavedChanges
+            ) {
+                Text(stringResource(if (promptId == 0) R.string.save_prompt_button else R.string.update_prompt_button))
+            }
+        }
+        // Confirmation Dialog
+        if (showDiscardConfirmationDialog) {
+            ConfirmationDialog(
+                showDialog = showDiscardConfirmationDialog,
+                title = stringResource(id = R.string.edit_prompt_dialog_title),
+                text = stringResource(id = R.string.edit_prompt_dialog_message),
+                confirmButtonText = stringResource(id = R.string.dialog_confirm),
+                cancelButtonText = stringResource(id = R.string.dialog_cancel),
+                onConfirm = {
+                    showDiscardConfirmationDialog = false
+                    onBack()
+                },
+                onCancel = { showDiscardConfirmationDialog = false }
+            )
+        }
+    }
+}
+
+// TODO: Add Preview

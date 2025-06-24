@@ -1,0 +1,569 @@
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\utils ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\utils\ContextUtils.kt ---
+package com.promptmaster.utils
+
+import android.content.Context
+import android.content.ContextWrapper
+import android.os.Build
+import java.util.Locale
+
+fun Context.setLocale(language: String): ContextWrapper {
+    val locale = Locale(language)
+    Locale.setDefault(locale)
+
+    val configuration = resources.configuration
+    configuration.setLocale(locale)
+
+    val context = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        createConfigurationContext(configuration)
+    } else {
+        @Suppress("DEPRECATION")
+        resources.updateConfiguration(configuration, resources.displayMetrics)
+        this
+    }
+
+    return ContextWrapper(context)
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\utils\PromptUtils.kt ---
+package com.promptmaster.utils
+
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.promptmaster.data.Prompt
+import com.promptmaster.data.PromptBackupManager
+import com.promptmaster.data.PromptRepository
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+
+class PromptUtils(
+    private val context: Context,
+    private val repository: PromptRepository,
+    private val promptBackupManager: PromptBackupManager
+) {
+
+    private val sharedPreferences: SharedPreferences by lazy {
+        PreferenceManager.getDefaultSharedPreferences(context)
+    }
+
+    // Channel for one-time events like status messages
+    private val _statusChannel = Channel<String>(Channel.BUFFERED)
+    val status = _statusChannel.receiveAsFlow()
+
+    fun loadSearchHistory(): List<String> {
+        return sharedPreferences.getStringList("search_history")
+    }
+
+    fun saveSearchHistory(history: List<String>) {
+        sharedPreferences.edit().apply {
+            putStringList("search_history", history)
+            apply()
+        }
+    }
+
+    // Function to copy text to clipboard
+    fun copyToClipboard(text: String) {
+        val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        val clipData = android.content.ClipData.newPlainText("Prompt Description", text)
+        clipboardManager.setPrimaryClip(clipData)
+    }
+
+    // Function to reset application data to initial state
+    suspend fun resetApplicationData() {
+        repository.deleteAllPrompts()
+
+        // Delete the backup file
+        val backupFile = promptBackupManager.getBackupFile()
+        if (backupFile != null && backupFile.exists()) {
+            try {
+                backupFile.delete()
+                android.util.Log.d("PromptUtils", "Backup file deleted during reset")
+            } catch (e: Exception) {
+                android.util.Log.e("PromptUtils", "Error deleting backup file during reset", e)
+            }
+        }
+
+        try {
+            val inputStream: InputStream = context.assets.open("initial_prompts.json")
+            val reader = InputStreamReader(inputStream)
+            val promptListType = object : TypeToken<List<Prompt>>() {}.type
+            val prompts: List<Prompt> = Gson().fromJson(reader, promptListType)
+
+            prompts.forEach { prompt ->
+                repository.insertOrUpdatePrompt(prompt)
+            }
+            _statusChannel.send("Application data reset to initial prompts successfully")
+        } catch (e: IOException) {
+            e.printStackTrace()
+            _statusChannel.send("Error reading initial_prompts.json: ${e.message}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _statusChannel.send("Error resetting application data: ${e.message}")
+        }
+    }
+
+    suspend fun importPrompts(uri: android.net.Uri) {
+        try {
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                val reader = InputStreamReader(inputStream)
+                val promptListType = object : TypeToken<List<Prompt>>() {}.type
+                val prompts: List<Prompt> = Gson().fromJson(reader, promptListType)
+
+                prompts.forEach { prompt ->
+                    repository.insertOrUpdatePrompt(prompt)
+                }
+                _statusChannel.send("Prompts imported successfully")
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            _statusChannel.send("Error reading prompts file: ${e.message}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _statusChannel.send("Error importing prompts: ${e.message}")
+        }
+    }
+
+    suspend fun exportPrompts(): String? {
+        return try {
+            val json = repository.exportPromptsToJson() // Corrected function call
+            _statusChannel.send("Prompts data prepared for export.")
+            json
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _statusChannel.send("Error preparing prompts for export: ${e.message}")
+            null
+        }
+    }
+}
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\java\com\promptmaster\utils\SharedPreferencesUtils.kt ---
+package com.promptmaster.utils
+
+import android.content.SharedPreferences
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+
+@Composable
+fun rememberBooleanPreference(
+    key: String,
+    defaultValue: Boolean,
+    preferences: SharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
+): State<Boolean> {
+    val context = LocalContext.current
+    val state = remember { mutableStateOf(preferences.getBoolean(key, defaultValue)) }
+
+    DisposableEffect(preferences, key) {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, changedKey ->
+            if (changedKey == key) {
+                state.value = sharedPreferences.getBoolean(key, defaultValue)
+            }
+        }
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+        onDispose {
+            preferences.unregisterOnSharedPreferenceChangeListener(listener)
+        }
+    }
+
+    return state
+}
+
+fun SharedPreferences.Editor.putStringList(key: String, list: List<String>) {
+    putStringSet(key, list.toSet())
+}
+
+fun SharedPreferences.getStringList(key: String, defaultValue: List<String> = emptyList()): List<String> {
+    return getStringSet(key, defaultValue.toSet())?.toList() ?: defaultValue
+}
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable-anydpi ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\drawable-anydpi\ic_launcher_ai.xml ---
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="#333333"
+    android:alpha="0.6">
+  <path
+      android:pathData="M22,11A4,4 0,0 0,20 7.52,3 3,0 0,0 20,7a3,3 0,0 0,-3 -3l-0.18,0A3,3 0,0 0,12 2.78,3 3,0 0,0 7.18,4L7,4A3,3 0,0 0,4 7a3,3 0,0 0,0 0.52,4 4,0 0,0 -0.55,6.59A4,4 0,0 0,7 20l0.18,0A3,3 0,0 0,12 21.22,3 3,0 0,0 16.82,20L17,20a4,4 0,0 0,3.5 -5.89A4,4 0,0 0,22 11ZM11,8.55a4.72,4.72 0,0 0,-0.68 -0.32,1 1,0 0,0 -0.64,1.9A2,2 0,0 1,11 12v1.55a4.72,4.72 0,0 0,-0.68 -0.32,1 1,0 0,0 -0.64,1.9A2,2 0,0 1,11 17v2a1,1 0,0 1,-1 1,1 1,0 0,1 -0.91,-0.6 4.07,4.07 0,0 0,0.48 -0.33,1 1,0 1,0 -1.28,-1.54A2,2 0,0 1,7 18a2,2 0,0 1,-2 -2,2 2,0 0,1 0.32,-1.06A3.82,3.82 0,0 0,6 15a1,1 0,0 0,0 -2,1.84 1.84,0 0,1 -0.69,-0.13A2,2 0,0 1,5 9.25a3.1,3.1 0,0 0,0.46 0.35,1 1,0 1,0 1,-1.74 0.9,0.9 0,0 1,-0.34 -0.33A0.92,0.92 0,0 1,6 7,1 1,0 0,1 7,6a0.76,0.76 0,0 1,0.21 0,3.85 3.85,0 0,0 0.19,0.47 1,1 0,0 0,1.37 0.37A1,1 0,0 0,9.13 5.5,1.06 1.06,0 0,1 9,5a1,1 0,0 1,2 0ZM18.69,12.87A1.84,1.84 0,0 1,18 13a1,1 0,0 0,0 2,3.82 3.82,0 0,0 0.68,-0.06A2,2 0,0 1,19 16a2,2 0,0 1,-2 2,2 2,0 0,1 -1.29,-0.47 1,1 0,0 0,-1.28 1.54,4.07 4.07,0 0,0 0.48,0.33A1,1 0,0 1,14 20a1,1 0,0 1,-1 -1L13,17a2,2 0,0 1,1.32 -1.87,1 1,0 0,0 -0.64,-1.9 4.72,4.72 0,0 0,-0.68 0.32L13,12a2,2 0,0 1,1.32 -1.87,1 1,0 0,0 -0.64,-1.9 4.72,4.72 0,0 0,-0.68 0.32L13,5a1,1 0,0 1,2 0,1.06 1.06,0 0,1 -0.13,0.5 1,1 0,0 0,0.36 1.37A1,1 0,0 0,16.6 6.5,3.85 3.85,0 0,0 16.79,6 0.76,0.76 0,0 1,17 6a1,1 0,0 1,1 1,1 1,0 0,1 -0.17,0.55 0.9,0.9 0,0 1,-0.33 0.31,1 1,0 0,0 1,1.74A2.66,2.66 0,0 0,19 9.25a2,2 0,0 1,-0.27 3.62Z"
+      android:fillColor="#000000"/>
+</vector>
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\activity_main.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
+
+    <include
+        android:id="@+id/app_bar_main"
+        layout="@layout/app_bar_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer" />
+</androidx.drawerlayout.widget.DrawerLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\app_bar_main.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <include layout="@layout/content_main" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin_bottom"
+        app:srcCompat="@android:drawable/ic_dialog_email"
+        android:contentDescription="@string/fab_content_description" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\content_main.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/app_bar_main">
+
+    <fragment
+        android:id="@+id/nav_host_fragment_content_main"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/mobile_navigation" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\fragment_favorites.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.favorites.FavoritesFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/fragment_content_padding"
+        android:paddingEnd="@dimen/fragment_content_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Search filter box -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/search_filter_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/search_favorite_prompts_hint"
+                    android:minHeight="@dimen/search_filter_min_height"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/purple_200"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_prompts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/prompt_item" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\fragment_gallery.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.gallery.GalleryFragment">
+
+    <TextView
+        android:id="@+id/text_gallery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/gallery_text_margin_start_end"
+        android:layout_marginTop="@dimen/gallery_text_margin_top"
+        android:layout_marginEnd="@dimen/gallery_text_margin_start_end"
+        android:textAlignment="center"
+        android:textSize="@dimen/gallery_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\fragment_home.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/fragment_content_padding"
+        android:paddingEnd="@dimen/fragment_content_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Search filter box -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/search_filter_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/search_prompts_hint"
+                    android:minHeight="@dimen/search_filter_min_height"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/purple_200"
+                    android:textCursorDrawable="@null"
+                    android:textAppearance="?attr/textAppearanceBody1"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_prompts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/prompt_item" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\fragment_slideshow.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.slideshow.SlideshowFragment">
+
+        <TextView
+            android:id="@+id/text_slideshow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\nav_header_main.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/nav_header_height"
+    android:background="@drawable/side_nav_bar"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/nav_header_desc"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        app:srcCompat="@mipmap/ic_launcher_round" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:text="@string/nav_header_title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/nav_header_subtitle" />
+</LinearLayout>
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\layout\prompt_item.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/card_margin"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="@dimen/card_elevation"
+    tools:theme="@style/Theme.AppCompat.Light.NoActionBar">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/card_padding"
+        android:paddingStart="@dimen/card_padding"
+        android:paddingEnd="@dimen/card_padding"
+        android:paddingBottom="@dimen/prompt_item_content_padding_bottom">
+
+        <TextView
+            android:id="@+id/prompt_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"
+            android:text="@string/prompt_title_placeholder" />
+
+        <TextView
+            android:id="@+id/prompt_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/prompt_description_margin_top"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:text="@string/prompt_description_placeholder"
+            android:scrollbars="vertical"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/prompt_icons_margin_top"
+            android:gravity="end">
+
+            <ImageView
+                android:id="@+id/favorite_icon"
+                android:layout_width="@dimen/prompt_icon_size"
+                android:layout_height="@dimen/prompt_icon_size"
+                android:src="@drawable/ic_menu_favorites"
+                android:layout_marginEnd="@dimen/prompt_icon_margin_end"
+                android:contentDescription="@string/favorite_icon_description" />
+
+            <ImageView
+                android:id="@+id/copy_icon"
+                android:layout_width="@dimen/prompt_icon_size"
+                android:layout_height="@dimen/prompt_icon_size"
+                android:src="@drawable/ic_menu_copy"
+                android:layout_marginEnd="@dimen/prompt_icon_margin_end"
+                android:contentDescription="@string/copy_icon_description" />
+
+            <ImageView
+                android:id="@+id/share_icon"
+                android:layout_width="@dimen/prompt_icon_size"
+                android:layout_height="@dimen/prompt_icon_size"
+                android:src="@drawable/ic_menu_share"
+                android:contentDescription="@string/share_icon_description" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\mipmap-hdpi ==
+== Carpeta: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-w600dp ==
+
+--- Archivo: C:\Users\migue\AndroidStudioProjects\PromptMaster\app\src\main\res\values-w600dp\dimens.xml ---
+<resources>
+    <dimen name="fab_margin">48dp</dimen>
+</resources>

@@ -165,6 +165,11 @@ class PromptRepository @Inject constructor(
         return Gson().toJson(prompts)
     }
 
+    // This function is for getting all prompts as a List<Prompt> for sharing or other purposes
+    suspend fun getAllPromptsList(): List<Prompt> {
+        return promptDao.getAllPromptsList()
+    }
+
     suspend fun writeJsonToFile(context: Context, jsonString: String, filename: String): Boolean {
         return try {
             val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -176,4 +181,5 @@ class PromptRepository @Inject constructor(
             false
         }
     }
+
 }
